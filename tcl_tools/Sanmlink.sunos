@@ -1,0 +1,5 @@
+echo -Bstatic \
+	-L%ANMAP%/lib -L/mrao/lib -L/usr/local/lib -L/usr/lib/X11  \
+	-lAnmap  -lclean -lra -lspec -limg -lplot -lgr \
+	-licl -lfits -lmap -lcmd -lutil -lio -lch -lpg -lpgplot -lnag -lAnmap \
+        -L/usr/lib/X11 -lsuntool -lsunwindow -lpixrect -lX11

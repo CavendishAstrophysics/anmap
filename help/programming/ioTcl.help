@@ -1,0 +1,82 @@
+
+*1 introduction
+
+The tcl porciedures to handle user-friendly IO are all prefixed io_.  For
+all procedures a number of parameters are in common:
+
+  o  prompt        This string is output to the user.  If the string contains
+                   a "%s" format description then the default value will
+                   be written into the string at this point.
+
+  o  default       This is the default value to use if no data values are
+                   supplied by the user.  It is the value used if the user
+                   responds with a cariiage return (CR) to the prompt.
+
+  o  cli           The current line.  The action of each routine is to
+                   take the next value from the current line (cli) or if
+                   this is empty to prompt the user for a value.  Procedures
+                   exist to manipulate the current line.
+
+*1 management_procedures
+
+  io_initio        Initialise the IO package.  You can call this procedure
+                   at any time to re-initialise the package, it should be
+                   called before any IO is attempted (and is done so by
+                   default in the standard Anmap startup script).
+
+  io_setcli text   Set the current cli to "text"
+
+  io_enqcli        Return the current cli
+
+  io_cmatch  s1 s2 Performs minimal matching of compound ("-" separated)
+                   strings.  True if s1 is a valid abbrevations for
+                   s2.  Returns 1/0 depending on result.
+
+*1 prompting_routines
+
+These routines prompt for various types of information.  A type validation
+is performed and if the type is wrong the user is given an error message
+and re-prompted.
+
+   Procedure     Parameters                 Data type returned
+   -------------------------------------------------------------------
+   io_getr       prompt default n           1 real value
+   io_geti       prompt default n           1 integer value
+   io_getword    prompt default n           1 text word
+   io_getnr      prompt default n           n real value
+   io_getni      prompt default n           n integer value
+   io_getnwords  prompt default n           n text words
+   io_getstring  prompt default             a text string
+   io_getnext    prompt default             next item of any type
+   io_getline    prompt default             prompt and update cli
+   io_onoff      prompt default             1 boolean (1/0 on/off yes/no y/n)
+   io_getopt     prompt default options     1 of the options in the tcl list
+                                            "options" minimal matching of
+                                            compound strings applies.
+
+*1 examples
+
+To build a procedure which can be used to implement a standard Anmap
+user-friendly command the following can be used as a model.
+
+proc list_catalogue { args } {
+
+  # implement the list-catalogue command
+
+  # setup the command line
+  io__setcli $args
+
+  # prompt for start and end catalogue entries
+  set i1 [io_geti "Start-entry \[%s\] : " 1]
+  set i2 [io_geti "End-entry \[%s\] : " 256]
+
+  # run command
+  imcat list $i1 $i2
+}
+
+Calling the procedure without any arguments will lead to the user being
+prompted.  However calling the routine as list_catalogue 12 40
+will result in i1 set to 12 and i2 set to 40.  If an error occurs the
+user is re-prompted.
+
+*

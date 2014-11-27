@@ -1,0 +1,28 @@
+The Anmap command language is called tcl, pronounced "tickle" and is the
+same command language as used in the locally written desktop applications
+as well as a number of other applications.  Extensize documentation is
+available describing tcl/tk itself --- there is a book by the author
+of the language Professor J. Ousterhout, but perhaps more accessibly the
+manual pages for all the build in commands are available online, either
+via the usual Anmap help (accessible via this help section) or using
+Mosaic via the local file:
+
+  /soft/html/tcl/Tcl.html
+
+(or access it using the local MRAO home page and select UNIX commands from
+the top level).
+
+In addition to the built in commands Anmap is implemented by defining a
+number of additional commands, many of which are of interest to the
+general Anmap programmer and are documented in this help section.  Each
+sub-section of Anmap may also provide specific command-language
+facilities to access the functions provided by that sub-system and you
+should browse the help information for the relevant sub-systems to
+familiarise yourself with the available commands and facilities.
+
+If in doubt feel free to ask advice.
+
+*1 tcl/tk_language
+*@$ANMHELP/programming/tcltk.help
+
+*

@@ -1,0 +1,685 @@
+
+Programmers Guide to Writing ANMAP callable routines and programs
+-----------------------------------------------------------------
+
+This document is intended as a guide to writing routines for the ANMAP
+map-analysis program. The main item covered will be the handling of the
+map data via the map catalogue.  Any program using the MAPCAT library
+should follow the instructions outlined below.
+
+This guide is intended for both ANMAP system programmers writing
+code for the main ANMAP source, adding or modifying ANMAP routines,
+adding new sub-systems and programs AND for users to write and
+interface their own routines to the ANMAP environment.  Users writing
+their own routines will do so as stand alone programs and they should
+refer to section 5 of this guide at an early stage.
+
+0. Conventions
+--------------
+
+A number of programming conventions have been adopted for ANMAP: these
+all follow the conventions agreed for writing common user FORTRAN for
+MRAO programs.
+
+0)    It is essential all routines are properly documented, both
+      internally and by providing information in help/written
+      documentation.
+
+i)    All routines should pass by argument a status word (as the last
+      argument).  A non-zero value of the status word indicates an
+      error.  In most cases STATUS should be checked on entry to the
+      routine and immediate return from the routine should occur if
+      STATUS is non zero.  STATUS should also be checked before exit
+      for a non-zero value -- this should occur even if no explicit
+      setting of STATUS is made since STATUS will contain any return
+      from the FORTRAN trap-handler library.  If STATUS is found to be
+      non-zero on exit then IO_WRERR or a library specific routine:
+         cmd_err, mapcat_err, etc.
+      should be called.
+
+ii)   Routines should be written so that they can be compiled with no
+      specific type checking -- i.e. IMPLICIT NONE (or the f77 option
+      -u in SUN FORTRAN).  Therefore all variables and functions must
+      be declared.  Standard include files (see LIBRARY) are available
+      for defining MAPLIB, IOLIB and CHRLIB functions and these should
+      be used.
+
+iii)  Entry points are forbidden.
+
+iv)   The code should be formatted so that the facilities of SCAN may
+      be used. Specifically a program segment should be introduced
+      by *+ (or C+) and the routine specification ended with *- or (C-).
+      See the documentation for SCAN for more information.  Additionally
+      the preferred method of specifying the argument types and meaning
+      to a call is as follows:
+
+C+ example
+
+      subroutine example( ain, bin, cout, dout, status )
+C     --------------------------------------------------
+C
+C Example subroutine specification
+C
+C Given:
+C   input variable a
+       real*4             ain
+C   input variable b
+       integer            bin(*)
+C Returned:
+C   ouput variable cout and size dout
+       character          cout*(*)
+       integer            dout
+C
+C A full specification of the routine should be included here.  The
+C author (especially for one-off routines) may also be included as
+C well as the last date of update.  If not this information may appear:
+C   a) after the *- line (if of no interest to the SPEC)
+C   b) at the head of the file if only one maintainer
+C-
+
+
+Further details of preferred layout of routines can be seen by looking
+at code performing operations of a similar kind.
+
+
+1. Libraries used by ANMAP
+--------------------------
+
+The folowing libraries all contain routines useful for ANMAP programmers
+and the documentation for them should be consulted:
+
+    iolib             --       terminal interaction  (*)
+    chrlib            --       character handling
+    utility           --       various utility routines
+    slalib            --       astrometric procession
+    naglib            --       numerical applications
+    icl               --       map / immage handling (see also maplib) (*)
+
+The libraries marked (*) are most likely to be needed by a programmer
+wishing to add a new map-analysis or graphics utility to the program,
+other libraries may be useful under special circumstances.
+
+Documentation for all these libraries is available as help text;
+use the help command; or as written specifications in the /mrao/docs
+directory.
+
+The most important aspect of ANMAP which a new programmer must become
+acquainted with is the map catalogue (MC). The MC and the associated routines
+provide the means of accessing the raw data in a very simple manner.
+Usually only two or three routines are needed and a model for their
+use can be taken from an established routine. Accessing the redtape
+of a map is via maplib enquiry rouitines -- note some older pieces of
+ANMAP code include explicitly the maplib common blocks; this MUST be
+avoided in all new code.
+
+2. Data format and MAPLIB
+-------------------------
+
+The image format currently used by ANMAP is the standard MRAO MAP format.
+This consists of header information followed by the data in a direct access
+file -- MAPLIB and MAPCAT routines exist to handle the interface to this
+data structure.  For simple applications, the programmer need know
+nothing of the data structure and obtain all information needed to
+write an application using MAPLIB enquire routines.  The most important
+of these are:
+
+   ic2_enq_minirt( minirt, status )    ic2_enq_null( blank, status )
+
+MRAO format MAPS use majic-blanking to indicate null pixels, the
+ennull routine returns the BLANK value for the current map; this
+can be used to test map pixel values using a standard equivalence
+test in FORTRAN.  The enminirt routine returns the MINIREDTAPE for
+the current map.  This miniredtape has the following definition:
+
+    integer       minirt(8), rminirt(8)
+    equivalence  (minirt,rminirt)
+    minirt(1-4)  -->  range of the map usually referred to as the
+                      UV range
+    minirt(5)    -->  map dimension in U (x-direction)
+    minirt(6)    -->  map dimension in V (y-direction)
+    minirt(7)    -->  coded data type (not needed by user
+                      programs
+    rminirt(8)   -->  BLANK value, identical to the value returned
+                      from ennull.
+
+The UV-range of the map is defined as follows:
+
+    iu1,iv1       iu2,iv1
+      --------------
+      |            |
+      |            |
+      |            |        minirt(1) = iu1   minirt(2) = iu2
+      |            |        minirt(3) = iv1   minirt(4) = iv2
+      |            |
+      |            |           iu2 > iu1    iv1 > iv2
+      --------------
+     iu1,iv2      iu2,iv2
+
+Note that the data is ordered in rows from the top-left pixel to the
+bottom right pixel, thus a loop which moves through the FORTRAN array
+holding map data is as follows:
+
+       real*4    map(*)
+       integer   iu, iv
+
+C ip_map is a pointer in the array map to the first pixel of the
+C map (top left-hand corner) it may of course be 1.
+
+       do iv=iv1,iv2,-1
+         do iu=iu1,iu2
+           current_pixel = map( ip_map-1 + iu + (iv-1)*(minirt(5) )
+         end do
+       end do
+
+Note how minirt(5), the map-dimension in U, is used.  Of course
+there are many ways of coding this same loop, but it is important to
+always go around the loop in the direction shown as this is the most
+efficient method of accessing the data.  If explicit reference to the
+UV coordinates is not required the simplest loop is:
+
+       do i=1,minirt(5)*minirt(6)
+         current_pixel = map( ip_map-1 + i)
+       end do
+
+4. User interaction
+-------------------
+
+All user interaction (prompting for data values etc.) is handled
+by the IOLIB library.  The IOLIB library contains routines to
+prompt the user for data in a wide variety of formats, if more
+advanced user interaction is required the programmer can also
+call on the facilities of CMD_LANG which is the interface to the
+full MRAO command-language including command-line interpretation,
+parameters etc.  These routines are fully documented in help -- use
+help libraries iolib ....
+
+3. Introduction to the Map-Catalogue (MC)
+-----------------------------------------
+
+The MC at the program level is really a simple filing system
+with two additional aspects:
+
+ a) All the programmer needs to identify a map is a catalogue entry
+    number, this is usually found by prompting the user for a map
+    catalogue entry using the routine ic2_getmap.  Access to the
+    map redtape is then achieved by loading the redtape for that
+    map (redt_load) and to the data via the routines ic2_alloc_xxx
+    and ic2_row_xxx
+
+ b) Space for map/image data is provided via a standard working array
+    map_array which is passed by argument.  To access map data the
+    programmer calls the routines ic2_alloc_in and ic2_alloc_out which
+    return pointers to the map_array array for input and output maps.
+    All transfers to and from disc files are handled by the routines
+    and subtsantial buffering is performed (in terms of whole maps)
+    to reduce disc accesses and speed up real-time performance.
+    If the full map data is not required a call to ic2_alloc_area
+    may be more appropriate.
+
+An intrinsic part of the system are the MC temporary maps.
+Routines producing new maps write the data to disc automatically
+on completion as anonymous files (actually map files of type ".pmap" held
+on the users default map space).  Programmers need not concern themselves
+of the differences between permanent and temporary maps, they are
+handled in an identical manner at the programmer's level.
+
+The only decisions a programmer must make when writing a routine are:
+
+i)    How many output images do I want
+ii)   Do my images need to be moved into core or can I move
+      through them one row at a time?
+iii)  How many input images do I need?
+iv)   Do I need work-space?
+
+Having decided on the above questions a standard answer will usually
+exist as to what routines are needed and how to program the routine. In
+a very few cases more complicated interaction with the stack may be
+required and then a number of more complicated facilities can easily
+be used still within the framework of the basic MC routines.
+
+
+Example - 1   1 output map, 1 input map in core
+-----------
+
+The problem is to have one input map and one output map, the input map
+the programmer wants to map into core. This is the basic situation
+in the reprojection routine - do_reproj, or do_shrink.
+
+C obtain an input map identifies "imap" from the user -- output map
+C identifiers are chosen automatically
+       call ic2_getmap('Input-map ','Default-Map','READ',imap,status)
+C
+C ..   the user is prompted for an input map the defaut is the default
+C      map and the access requested is READ. The user response is to
+C      type an integer coresponding to the map-catalogue entry.
+C
+C read the map into core
+       call ic2_alloc_in(imap,'DIRECT',map_array,ip_map,status)
+C
+C ..   the map is forced into core (if not already there) and you can
+C      now acces the data in the map_array array starting at the ip_map
+C      element, so  MAP_ARRAY(IP_MAP) is the image data.  This mode of
+C      access is called DIRECT by analogy with FOTRAN file access.
+C
+C find the output map -- specifying a size equal to that of the input map
+       call ic2_alloc_out(0,0,'DIRECT',imapo,ip_mapo,status)
+       if (status.ne.0) goto 999
+C
+C ..   imapo is the cataloge entry of the output map. It will be the
+C      next available entry and it will be in core (in MAP_ARRAY)
+C      starting at element ip_mapo.
+C
+C ..   At this stage the redtape in the common blocks will be that of the
+C      input map IMAP and IMAPO will have a copy of this redtape associated
+C      with it.
+C
+C now work on the maps
+       call do_work(map_array(ip_map),map_array(ip_mapo),status)
+C
+C ..   this routine may of course be very general, see the "do_"
+C      routines for an example of use.
+C
+C tidy up, close input and output maps
+999    call ic2_end_alloc(imap,map_array,status)
+       call ic2_end_alloc(imapo,map_array,status)
+
+C
+C ..   you must always call ic2_end_alloc for each map referred to for
+C      read or write. If the map were opened for read then the routine
+C      will close any open files and release the MC entry (after a
+C      call to ic2_alloc_xxx or ic2_row_xxx the specified MC entries are
+C      marked as in-use and cannot be opened a second time). If the map
+C      was opened for write (i.e. the output map imapo was!) then the
+C      routine will do much more. The max/min items in the map redtape
+C      will be updated and any final writing of the map or redtape to
+C      disc will be completed.  All files will be closed as required.
+C      The history information of the redtape and map-catalogue entry
+C      will be updated.  The user will be informed (if required) of
+C      successful completion of this routine.
+C
+
+The above is a typical use of the MC routines, to have more input/output
+maps simply insert more calls to ic2_alloc_in or ic2_alloc out as
+appropriate.  Note the importance of maintaining the integrity of the
+map catalogue identifier (imap, imapo etc.) and the map pointers for
+access (ip_map, ip_mapo).
+
+In the above example if at the time of calling ic2_alloc_in the input
+map imap was in fact on disc (either a new map not read into core or
+a map paged out by the system) then it will be paged in (read into the
+map_array array). All output maps are found space in the map_array
+array.
+
+Pageing is triggered by calls to the following routines
+
+      ic2_alloc_in
+      ic2_alloc_out
+      ic2_alloc_toout
+      ic2_alloc_area
+
+It is very important the ic2_end_alloc is called for each map referred to as
+soon as you are finished with it. It is especially important that if an
+error occurs in the routine, control still passes through the ic2_end_alloc
+routines. Do NOT alter the status word to be zero as ic2_end_alloc sees that
+it is being called in a case when there has been an error and simply
+closes any open files and releases all input maps - output maps will
+not be created.
+
+If you do not have to force the input map to be in core, a special
+programming strategy can be used to make the program more efficient
+and note that if you wish to have more than 2 maps active simultaneously
+then the size of map_array may not be sufficient for 512x512 images if
+you try to force them all into core (for small maps there is no problem)
+the next example shows you what to do in this case and again refer to the
+routines especially do_alpha, do_perc and do_chi for examples of how to
+code efficiently when the input does not have to be forced into core.
+
+Example - 2    two input map, two output maps, not forced into core
+-----------
+
+C read input 1
+       call ic2_getmap('Input-1 : ','Default-Map','R',imap1,status)
+C read input 2
+       call ic2_getmap('Input-2 : ','Default-Map','R',imap2,status)
+C
+C .. allocate input and output maps -- note the access requested is
+C    now SEQUENTIAL
+       call ic2_alloc_in(imap1,'SEQUENTIAL',map_array,ip_map1,status)
+       call ic2_alloc_in(imap2,'SEQUENTIAL',map_array,ip_map2,status)
+       call ic2_alloc_out(0,0,'SEQUENTIAL',imapo1,ip_mapo1,status)
+       call ic2_alloc_out(0,0,'SEQUENTIAL',imapo2,ip_mapo2,status)
+       if (status.ne.0) goto 999
+C
+C .. find range of images and sizes
+       call enminirt(minirt,status)
+C
+C .. minirt(1-4) == UV-range
+C    minirt(5,6) == Size in U and V
+C
+C loop through the map data - accessing rows sequentially -- note the
+C use of the pointers in this mode
+C
+       do iv = minirt(3),minirt(4),-1
+         call ic2_row_read(imap1,iv,map_array,ip_map1,status)
+         call ic2_row_read(imap2,iv,map_array,ip_map2,status)
+         do iu = 1,minirt(5)
+           map_array(ip_mapo1+iu-1) = map_array(ip_map1+iu-1) +
+     *                                map_array(ip_map2+iu-1)
+
+           map_array(ip_mapo2+iu-1) = map_array(ip_map1+iu-1) -
+     *                                map_array(ip_map2+iu-1)
+         end do
+         call ic2_row_write(imapo1,iv,map_array,ip_mapo1,status)
+         call ic2_row_write(imapo2,iv,map_array,ip_mapo2,status)
+       end do
+C
+C close output maps
+999    call ic2_end_alloc(imapo1,map_array,status)
+       call ic2_end_alloc(imapo2,map_array,status)
+
+C close input maps
+       call ic2_end_alloc(imap1,map_array,status)
+       call ic2_end_alloc(imap2,map_array,status)
+
+
+Example - 3
+-----------
+
+Modifying the data for an image and creating a new output image.  Many
+operations can be regarded as simply modifying the input image in some
+way.  In may systems the results would overwrite the input, the MC
+stops this mode as it is regarded as too dangerous -- an output map must
+always be created.  However in such circumstances it is unlikely that
+the user will want to access the original data in the near future.  An
+efficient programming technique is then to use the routine map_alloc_toout:
+this routine is equivalent to reading the input data file, copying it
+to the output and modifying it, but a copy of the input data is not
+held in core.  Only 'DIRECT' type access is supported in this mode.
+The following example scales a map by a factor 0.5.
+
+C read input map entry to scale
+       call ic2_getmap('Map-entry : ','default-map','READ',imap,status)
+C allocate output map and load input data
+       call ic2_alloc_toout(imap,map_array,imapo,ip_mapo,status)
+       if (status.ne.0) goto 999
+C
+C    map-array(ip_mapo) now has a copy of the data for map IMAP, but IMAP
+C    has not been allocated and the call to MAP_END_ALLOC(IMAPO,,, will
+C    write out the new map.
+C
+C scale the map
+       call enminirt(minirt,status)
+       do i=1,minirt(5)*minirt(6)
+         map_array(ip_mapo+i-1) = map_array(ip_mapo+i-1)*0,5
+       end do
+
+C tidy up
+       call adredt('HISTORY','SCALED')
+999    call ic2_end_alloc(imapo,map_array,status)
+       end
+
+
+Example -- 4
+------------
+
+The routine ic2_alloc_in, ic2_alloc_out, ic2_alloc_toout all consider
+operations on complete maps.  Such a mode of access may be extremely
+inefficient when access is only required to a small region.  For
+this reason MAP_ALLOC_AREA is provided.  This routine is only provided
+for input and is only available for 'DIRECT' type access.
+
+The example assumes a single value is required from the map IMAP
+
+C read in the map in order to access the pixel IU, IV
+       call enminirt(minirt,status)
+C .. set the V range to be simply IV (whole rows HAVE to be read
+C    so the values of minirt(1),minirt(2) are in fact immaterial)
+       call redt_load(imap,status)
+       minirt(3) = iv
+       minirt(4) = iv
+C read in the map data as required
+       call ic2_aloc_area(imap,minirt,map_array,ip_map,status)
+       if (status.ne.0) goto 999
+
+C read value required -- note IP_MAP still points to the start of
+C the WHOLE map although it is only safe to assume map_array contains
+C valid data for row IV.
+       call enminirt(minirt,status)
+       value = map_array(ip_map + minirt(5)*(minirt(3)-iv) + iu - 1)
+
+C end allocation
+999    call ic2_end_alloc(imap,map_array,status)
+
+
+There are times, especially when the user specifies the range of map
+data to access, that it would be wise to read the whole map although
+only a fraction is requested at present on the assumption the user
+may access an adjacent region.  For this reason the MC routine
+ic2_alloc_area may read the whole of the map data for possible future
+use -- this actions is triggered by what proportion of the map the
+call to ic2_alloc_area is requesting.  By default if more than 50%
+(by rows -- only complete rows can be read) of the map is requested
+then the whole map is read.  This fraction is under user control
+with the SET-MAXIMUM-AREA-READ command in the map-catalogue system:
+it may also be useful to change the default action which is at present
+coded in the routine MAP_ALLOC_AREA itself.
+
+
+Example -- 5
+------------
+
+Many routines require scratch space.  The MC provides scratch array
+space by allocating a scratch map.  The programmer is free to use this
+space in any way required -- these is NO associated REDTAPE!
+
+C allocate scratch space -- access mode must be DIRECT at present
+C -- size of space is 128*128 words
+       call ic2_alloc_scr(128,128,'DIRECT',iwork,ip_work,status)
+
+C ... use the work space
+C          map_array(ip_work) --> map_array(ip_work+128*128-1)
+C     is any way required.
+
+C release scratch space
+       call ic2_end_alloc(iwork,map_array,status)
+       end
+
+
+The similarity with output map allocation is deliberate.
+
+
+
+4. Graphics in ANMAP
+--------------------
+
+THIS SECTION IS NOT CURRENTLY AVAILABLE
+
+
+5. Creating a stand-alone program
+---------------------------------
+
+Users wishing to write their own ANMAP compatible code will
+write stand-alone programs which can be called from ANMAP.  This
+section describes how to do this.
+
+All that is required to write a stand-alone program, in addition
+to the above information on the MC, is to provide a standard
+start-up and close-down procedure.  These are provided by the
+two routines anm_start and anm_close.  Additionally, you must
+define a work-array (map_array) and of course supply your specific
+code/routines.
+
+The definition of anm_start is as follows:
+
+    subroutine anm_start( scope, nm, msize, nb, bsize, status )
+
+Where the parameters are:
+Given:
+ scope of program (cmd-language scope)
+     integer      scope
+ number of maps in work-space and size of each map
+     integer      nm, msize
+ number of row buffers in work-space and size of each buffer
+     integer      nb, bsize
+Updated:
+ error status
+     integer      status
+
+The routine provides a standard initialization for programs
+using the CMD-language, ANMAP graphics and/or map-catalogue.
+
+If the program is a command-line interpretation program then
+it should be asigned a scope to distinguish it from ANMAP which
+is SCOPE=1.  SCOPEs 1-99 are reserved for system programs so
+use SCOPE 1xx for all programs to be called from ANMAP.
+
+If the stack-system is to be used for work space the program
+must define an array (conventionally called map_array) of size
+   nm*msize + nb*bsize
+ then call this routine with nm, msize, nb, bsize set.  If the
+ stack system is not to be used to allocate space then call
+ this routine with all arguments set to zero.  Note that even
+ if the stack-system is not to be used this routine does
+ perform the initialization for using the map catalogue.
+
+Example:
+
+1) To initialize a program which does not use command-line
+  interpretation or use the stack then call:
+
+      call anm_start( 0,0,0.0,0,0.0,status )
+
+2) To initialize a command-driven program using the stack the
+  following is a standard code fragment.
+
+      integer         status
+      integer         nm, nb
+      integer         msize, bsize
+      paramater      (nm = 8, nb=4, msize=256*256, bsize=1024)
+      real*4          map_array( nm*msize + nb*bsize)
+      call anm_start( 101, nm, msize, nb, bsize, status )
+
+To perform the standard shut-down you should end you program with
+anm_end:
+
+      subroutine anm_end( status )
+
+where status is just the integer status code as usual.
+
+
+A complete example of a stand-alone program is therefore as follows:
+
+C_-------------------------------------------------------------------
+C Example-Prog-1:  Scale a map by a user-supplied value
+C
+C The map is scaled such that:
+C
+C   "output-map"  =  "scale-factor" * ("input-map"  -  "offset-level")
+C
+C where scale-factor and offset-level are supplied by the user.
+C
+C This example program performs the same function as scale-map in
+C the map-analysis sub-system of ANMAP.
+C
+C Document origin and update of this routine
+C   A.N. other, at Place, some time
+C-
+C define work array
+       integer       nm, nb
+       integer        msize, bsize
+       parameter    (msize = 256*256)
+       parameter    (bsize=1024)
+       parameter    (nm=16)
+       parameter    (nb=3)
+       real*4        map_array( nm*msize + nb*bsize )
+C error status
+       integer       status
+C Local variables used for scaling
+       real*4        scale_factor, offset_level, blank_value
+C pointers and map identifiers
+       integer       imap, ip_map, imapo, ip_mapo
+C counter
+       integer       i
+C mini redtape for map size etc.
+       integer       minirt(8)
+
+C perform standard initialization
+       call anm_start( 0,nm,msize,nb,bsize,status )
+
+C read input map: imap is the catalogue identifier
+       call ic2_getmap('Map : ','Default_Map','READ',imap,status)
+C force input map into core: ip_map is pointer to imap
+       call ic2_alloc_in(imap,'DIRECT',map_array,ip_map,status)
+C find output map: imapo is the output map and ip_mapo its pointer
+       call ic2_alloc_out(0,0,'DIRECT',imapo,ip_mapo,status)
+       if (status.ne.0) goto 999
+
+C Perform other user interaction
+       call io_getr('Scale-Factor : ','1.0',scale_factor,status)
+       call io_getr('Offset-Level : ','0.0',offset_level,status)
+       if (status.ne.0) goto 999
+
+C do the work
+       call enminirt(minirt,status)
+       call ennull(blank_value,status)
+       do i = 1,minirt(5)*minirt(6)
+         if (map_array(ip_map+i-1).ne.blank_value) then
+           map_array(ip_mapo+i-1) = scale_factor *
+     *                            (map_array(ip_map+i-1) - offset_level)
+         else
+           map_array(ip_mapo+i-1) = blank_value
+         end if
+       end do
+
+C Update the TEXT of the redtape
+       call adredt('CREATED','SCALE',status)
+       call stnull(blank_value,status)
+
+C Tidy up: clear access to the maps.
+999    call ic2_end_alloc(imapo,map_array,status)
+       call ic2_end_alloc(imap,map_array,status)
+
+C check status value and report an error to the user, then shut-down
+       call cmd_err(status,'SCALE-MAP','Failed ')
+       call anm_end( status )
+
+       end
+C_--------------------------------------------------------------------
+
+To compile and link this program is straight forward;
+
+   f77 -u example_1.f -o example_1 `anmlink`
+
+Note the use of the -u option to turn of implicit typeing of
+variables.  The -o option specifies the output file for the
+fully linked, executable program.  The above example code
+is in the file:
+
+  /mrao/anmap/examples/example_1.f
+
+and you may use it as a basis for similar programs. This
+directory contains other code fragments (and this guide)
+which will be of use to use in writing routines.
+
+If you use other libraries such as NAG include the
+necessary link commands on the same line, e.g.
+
+   f77 -u example_1.f -o example_1 `anmlink` -lnag
+
+To interface this routine to ANMAP is equally easy.  From
+within ANMAP you can define a procedure or alias which calls this
+program as follows:
+
+^alias example-1 '^system /mrao/anmap/examples/example_1'
+
+You will of course use the actual path to where the executable
+is located.  From within ANMAP you can now use the procedure
+example-1 in the same was as any other command:
+
+Anmap>  example-1  3 -1.0 0.0
+
+will take map-catalogue entry 3 and scale it by -1.0.  Users
+will be unaware that this is in fact running as a separate program.
+
+
+

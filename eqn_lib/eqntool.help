@@ -1,0 +1,56 @@
+EQNTOOL(1)      Uni Liv Pure Math Sing Group            EQNTOOL(1)
+
+NAME
+        eqntool - tool for handling equations
+
+SYNOPSIS
+        eqntool [filename|equation|-|-c-d name|-e|-f|-F] ...
+
+DESCRIPTION
+        eqntool reads equations either from a file or strings
+        specified on the command line or from the standard input.
+        These equations can be differented, expanded, clean,
+        and are normally printed on the standard output.
+
+OPTIONS
+        Each argument of the program is read in turn and immediately
+        acted upon. Hence the order they appear is important. The
+        possible options are:-
+
+        filename        All the equations in the file are read in.
+
+        -               Equations are read in from the standard input
+                        until EOF (control-D) is encountered.
+
+        equation        An set of equations is read in from the command
+                        line. Normally its best if the equations are
+                        enclosed in single quotes,
+                        e.g. eqntool 'x+y'
+                        Note if the equation is a valid filename then
+                        the equations will be read in from that file instead.
+
+        -c              Flip the clean flag. If the clean flag is set
+                        then all equations read in so far and all the
+                        following equations will be cleaned up. For example
+                        If the clean flag is set the equation 'sin(Pi/6)'
+                        becomes '0.5'. The clean flag is ON by default.
+
+        -d name         Differentiate all the equations with respect
+                        to name.
+
+        -e              Flip the expand flag. If the expand flag is set
+                        then all equations read in so far and all the
+                        following equations will be expanded. For example
+                        If the expand flag is set the equation '(x+y)^2'
+                        becomes 'x*x+x*y+y*x+y*y'.i
+                        The expand flag is OFF by default.
+
+        -f              Flip the function flag. If the function flag is set
+                        then the standard list of functions will be
+                        used in all the equations read in so far and all the
+                        following equations. If the function flag is set
+                        'cos(x)' will be recognized as a function, otherwise
+                        'cos' will be treated as a variable and 'cos(x)'
+                        becomes 'cos * x'. The function flag is ON by default.
+
+        -F      Print out the definitions of the standard function. 

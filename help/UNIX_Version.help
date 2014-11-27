@@ -1,0 +1,139 @@
+
+Anmap is available as a package on both NORSK data NORD machines and
+SUN (or compatibles) running under SUNOS 4.x and SUNOS 5.x
+
+The NORD version of Anmap is no longer supported and all users are
+advised to switch to the Sun version.
+
+This document describes the main differences between the NORD and Sun
+versions and is intended only for users transfering from the NORD to
+the Sun-based system.
+
+The main differences concern:
+  (a) The user interface:  A new and powerful command language is used in
+      all versions of Anmap from version X0.5 onwards, however the style of
+      minimal-match commands is retained from the NORD version.
+  (b) The graphics facilities have been completely re-written and much
+      improved over the NORD version.  There is a major new sub-system,
+      the graphic sub-system, which controls the overall appearance of plots
+      and provides a powerful replacement for the graphics-overlay facility.
+  (c) Anmap has been split into many more programs than on the NORD.  For
+      most purposes this appears completely transparent to the user, however
+      there is an important advantage to this approach in that users may
+      easily add their own routines to Anmap in either FORTRAN or Anmap's
+      command language, called "tcl", or a mixture of the two.
+
+*1 X-window_interface
+
+ANMAP is designed to be used under X-windows on the SUN.  
+ANMAP only uses standard X11R6 compliant tools so that it will run under 
+any window manager; specifically open-windows, twm or MOTIF by using, for 
+example, a VAX as a remote "X-terminal".  A full X-windows interface is being 
+developped and this will be based on the MOTIF-like toolkit Tcl/Tk.
+
+To start the X-windows version of Anmap use the command:
+
+  Xanmap
+
+or
+
+  anmap -X
+
+
+or to start the command-line only version type:
+
+  anmap
+
+or
+
+  Xanmap -noX
+
+This assumes /mrao/bin is in your "path" if not then the "/mrao/bin" should 
+be included.  Alternatively, if you have started the cd (CS) tool then you 
+can choose Xanmap from Packages menu.
+
+Once started under X-windows Anmap will display a control panel and
+a command-line window below it, together with a graphics window.  IF you
+start the command line version then the prompt will change to the Anmap
+prompt:
+
+  Anmap>
+
+
+*1 TV-load
+
+Command: Load an image into  the TV-device
+Parameters: map-entry, TV-display-min, TV-display-max
+
+The specified map is loaded into the TV device (currently only
+SAOimage is supported).  You may specify the range of pixel values to
+display; these default to the min and max on the image (as taken from the
+image redtape).
+
+*1 PGPLOT-device
+
+Anmap uses the fixed size PGPLOT window which disappears when Anmap is
+exited or an end-plot command is given in the map-display sub-system.
+
+*1 user_files
+
+Anmap makes use of two directories in your home space:
+
+  ~/mrao    ---    A directory where files from MRAO programs are
+                   written rather than having them in your home
+                   directory.  This is a good place to put Anmap
+                   command files etc.
+                   This directory is created if it does not exist
+                   when Anmap starts up.
+  ~/images  ---    This is the directory in which Anmap stores its
+                   internal images.  The best policy is to create
+                   this directory as a link to a private region on
+                   one of the data discs.
+
+You may change the directory used for internal images by use of the
+command default-map-directory in the catalogue sub-system.
+
+*1 Command_line_options
+
+Anmap supports a number of command line options:
+
+       -help        = This message
+       -cd [dir]    = Specify working directory as dir [~/mrao]
+       -cwd         = Do not change to a working directory [no]
+       -swd         = Change to standard working directory [yes]
+       -X           = Startup Xanmap [yes]
+       -noX         = Startup anmap [no]
+       -winX        = Startup X anmap in own window [yes]
+       -nowinX      = Startup X anmap in current window [no]
+       -mapsize [s] = Set standard map size [256]
+       -nmaps [n]   = Set number of maps [20]
+       -buffsize [s]= Set standard buffer size [1024]
+       -nbuff [n]   = Set number of buffers [4]
+
+This enables you to start Xanmap with the anmap command as:
+
+	anmap -X
+
+If you do not want to have a separate embedded Xterm you can use:
+
+	anmap -X -nowinX
+or
+	Xanmap -nowinX
+
+By default Anmap changes directory to ~/mrao.  You can now overide this
+with the option "-cwd" or change to another directory with the options
+"-cd dir".  If you are analysing large images then you will find the
+"-mapsize" options very useful.  For example if your standard image size
+is 1024x1024, then you should probably start Anmap with:
+
+	anmap -mapsize 512
+
+It is not necessary to specify your actual map size as the amount of reserved
+storage is in fact:
+
+	nmaps * mapsize**2
+
+
+
+*
+

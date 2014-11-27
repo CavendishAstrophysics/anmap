@@ -1,0 +1,31 @@
+
+Spectrum-analysis-program: Reinterpolate spectral file
+
+Invocation:
+
+    sp_rebin
+
+Keys:
+    outfile nokeyok             output file name [-]
+    infile  nokeyok,needed      input file name
+    model   nokeyok,needed      model file against which 
+                                re-interpolation is done
+    xc                          X-column in the infile for use 
+                                in reinterpolation [1]
+    xcm                         X-column in the model file
+                                if it differs from infile X-column
+     title                      new title for output file
+    comment                     user defined comment text
+
+The input file is re-interpolated onto the X-axis specified by
+the model file -- the output specral file will therefore have 
+identical sampling to the model file.  If the input file does not
+cover the range in X of the model file then output file contains zeros.
+All columns are copied from input to output.
+
+
+
+
+
+
+

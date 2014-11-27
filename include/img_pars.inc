@@ -1,0 +1,1 @@
+../ic_lib/img_pars.inc

@@ -1,0 +1,609 @@
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                            ANMAP 
+ 
+ 
+ 
+ 
+ 
+                    A Map Analysis System 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                           Preface
+ 
+ 
+ 
+Anmap is a map and image analysis system currently implemented
+at MRAO, Cambridge. This document describes the facilities
+provided by the package and how to use it. The package is
+written around the standard map format and IO libraries used
+at MRAO and is fully supported and future developments are
+foreseen. The system is compatible with the other MRAO
+software such as Postmortem and the Mapper which are also
+based around the same command processor and map format.
+ 
+Paul Alexander was responsible for the design and
+implementation of most of the high level and Anmap specific
+utilities, including the routines for handling the map
+catalogue. The IO libraries, command processing and map
+handling libraries were written by Dave Titterington. A number
+of routines, especially for coordinate conversion and
+reprojection have been supplied by Elizabeth Waldram and Nick
+Rees. This documentation has been prepared by Paul Alexander
+using the GCAL text processing package written by Philip Hazel
+of the University of Cambridge Computer Laboratory and
+supported on on the IBM 3084. Routines supplied by the
+Numerical Algorithms Group are used for specific numerical
+applications. The graphics library is the PGPLOT library
+supplied by T.J. Pearson and translated to the NORD by Dave
+Titterington. Julia Riley and Guy Pooley kindly read and
+suggested improvements to this manual.
+ 
+This documentation is applicable to Version 6 of ANMAP. It is
+both a users guide and a reference manual.
+ 
+ 
+ 
+ 
+P. Alexander, Dave Titterington, October 1990.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                          Contents
+ 
+ 
+ 
+Introduction                                     I--1
+ 
+A Tutorial Guide to Map Analysis                 II--1
+ 
+The Anmap System                                 III--22
+ 
+Displaying Maps and Images                       IV--43
+ 
+Map Analysis                                     V--62
+ 
+Image Deconvolution                              VI--75
+ 
+Analysing Synchrotron Spectra                    VII--82
+ 
+Utilities                                        VIII--86
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                       1. INTRODUCTION
+                       _______________
+ 
+ 
+ 
+Anmap is short for ANalysis-MAP and is the name given to the
+new image reduction software package on the Norsk Data NORD
+computers at the Mullard Radio Astronomy Observatory,
+Cambridge. Facilities are provided for displaying, CLEANing,
+convolving, combining images and statistical analysis such as
+finding fluxes. Other programs in MRAO's data reduction system
+provide facilities for examining and editing UV-plane data,
+calibration and map making (Postmortem), for analysing
+catalogues (Car-System) and analysing survey data (Survey).
+ 
+This document provides both a tutorial type introduction to
+Anmap and a more extensive manual. New users should look first
+at Chapter 2 and then at the more detailed command
+descriptions as the need arises. The remainder of this
+introductory chapter describes the NORD filing system, the map
+catalogue and the basic way maps are manipulated. For more
+information on the system itself see Chapter 3.
+ 
+ 
+ 
+1.1 Notation
+____________
+ 
+Throughout this document some standard notation will be used.
+ 
+(a)  In the text bold will indicate a command name or
+     parameter.
+ 
+(b)  In examples bold will indicate messages produced by the
+     computer as well as prompts.
+ 
+(c)  The term CR will refer to a 'carriage-return' (i.e.
+     pressing the return key) and ESC to an 'escape' obtained
+     by pressing the key marked escape.
+ 
+ 
+1.1.1 Commands
+1.1.1 Commands
+ 
+Commands follow the same convention as on the NORD itself.
+Each command consists of a number of parts each separated by a
+dash '--'. Upper and lower-case characters are not
+distinguished in commands or file names. The command
+interpreter matches each part of the command separately, you
+only need to type as much of the command as is necessary to
+make it unambiguous. The simplest way to see how this works is
+via an example. The command list-catalogue lists the contents
+of the map-catalogue (see below). To use this command the user
+may type any one of the following abbreviations:
+ 
+       li-cat
+       list-c
+       l-c
+ 
+however, the simple
+ 
+       list
+ 
+is not sufficient as there is also a command list-batch-queue
+and a message:
+ 
+*** command is ambiguous 
+ 
+will appear along with a list of alternatives.
+ 
+Commands may take data (just as on the NORD). The data for a
+particular command is given after the command: you may type on
+the same line as the command the responses to the prompts
+which would normally follow after specifying the command name.
+If more than one data item or response is given on the command
+line than they may be separated by commas ',' or spaces. If
+you do not know what data a particular command is expecting
+then the program will give an informative prompt.
+ 
+ 
+ 
+Examples:
+ 
+       delete-files (maps-1:p-a):resi,yes
+ 
+delete-files takes an argument which is the file name and
+requests for confirmation before deleting the file.
+ 
+       scan-map 1,,,,,
+ 
+Scan-map takes a map-catalogue entry and a UV-range -- in this
+example the default of the complete map is used.
+ 
+ 
+ 
+When you are prompted for some input the default to the
+command is shown in square brackets '[', ']'. Round brackets
+are used to show possible responses. The default may be
+obtained by pressing CR.
+ 
+ 
+ 
+Examples:
+ 
+       Map-name [(maps-1:paul-a):map] :    CR 
+ 
+In this example a default directory and file type are
+indicated -- if you do not supply these the defaults are used.
+ 
+       Projection (equatorial,sky,tangent) [sky] :    equat
+ 
+The user is prompted for the projection of the output map in
+the reproject command, the valid replies are either
+equatorial, sky or tangent and the default (obtained on
+pressing carriage return) is sky, in this example the user has
+chosen equatorial.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1.2 File Names
+______________
+ 
+File names on the Nord have the following structure:
+ 
+(directory-name:user-name)file-name:type
+ 
+Upper- and lower-case characters are not distinguished. As
+with commands, when specifying the name of an existing file
+you need only give as much of the file name as is necessary to
+make the name unambiguous and portions of the file name
+between dashes '--' and colons ':' are treated separately. The
+file name must not exceed 16 characters, while the type
+(similar to the type on the VAX) must not exceed 4 characters.
+ 
+ 
+ 
+Examples
+ 
+(maps-3:paul-a)map-name:map
+ 
+is matched by (m-3:p-a)m-n:map or even (m-3:p-a)m if there are
+no other files beginning with an 'm' and especially if the
+program is expecting a file type of ':map'.
+ 
+ 
+ 
+1.3 Getting ANMAP started
+_________________________
+ 
+To start up ANMAP simply type:
+ 
+      anmap
+ 
+The program will then begin -- it will take a little time to
+get going as the program is quite large and it is going
+through a start-up procedure. After a while a message similar
+to the following will appear on the screen:
+ 
+ 
+Anmap Version 6.4(a) June 1990
+_____
+ 
+ 
+together perhaps with a message, and the prompt will change
+to:
+ 
+       Anmap> 
+ 
+Anmap is now ready to accept commands. Anmap is organized into
+sub-systems, each with its own set of commands, however some
+commands (Basic-Commands) are always available to you -- the
+basic commands are those which are available when you see the
+Anmap> prompt and you may type them in response to any of the
+other prompts. Basic-commands exist to obtain help
+information, access the map-catalogue, access disc files and
+importantly to change to another sub-system.
+ 
+The sub-systems currently available to you are:
+ 
+ 
+ 
+ 
+ Sub-System             Prompt              --  Description 
+ 
+ BASIC-SYSTEM           Anmap>              --  The basic ANMAP system
+ 
+ FILE-SYSTEM            File-System>        --  File system commands
+ 
+ CATALOGUE-SYSTEM       Map-Catalogue>      --  Map-Catalogue commands
+ 
+ MAP-ANALYSIS           Map-Analysis>       --  Analysing maps
+ 
+ MAP-DISPLAY            Map-Display>        --  Contouring and grey-scales
+ 
+ CLEAN                  Clean>              --  CLEANing maps
+ 
+ RESULTS-ANALYSIS       Results-Analysis>   --  Analysing results file
+ 
+ EDIT-REDTAPE           Edit-Redtape>       --  Redtape correction
+ 
+ SYNCHROTRON-ANALYSIS   Synchrotron>        --  Analysing synchrotron spectra
+ 
+ ERROR-REPORT           Report>             --  Gripes and suggestions
+ 
+ ANMAP-MONITOR          Anmap-Monitor>      --  System facilities
+ 
+ 
+You start off in the basic-system - to return to it from any
+other sub-system just type exit or quit -- these commands
+typed in response to the Anmap> prompt will leave Anmap and
+return to SINTRAN and the '@' prompt. To switch to a different
+sub-system simply give the name of the sub-system as a command
+and you will notice that the prompt will change.
+ 
+At any time you can list the available commands by typing a
+'?' and you will be prompted:
+ 
+      command: 
+ 
+pressing CR will list all the commands available in the
+current sub-system while typing for example 'examine' will
+list all commands matching this string (in response to the
+File-System> prompt this gives examine-maps, examine-files).
+ 
+You may obtain considerably more information by typing help --
+this enters the help system and you will be prompted for an
+output file; simply press return if you want the information
+to appear on your terminal otherwise as a useful alternatives
+type PRINTER to get hard copy output.
+ 
+Once past the prompt for the output file a menu of items help
+knows about is displayed. To obtain information on a
+particular topic, for example the map-catalogue, simply type
+the name of the entry of interest. Let us suppose you type
+map-cat (note that minimal matching applies). On the screen
+will be displayed a few lines of introduction to the map
+catalogue and then there will appear a new menu of things help
+knows about in connection with the map-catalogue; as we will
+presume you are new to Anmap, type intro and the information
+listed under the Introduction will be typed. On completion of
+this information you will still be at the level of help
+information on the map catalogue -- to re-display the menu
+type:
+ 
+       ? CR 
+ 
+or to return to the basic menu of what help knows about simply
+type CR. To return to the Anmap> prompt keep pressing CR until
+the prompt re-appears on your screen.
+ 
+ 
+ 
+1.4 Escape
+__________
+ 
+You may interrupt the program at any stage by pressing the ESC
+key. This should return you to the current sub-system prompt.
+Note that this will happen immediately in response to a
+prompt, but there may be a considerable delay if some work is
+being done on an image as the effect is carefully controlled
+so that you do not lose any data.
+ 
+Normally ESC on the NORD returns you to SINTRAN. In general
+this is undesirable in Anmap (and also other programs such as
+Postmortem) as you will have lost all of your work within the
+program. However, it sometimes occurs that due to an error in
+programming (or a system problem) the program gets itself in a
+mess and you have to interrupt it in a violent fashion (just
+like breaking out of programs on other systems -- e.g. CTRL-Y
+on the VAX). In this case press the CTRL key and the
+backslash, \, key together and this will work to exit from
+Anmap.
+ 
+ 
+ 
+1.5 What Should I Read Now?
+___________________________
+ 
+The remainder of this manual is brocken up into two main
+sections. Chapter 2 is a users guide to Anmap containing many
+examples and is all you should read if you are a new user of
+the program. Once you have gained some experience with Anmap
+you will find the remaining chapters of this document useful.
+The information contained in the chapters 3-8 is also
+available online within Anmap by using the help system.
+ 
+ 
+ 
+1.6 Where Do I Find Information On...
+_____________________________________
+ 
+Since Anmap is divided into sub-systems the following table
+may be useful in directing you to the right section of Anmap
+to solve a particular problem.
+ 
+Getting data into Anmap.
+          If your data is in standard MAP format use the map-
+          catalogue command add-to-catalogue to add your map
+          to the catalogue (Section 3.5). If your data is on
+          tape you will probably need to use FITSREAD (see
+          online help documentation at the NORD prompt)
+          followed by add-to-catalogue. If your data is in a
+          non-standard format use the input-map command of the
+          map-analysis sub-system (Section 5.5).
+ 
+Correcting the redtape of images.
+          Use the edit-redtape sub-system described in chapter
+          8.
+ 
+Displaying images.
+          To display images on any device use the map-display
+          sub-system described in Chapter 4.
+ 
+CLEANing maps.
+          To CLEAN a map use the CLEAN sub-system described in
+          chapter 6. To print pixel values use the print-map
+          command in the map-analysis sub-system (Section
+          5.1).
+ 
+Calculating statistics, noise and fluxes.
+          Use scan-map, noise-map and map-histogram in the
+          map-analysis sub-system (Section 5.1.9) to analyse
+          the noise on a map. To calculate the flux the
+          commands add-flux, strip-flux and ring-flux are
+          available (Section 5.1).
+ 
+Finding positions and pixel values.
+          The basic command cursor-position return the cursor
+          position and map value using a interactive plot
+          device (Chapter 4, Section 4.8.6). The map-analysis
+          command local-maximum will locate the position of
+          the maximum on a map within a specified search area,
+          while the command convert-position can be used to
+          convert between pixel positions (U,V) and sky
+          coordinates (RA,DEC) (Section 5.1).
+ 
+Analysing polarization maps.
+          Commands exist to analyse polarization data to
+          produce polarized intensity maps (mI-map),
+          percentage polarization (perc-map) and position-
+          angle maps (CHI-map). To display polarization maps
+          the map-display sub-system command vectors and plot
+          vectors can be used (Section 4.2.12).
+ 
+Combining maps.
+          Maps can be added/subtracted (add-maps) or divided
+          (divide-maps) see Section 5.2.
+ 
+Transforming maps.
+          Maps may be transformed to a new coordinate system
+          (reproject-map, stretch-map, uv-shift-map) and made
+          smaller (shrink-map) or other numerical
+          transformations applied (logarithm-map,
+          exponentiate-map, scale-map); these are all map-
+          analysis commands and are described in Section 5.3.
+          Regions of a map may have their value set to
+          'undefined' either by specifying a particular map
+          range (zap-map) or by masking with themselves or
+          other maps (gate-map, mask-map) -- Section 5.3).
+ 
+Smoothing and filtering.
+          A map may be convolved with a gaussian using smooth-
+          map (Section 5.3.5) or with a general 2D array using
+          convolve-map (Section 5.3.6).
+ 
+Analysing multi-frequency data.
+          Simple spectral index maps can be made constructed
+          (alpha-map, Section 5.2) or more complex synchrotron
+          spectral analysis performed (Chapter 7).
+ 
+          The above list is not exhaustive, but is intended as
+          a quick guide to many of Anmap's features.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

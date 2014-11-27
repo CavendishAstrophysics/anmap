@@ -1,0 +1,27 @@
+
+Spectrum-analysis-program: make a histogram from spectral data
+
+Construct a histogram from supplied data.  The data once binned into a
+histogram may be displayed using sp_display and choosing the the plot_histogram
+option for the type of display.
+
+Keys
+
+  low                               low value for histogram [0.0]
+  high                              high value for histogram [max in data]
+  col                               column to construct histogram for [2]
+  bins                              number of bins in histogram [10]
+  title
+  comment
+  infile       nokeyok,needed       input file [-]
+  outfile      nokeyok,needed       output file [-]
+
+Example
+
+Construct a histogram of the data in stats.dat; each bin is of width
+0.1 and there are ten bins.  The outut histogram is the displayed.
+
+Examples
+  sp_make_histogram stats.dat hist.dat low 0.0 high 1.0 bins 10
+  sp_display hist.dat xrange 0,1 plot_histogram plot_device /xwindow
+

@@ -1,0 +1,441 @@
+Graphic sub-system
+
+*1 introduction
+
+The graphic sub-system is used to coordinate and control all of the
+graphics tools within Anmap, including the manipulation of devices and
+device sizes and the allocation of regions of the device to specific
+plotting tasks.  Most of the commands within the graphics sub-system
+either operate on the current graphic or on the device.
+
+All graphics-based operations and tools in Anmap use a "graphic" definition;
+four basic types are currently defined:
+
+  image      For images and contours (used by map-display)
+  draw       For drawings (used by drawing-display)
+  graph      For graph-like graphics (used by data-display)
+  scratch    For various graphics utilities (used by various commands
+                 such as plot-slice in map-analysis).
+
+You may have more than one definition for each type which are labelled
+with the graphic index number.  When Anmap starts up one graphic of each
+of the above types is defined and initialised and each is given the index
+number 1.  The command list-graphics can be used to list the currently
+defined graphics.  Each graphic definition contains all the instructions to
+produce a plot.  The commands in the graphics sub-system enable you to
+manipulate graphics and their relationship to the physical device.
+For all graphics some basic information is recorded:
+
+   view-port     region on the device into which the graphic is drawn
+   transparancy  the transparency of the graphic with respect to underlying
+                 graphics on the device
+   depth         the depth of the graphic
+   line-style    a default line style
+   test-style    a default text style
+
+How the last three are used depends on the sub-system using the graphic. The
+default on Anmap's startup is to set the view-port to the entire screen and
+the transparency to opaque for all graphics except "draw" where the
+transparency is set to transparent.
+
+To illustrate the use of graphic definitions consider the following example
+in which a map is displayed using the default graphic, it is then re-drawn
+in a smaller region of the screen and another graphical object (a graph)
+is drawn in another part of the screen.
+
+! enter map display and display may number 1 as a grey scale image
+  map-display
+  set-map 1
+  grey on,,,,
+  plot grey
+
+! now re-display this image in the upper right hand quadrant
+  graphic
+! first clear the device
+    clear-device
+! now reset the view-port for the image
+    select image 1
+    view-port 0.5,1.0,0.5,1.0
+! return to map-display and re-plot
+   map-display
+     plot refresh
+! enter the data-display sub-system and plot a graph having setup the view-port
+   data-display
+     graphic
+       select graph 1
+       view-port 0,.5,.5,1
+     exit
+     linear-graph data.dat
+
+Note also in this example the use of "plot refresh" to update the plot.
+
+The graphical elements can be arbitrarily complicated, all the information
+is stored in the associated graphic.  Graphic definitions can also be saved
+and read back into Anmap using the save and recall commands. Finally it is
+possible to copy graphic definitions.
+
+The device can be controlled with a number of commands:
+  output-device     to set the output device
+  open-device       open the selected device
+  close-device      close the selected device
+  device-size       set the physical size for the "device" (e.g.
+                    size of X-window screen or plotting region on
+                    paper).
+  next-page         move to the next page (screen) of output.
+  segment-screen    break the screen up into a number of (logical)
+                    pages -- next-page will then move between them.
+
+For example having obtained the above plot on an X-window screen the
+following can be used to send the plot to a postscript file.
+
+  graphic
+    close-device
+    output-device test.ps/ps
+    refresh-all
+    close-device
+  exit
+
+Alternatively a better approach is to use the built-in postscript- procedures:
+
+  postscript-dump      will dump the current graphics
+  postscript-view      will view the dumped file
+  postscript-plot      will plot the dumped file
+  postscript-save      will save the dumped file to a new file
+
+For example the following will save the graphics as a postscript file and
+then send it to the laser printer.
+
+  postscript-dump ; postscript-plot
+
+*1 output-device
+
+Command: set the output device for subsequent graphics
+Parameters: device-name
+
+Set the output device for subsequent graphics -- the default device is
+an X-window device.  To make the device accept graphics you may need to
+close any existing device; you may also open the new device using
+device-open, but this will happen automatically when there is an attempt
+to write to the device.
+
+*1 close-device
+
+Command: close the current graphics device
+Parameters: NONE
+
+Close the current graphics device -- this is necessary to flush output
+to say a file containing POSTSCRIPT graphics.
+
+*1 open-device
+
+Command: open the currently selected device
+Parameters: NONE
+
+Open the device previously selected with the output-device command. If
+a size has been specified for the device then this size will take effect.
+
+*1 next-page
+
+Command: move the the next (logical) page
+Parameters: NONE
+
+Move to the next logical page.  For output to a hard-copy device or a
+file (e.g. a POSTSCRIPT file) a new physical page will be selected,
+for output to a screen a new screen will be started; it is NOT possible
+to move to the previous page.  If the device/screen has been segmented then
+this commands moves to the next segment or logical page of the device,
+in this case the logical pages start in the top left of the physical
+device and move to the bottom right.  More control over the appearance
+of the screen may be obtained by specifying the drawing area using the
+view-port command to setup the drawing view-port.
+
+*1 segment-screen
+
+Command: divide the screen up into a number of logical segments
+Parameters: number-of-horizontal-segment
+
+The screen is divided according to the specified number of horizontal
+segments, the number of segments in the vertical (y) direction is
+always set to 1 or 2 and the number of horizontal segments must be less
+than or equal to 3.   More control over the appearance
+of the screen may be obtained by specifying the drawing area using the
+view-port command to setup the drawing view-port.
+
+*1 device-size
+
+Command: specify the physical size (in cm) for the device
+Parameters: plot-size, aspect-ratio
+
+The device is set to the specified size in cm with the specified aspect
+ratio (width/height).  A square plot is therefore obtained with aspect-ratio
+set to 1.0, a "landscape" plot is obtained with aspect-ration < 1.0 and
+a "portrait" plot is obtained with aspect-ratio > 1.0.  This command
+can be used to match the physical size between screen and hard-copy
+devices, to reduce "screen clutter" by reducing the size of the requested
+graphics window, or to maximise the size of the plotted region.  Not all
+devices may honour a request to specify a size to the plotting region.
+To obtain the default size specify a size of 0.0 cm.
+
+*1 select
+
+Command: select a new of existing graphic
+Parameters: graphic-name, graphic-index
+
+A new or existing graphic definition is selected.  The graphic name must
+be one of the recognized types of graphic structure:
+
+    image      for use in map-display
+    graph      for use in data display
+    draw       for use in drawing-system
+    scratch    for use in "scratch" plots produced by various Anmap commands.
+
+For information on graphic structures see the introduction to the graphics
+sub-system.  The graphic-index is a unique index (for each graphic definition)
+which labels to definition, you are free to choose the index provided it is
+an integer with a value greater than zero.  New graphics are initialised
+and made current, existing graphics are simply made current -- commands in the
+grahics sub-system operate on either the current device or the current
+graphic.
+
+*2 advanced_information
+
+When a new graphic is selected then the procedure display-default is
+run with parameter SUB-SYSTEM where sub-system is the appropriate name
+of the sub-system to which the graphic-name applies.  For example the
+command:
+
+   select image 2
+
+if "2" is a new image graphic will result in the following command being
+executed:
+
+   default-setup map-display
+
+this is turn will execute a procedure to actually perform the initialisation.
+Standard procedures are provided for these actions, but they can be
+overiden by the user by re-defining the the display-default procedure; if
+you intend to do this start with the existing definition as an example
+and modify the procedure(s) as required.
+
+*1 plot
+
+Command: plot the current graphic
+Parameters: NONE
+
+This command is equivalent to running the plot all command in the sub-system
+appropriate to the currently defined graphic.
+
+*1 refresh
+
+Command: refresh the current graphic
+Parameters: NONE
+
+This command is equivalent to running the plot refresh command in the sub-system
+appropriate to the currently defined graphic.
+
+*1 initialise
+
+Command: initialise the current graphic
+Parameters: NONE
+
+This command is equivalent to running the initialise all command in the
+sub-system appropriate to the currently defined graphic.
+
+*1 default-text-style
+
+Command: setup the default text style
+Parameters: TEXT-STYLE-PARAMETERS
+
+The text style to be used as a default by the currently selected graphic
+is defined.  The way in which the default is used depends on the application.
+
+*2 text_style
+*@$ANMHELP/Text_style.help
+
+*1 default-line-style
+
+Command: setup the default line style
+Parameters: LINE-STYLE-PARAMETERS
+
+The line style to be used as a default by the currently selected graphic
+is defined.  The way in which the default is used depends on the application.
+
+*2 line_style
+*@$ANMHELP/Line_style.help
+
+*1 transparent
+
+Command: set the transparency of the current graphic to transparent
+Parameters: NONE
+
+The current graphic is set to transparent -- in this mode the graphics
+underlying the current graphics will not be cleared when the graphic is
+drawn or refreshed -- in the standard setup this is the default for
+drawings, but no other graphics.
+
+The region of the device effected by the transparency is the view-port
+of the graphic.
+
+*1 opaque
+
+Command: set the transparency of the current graphic to opaqe
+Parameters: NONE
+
+The current graphic is set to opaque -- in this mode the graphics
+underlying the current graphics will be cleared when the graphic is
+drawn or refreshed -- in the standard setup this is the default for
+all graphics expect drawings.
+
+The region of the device effected by the transparency is the view-port
+of the graphic.
+
+*1 depth
+
+Command: set the depth of the graphic
+Parameters: depth
+
+The depth of the graphic is used to specify the order in which overlapping
+graphics are re-drawn with the device-refresh procedure.
+
+*1 view-port
+
+Command: set the view-port for the current graphic
+Parameters: u1,u2,v1,v2
+
+The view-port for the current graphic is specified in normalized device
+coordinates.  The physical region of the plot (sepcified if appropriate with
+the device-size command) is mapped into the region of normalized device
+coordinates:
+                  0.0 <= u <= 1.0      0.0 <= v <= 1.0
+This command sets the region of the plot to use for the current graphic to
+a sub-region of the whole device "screen or page" by specifying the
+region in terms of normalized coordinates.  All plotting will be scaled to
+fit in this region and the effects of the graphic's transparency will
+only be effective within the view-port of the graphic.
+
+*1 list-graphics
+
+Command: list all the currently defined graphics
+Parameters: NONE
+
+List all the currently defined graphics.
+
+*1 save
+
+Command: save the current graphic to a file
+Parameters: file-name
+
+The current graphic is saved to the specified file -- the file contains
+a dump of the graphic in binary form and may not be read or edited.  The
+graphic can be read back into Anmap at a later time using the recall command.
+
+*1 recall
+
+Command: read a previously saved graphic definition
+Parameters: file-name
+
+A graphic definition previously saved with the save command is read back into
+Anmap.  The graphic type and index are the same as for the saved graphic --
+if the index is the same as an existing graphic of the same type then the
+existing graphic is overwritten, if not a new graphic is created.
+
+*1 copy-definition
+
+Command: copy graphic definitions
+Parameters: from-type from-index to-type to-index
+
+A graphic of the specified type is copied to the specified type and
+index -- most usually only copies between graphics of the same type are
+useful, in other cases only the basic graphic definition is usefully
+copied and the new copy should be initialised for the appropriate sub-system.
+The copy-definition command can be useful in conjunction with the save/recall
+mechanism which does not allow the type or index of saved graphics to
+be changed.
+
+*1 display-graphic
+
+Procedure: display information for graphics
+Paramneters: option
+
+Option may be one of
+
+  current -- display information for the current graphic
+  all     -- display information for all graphics
+
+*2 advanced_information
+
+The display command is implemented as a procedure; information is retrieved
+using the get command -- users may re-define the action of the display
+commmand by re-defining the procedure.
+
+*1 get
+
+Command: get/retrieve information for graphics into parameters
+Parameters: option
+
+The get command takes one of a number of options and information is
+returned in standard parameters.
+
+   cursor-position     return the cursor position in normalized device
+                       coordinated %x, %y %gr-x %gr-y are all set by this
+                       call.
+   current-index       the index of the current graphic is returned in
+                       %current-graphic
+   current-type        the type of the current graphic is returned in
+                       %current-type
+   current-graphic     the sequence number of the current graphic is
+                       returned in %current-graphic
+   maximum-graphics    the maximum number of graphics is returned
+                       in %maximum-graphics
+   graphic  n          information for graphic of sequence number n
+                       is returned:
+                        Default line-style
+                          %LINE-STATUS %LINE-STYLE
+                          %LINE-COLOUR %LINE-WIDTH
+                        Default text-style
+                          %TEXT-STATUS %TEXT-FONT
+                          %TEXT-COLOUR %TEXT-WIDTH %TEXT-SIZE
+                        Graphic details for graphic n
+                          %GRAPHIC-STATUS        status
+                          %GRAPHIC-TYPE          type
+                          %GRAPHIC-TRANSPARENT   transparency
+                          %GRAPHIC-INDEX         index
+                          %GRAPHIC-DEPTH         depth
+                          %GRAPHIC-FILL          fill-mode
+                          %GRAPHIC-VP            view-port (array)
+
+
+*1 refresh-all
+
+Procedure: to refresh all plotted elements on the device
+Parameters: NONE
+
+This command can be used to refresh all plotted graphics on the
+device -- in most cases it should reproduce the orginal screen
+output if graphic depths have been set correctly, however a different
+results will occur if you have made a lot of use of the graphic clear
+commmand -- in these cases refresh each graphic element in turn.
+
+*1 postscript-output
+
+Procedures: to handle postscript output from a PGPLOT graphics device
+
+There arefour procedures designed to simplify obtaining hard copy from
+Anmap as postscript files.
+
+  postscript-dump      will dump the current graphics
+  postscript-view      will view the dumped file
+  postscript-plot      will plot the dumped file
+  postscript-save      will save the dumped file to a new file
+
+For example the following will save the graphics as a postscript file and
+then send it to the laser printer.
+
+  postscript-dump ; postscript-plot
+
+With the exception of the postscript-save command none of the above commands
+require any parameters; the postscript-save command can be used to save the
+current dumped postscript to a permanent file.
+
+*
+

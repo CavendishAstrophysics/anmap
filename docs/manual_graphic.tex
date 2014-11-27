@@ -1,0 +1,2145 @@
+\documentstyle[12pt]{article}
+\include{anmap_macros}
+\begin{document}
+\begin{center}
+\vspace*{4.0cm}
+{\Large\bf Anmap User Guide} \\
+\vspace{1.0cm}
+{\large\bf to} \\
+\vspace{1.0cm}
+{\Large\bf Commands for Publication Graphics}
+\end{center}
+
+\newpage
+\section{Introduction}
+
+Publication quality graphics in \Anmap\ are provided for graphs
+and images in a large variety of styles with control over almost
+every aspect of the output.  Complicated figures can be composed
+using the tools provided which include commands to layout various
+aspects of the figure, annotate them and even add simple line
+drawings.  The graphics facilities are {\em object oriented}, this
+means that you construct plots by building up a description and
+then displying it, the power of this approach comes when you want to
+change an aspect of the plot, for example the line style or text size,
+all you have to do is alter these aspects of the plot and then re-display,
+you do not have to repeat a perhaps long and complicated series of
+actions to  re-display the figure.
+
+This Users' Guide describes the command interface to the publication
+graphics facilities of \Anmap; it will therefore be of interest to
+all users wanting to display such graphics and users writing scripts
+which nake use of the graphics facilities.  
+
+The graphics-related commands are organised into five sub-systems.
+The {\em graphics} sub-system provides basic commands to control the
+layout of graphical objects on the page, specify basic attributes for
+graphical objects and control the graphic devices which \Anmap\ can send
+its output to.  Each of the other sub-systems provide facilities to
+construct graphic objects of one of four basic types (image, graph,
+drawings and scratch graphics in the {\em map-display}, 
+{\em data-display}, {\em drawing-display} and {\em scratch-display}
+sub-systems respectively).  Multiple objects of each type may also be
+defined all with their own (different) set of attributes.  For each
+graphic object (excluding drawings) you may also specify annotations
+such as text, arrows etc.
+
+In the {\em map-display} sub-system you construct plots (graphic objects)
+of two-dimensional images --- maps.  You can display the images as 
+grey-scales or in false-colour, or using contours, 
+vectors (for appropriate data), or symbol plots to mark specified 
+data points; these various styles can be combined on a single plot.
+You have full control over the style of the plot including the frame,
+grid, text annotations, contour line styles, scale-bar for the grey-scale
+etc.
+
+The {em data-display} sub-system is used to create plots of 
+one-dimensional data or functions where a series of ``y-values''
+are specified at a series of ``x-values''.  The data may either
+form a continuous graph or histogram, or they could represent points
+in a scatter plot.  The data points may be annotated with error bars
+in both the ``x'' and ``y'' directions, and you have full control over
+the appearance of the plot deciding on whether individual points are
+marked with symbols, joined by a continuous curve or a histogram-type
+curve and so on.  All aspects of the frae, titles and annotations may
+be specified and a key generated automatically.  On a single plot
+you can specify many ``lines'' and facilities exist to provide automatic
+scaling (both in y and x for comparison of say spectra) and offsetting
+in y and x directions to produce a stacked-plot.  Data can be supplied
+either as a file in the standard format used by \Anmap\ (it is a simple
+multi-column ascii (ordinary text) file, or as a mathematical
+function given in a intuative form (such as $sin(x)/x$ if you wanted to
+plot a {\em sinc} function).  
+
+The final two sub-systems, the {\em scratch-display} sub-system and 
+the {\em drawing-display} sub-system provide facilities to control
+the style of scratch graphics and to annotate the entire figure 
+respectively.  Scratch-graphics are those graphics produced by 
+various commands within \Anmap\ such as isometric or surface plots,
+scatter plots or histograms of image values.  The {\em scratch=display}
+sub-system provides facilities for specifying the size of such plots,
+line- and text-styles.  Although each graphics sub-system provides
+a set of annotation commands, there is also a {\em drawing-display}
+sub-system to complement these facilities.  The annotations associated
+with a particular graphic object are tied to that object (and indeed
+use the same coordinate system as the object).  When you compose
+a complete figure out of a number of graphic objects (for example a
+number of different images), you may well wish to annotate the complete
+composition perhaps with a title, or lines or arrows linking
+various graphic objects; these facilities are provided for in the
+{\em drawing-display} sub-system.
+
+The remainder of this Users' Guide is organised as follows.  In the
+next section commands are described which operate on the complete figure, 
+or which are common to all subs-systems.  An example is then given
+illustrating the basic principles of the object-oriented graphics
+approach and then a more detailed description of the facilities 
+available within each sub-system is given.  The aim of this guide is
+to show you how to use the publication graphics, it is not an exhaustive
+list of all the facilities or options available and you should consult
+the on-line help documentation for a complete description of all of
+the available commands.
+
+\section{Basic Graphics Commands}
+
+There are a number of commands which are available from all the
+graphic-based sub-systems within \Anmap\, the most important of these
+are the {\em plot} and {\em initialise} commands.  Since the graphic's
+system is {\bf object-oriented} you construct graphics by specifying
+options and when you have a complete set of options defined then you
+can give a plot command.  The {\em plot} command itself requires you
+to specify one of a number of options which differ between sub-systems,
+but all sub-systems have at least the options {\em all} and {\em refresh}.
+Similarly the {\em initialise} command requires an option and all
+sub-systems support {\em all} and {\em plot}.  A simple example will
+illustrate the use of these commands.
+
+In the {\em map-display} sub-system we can can setup to display a
+grey-scale representation of an image in the map-catalogue as
+follows:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf set-map 3} \\
+\> Map-Display$>$ \> {\bf grey on 0.0 0.15} \\
+\> Map-Display$>$ \> {\bf plot grey} \\
+\end{tabbing}
+
+Nothing appears on the graphic device until the plot command is given. 
+If you were to have said {\em plot all} then in addition to the grey-scale
+you would have a frame, title and other annotations plotted.\footnote{The
+exact output will depend on the default options specified in the system,
+or your own, initialisation file}  This sequence of commands will have
+drawn a scale-bar on the grey-scale with text indicating the range displayed;
+to turn off the text on the scale bar you can use the following command
+to change one of the many options for the scale bar:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf set-style scale-bar text-off} \\
+\> Map-Display$>$ \> {\bf plot refresh} \\
+\end{tabbing}
+Here the {\em plot refresh} command will re-draw the grey-scale image,
+but with the new option (turning off text on the scale-bar) applied. 
+The command {\em plot all} would not have had any effect since it is
+an instruction to plot any outshanding graphic elements not yet plotted,
+whereas {\em plot refresh} is an instruction to {\bf update} the current
+displayed graphic.  To illustrate these differences let us take the 
+above example a step further by adding contours to the plot.  We could
+try to get contours plotted using the following commands:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf linear-contours 0.02,0.02,0.14} \\
+\> Map-Display$>$ \> {\bf plot refresh} \\
+\end{tabbing}
+This will have defined 7 contour levels, but the {plot refresh}
+command will not have caused them to be plotted, instead the grey-scale
+would have been re-displayed since the contours are a new element to the
+plot.  To get the contours plotted we must say {\em plot contours}
+({\em plot all} would also display the contours but add a frame etc, as well),
+therefore the correct sequence would have been:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf linear-contours 0.02,0.02,0.14} \\
+\> Map-Display$>$ \> {\bf plot contours} \\
+\end{tabbing}
+and subsequent {\em plot refresh} commands would plot a grey-scale
+overlaid with contours.  Although this is a very simple example it
+serves to illustrate the way the graphic environment within \Anmap\
+is organised.
+
+In addition to the basic commands available within all graphic-sub-systems,
+their are the important commands in the {\em graphic} sub-system
+itself which are used to control the overall appearance of the display
+and to construct complex graphics.  It is in the {\em graphic} sub-system
+that the object-oriented approach to the graphical system within
+\Anmap\ becomes clear since all the available commands act on complete
+graphical objects.  The commands types above to the {\em map-display}
+sub-system are in fact specifying options to a graphic object of type
+{\bf image} and the plot commands are performing operations to display
+graphics of type {\bf image}.  Each graphical sub-system has a different
+type of graphics object as listed in Table 1.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Object type} & {\bf sub-system} \\
+& \\ \hline
+& \\
+image & map-display (contours, grey-scales, vectors etc.) \\
+& \\
+graph & data-display (graphs, histograms, scatter-plots etc.) \\
+& \\
+draw & drawing-display (drawings: lines, circles, text, etc.) \\
+& \\
+scratch & scratch-display (various graphical output) \\ 
+& \\ \hline
+\end{tabular}
+\caption{Graphical objects available.  Commands in the
+{\em graphic} sub-system control the properties of these objects.}
+\end{table}
+
+The {\em select} command selects a particular graphical object to
+which the {\em graphic} sub-system commands apply.  You may have
+more than one graphical object of a given type and they are
+distinguished by specifying an integer key; when \Anmap\ is
+initialised one graphical object of each type is defined and is
+given the numerical key of ``1'' (unity).  Therefore, to select the
+{\bf image} object we have already used as an example we would type
+the following:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Graphic$>$ \> {\bf select image 1} \\
+\end{tabbing}
+or to start a new {\bf image} object (retaining the original for future
+use):
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Graphic$>$ \> {\bf select image 2} \\
+\end{tabbing}
+where in fact the ``2'' could be any integer key chosen by us for
+convenience.\footnote{Supplied procedures use graphical objects with
+keys above 100, you should avoid using these or confusing effects may
+result, especially for novice users.}
+
+Having selected a particualr graphical object all subsequent {\em graphic}
+commands are applied to this object.  The most important commands used
+to alter the properties of a particular graphic are listed in Table 2.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Command} & {\bf Action} \\
+& \\ \hline
+& \\
+view-port & specify the view-port into which the graphic is drawn \\
+& parameters: $x1$,$x2$,$y1$,$y2$ (normalised device coordinates) \\
+& \\
+opaque &  specify an opaque rendering for the graphic, \\
+& any graphics below this object cannot be seen \\
+& (default for {\bf image}, {\bf graphic} and {\bf scratch} objects \\ 
+& \\
+transparent & specify a transparent rendering for the graphic, \\
+& graphics below this object will show through \\
+& (default for {\bf draw} objects \\
+& \\ \hline
+\end{tabular}
+\caption{Graphic sub-system commands used to alter the properties of
+graphical objects.}
+\end{table}
+
+\section{A Tutorial Example}
+
+\section{The Map-Display Sub-System}
+
+The {\em map-display} sub-system allows for very sophisticated 
+image display using in a variety of formats and styles:
+\begin{npars}
+\item Grey-scale/colour plots
+\item Contour plots
+\item Surface relief plots
+\item Vector fields
+\item Symbol display of specific pixels
+\end{npars}
+The following sections discuss the commands which are available in the
+{\em map-analysis} sub-system.
+
+\subsection{set-map}
+
+\Command{set the catalogue entry for display/plotting}
+\Parameters{map-catalogue-entry}
+
+The map to be displayed/plotted is specified with the 
+{\em set-map} command.
+In addition to specifying a map to display the current environment
+is re-initialised so that a new plot will be produced; this is
+usually equivalent to "initialise plot" and will lead the standard
+options unaltered. If you want to overlay a map onto the current plot,
+use the overlay-map command.
+
+The following sequence will plot catalogue entry 1 then catalogue entry
+2 in the current map-display window.
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\>Map-display$>$ \> {\bf set-map 1}
+\>Map-display$>$ \> {\bf grey on ,,,,}
+\>Map-display$>$ \> {\bf plot all}
+\>Map-display$>$ \> {\bf set-map 2}
+\>Map-display$>$ \> {\bf grey on ,,,,}
+\>Map-display$>$ \> {\bf plot all}
+\end{tabbing}
+
+When the set-map command is executed a procedure definition
+new-map-initialise is run to (re-)initialise the required
+options.  The default action is, for example, to do an
+effective "initialise plot" command and also to re-initialise
+all contour levels.  This action can be changed by re-definining
+the new-map-initialise procedure to execute a procedure of your
+own -- use the ^list-procedures command to see which procedure
+file is executed by this command and copy it to your own file space,
+edit this file (usually called new\_map\_initialise.com) and then
+re-define the procedure new-map-initialise to execute this file.
+For example you could put the following line in your init_anmap.tcl
+file:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> proc procedure new\_map\_initialise { } {
+\> \> init all  
+\> }
+\end{tabbing}
+
+\subsection{set-uv-range}
+
+\Command{set the UV-range of the current map to display}
+\Parameters{UV-range}
+
+Specify the UV-range to display.  If you give this command
+before any plot command then the specified UV-region will fill
+the frame of the plot and the frame will be scaled so that
+the U and V scales of the plot are equal.  After a plot command
+the set-uv-range command will restrict the range of data plotted,
+but the frame will be scaled to the UV-range which was in effect
+at the time of the first "plot" command.
+
+
+\subsection{set-pips}
+
+\Command{control plotting of RA/DEC and/or UV pips}
+\Parameters{radec-pip-on-off, [pip-interval], UV-pip-on-off}
+
+Turn pips on/off and for the RA/DEC pips select the interval at
+which to display the pips.
+
+\subsection{set-grid}
+
+\Command{control plotting of RA/DEC and UV grids}
+\Parameters{radec-grid, [grid-ra,grid-dec], uv-grid, [grid-u,grid-v]}
+
+Control plotting of RA/DEC and UV grids. If you specify on to either
+you must also supply the interval for the grid:
+\newline
+minutes-of-time,minutes-of-arc   ---    for RA/DEC grid
+\newline
+pixels-u,pixels-v                ---    for UV grid
+\newline
+The default (obtained by typeing a 0) will plot approximately five
+grid lines on the plot. To obtain, for example, a grid of the actual
+pixel positions set radec-grid=off, uv-grid=on and grid-u=grid-v=1.
+
+\subsection{set-interpolation}
+
+\Parameters{on/off}
+
+Control which routine is used for contouring -- by setting
+interpolation on the map will be interpolated to mid-points
+prior to plotting. This option can only be used if the region
+of the map to be plotted is smaller than 256x256 pixels.
+
+\subsection{Contours}
+\Information{on contour levels and styles}
+
+Anmap supports contours in five concurrent styles; the line-style actually
+associated with each style is set using the "set-style contours line-style"
+command.  The styles are labelled numerically from 1 to 5.
+
+Three defaults are set up for positive, negative and zero contours -- the
+positive contours are by default style 1, negative style 2 and zero style
+3; style 1 is initialised to solid foreground, style 2 to dashed foreground
+and style 3 to dotted foreground.
+
+Three commands are available to set contour levels:
+   contours style [list]                   specify a list of contours
+                                           for style "style"
+   linear-contours start increment end     specify a range of linear contours
+                                           using the default positive,
+                                           negative and zero styles.
+   logarithmic-contours start factor end   specify a range of logarithmic
+                                           contours using the default positive,
+                                           negative and zero styles.
+
+The styles actually associated with positive negative and zero default
+styles can be set using the set-style contours command with the options
+positive, negative and zero.  For example the following sets up some
+line contours of style 1 and style 3:
+   linear-contours 0.001,.001,.01
+   set-style contours positive 3
+   linear-contours .011,.001,.02
+   plot contours
+
+To plot contours use the "plot all" or "plot contours" commands; once
+plotted each level is marked as plotted and will not be re-plotted, to force
+the re-plotting of contour levels use the reset-contour-levels command.  To
+clear the lists of contours use the clear-contour-levels command.  Both
+the reset-... and clear-... take a parameter specifying either the particular
+style upon which to act or ALL to specify resetting/clearing all the styles.
+
+Contour levels are associated also with one of the main and overlay-maps, to
+specify contours for these two maps then the appropraite map must be current;
+to make the main and ovserlay maps current use the overlay-map command.
+
+
+\subsection{linear-contours}
+
+\Command{setup linear contours}
+\Parameters{start-contour, interval, end-contour}
+
+Specify linear contour levels as follows:
+
+
+          level(n) = start-contour + (n-1) x interval
+
+
+up to the "end-contour". Negative contours are added to the
+list of contours of style 2, positive contours to the list of
+style 1. To plot the contours on an existing frame use the
+plot contours command.
+
+If the set of contours you specify includes the zero-contour
+(or one numerically very close) you will be prompted and asked
+if you want to include it on the plot.
+
+The default for the end-contour is the maximum on the map in
+the specified UV-range: a map must be specified before you can
+define linear contours for this reason (in fact an allowance
+for the peak height increasing slightly when the data are
+interpolated is made if you are using the interpolation option
+-- the default).
+
+\subsection{contours}
+
+\Command{specify contours}
+\Parameters{style [contour-list]}
+
+Specify one or more contours of the specified style; the style is
+selectec via specifying an integer in the range 1 - 5.  Contours
+can be entered until you signify the end of the list by providing
+a null entry (either an extra Carriage return or two or more commas).
+
+Example:
+
+Enter contours of style 2 (usually used for negative contours)
+
+   contours 2, .001, .002, .004, .008, .012, .016, .02,,,
+
+\subsection{logarithmic-contours}
+
+\Command{set logarithmic contours}
+\Parameters{start-contour, factor, end-contour}
+
+Specify logarithmic contour levels as follows:
+
+        level(n) = +/-  abs(start-contour x (factor(n-1)))
+
+up to the "end-contour". Both positive and negative contours
+are specified with negative contours added to the
+list of contours of style 2 and positive contours to the list
+of style 1. To plot contours on an existing frame use the plot
+contours command.
+
+The default for the end-contour is the maximum on the map in
+the specified UV-range: for this reason a map must be specified
+before you can define linear contours (see note under
+linear-contours).
+
+
+\subsection{reset-contour-levels}
+
+\Command{reset the "plotted" flag for contours}
+\Parameters{option [style]}
+
+Reset the specified contour level list; This does not effect
+the plot on the screen, but resets the contour lists so that
+the lists have the same contour levels specified, but the
+flag indicating they are "plotted" is removed; this enable the
+contours to be "applied" to a new plot, but plot refresh will
+not reproduce the current plot.  You can either specify "all"
+or a particular style of contour.
+
+\subsection{clear-contour-levels}
+
+\Command{clear the "plotted" flag for contours}
+\Parameters{option [style]}
+
+Clear the specified lists of contours.  This does not effect
+the plot on the screen, but all contour lists are cleared.
+You can either specify "all" or a particular style of contour.
+
+\subsection{grey-scale}
+
+\Command{grey-scale or false colour display of current map}
+\Parameters{on/off, low-level, high-level}
+
+Turn grey-scaling/false-colour on or off and define the map values
+to be mapped into the low level and the high level. On the TV device
+the low-level will be black and the high level white whereas
+on a hard-copy device the reverse scaling is used. The grey-
+scale will be added to the same frame as the pips, grid,
+contours and labelling with a go-plot command. The lookup-
+table between pixel values and intensity levels is linear by
+default. For the TV device the command modify-lookup-table can
+be used to change the look-up table; linear, logarithmic,
+colour power-law and inverse lookup-tables are supported.
+
+
+The default for grey-scale is off.
+
+{\large\em Example}
+\newline
+To plot a grey-scale with a labelled frame on the TV device.
+
+      set-map 1
+      set-uv-range 20,,,,
+      grey-scale on, 0.0, 0.01
+      set-style scale-bar on
+      plot all
+
+the scaling is from 0.0 to 0.01.
+
+To plot a grey-scale with contours overlayed:
+
+      set-map 1
+      set-uv-range -10 10 10 -10
+      grey-scale on, 0.0, 0.01
+      logarithmic-contours .001, 2, .032
+      plot all
+
+To plot a grey-scale of one-map (2) superimposed on contours
+of another (1) -- e.g. grey-scale of spectral index map on
+I-map contours:
+
+      set-map 2
+      set-uv-range -10 10 10 -10
+      grey-scale on 0.4, 1.5
+      go
+      overlay-map 1
+      overlay-map 1
+      grey-scale off
+      log-contours .001, 2, .032
+      plot contours
+
+Note that the grey-scale is plotted before the contours --
+this is necessary on certain devices, specifically Xwindows and the
+the Laser-Printer, since the action of plotting
+the grey-scale is to overwrite everything currently on the
+screen. The order of the plot type commands is therefore
+important in determining the final appearance of your plot,
+commands defining the grey -scale and contour levels may be
+given in any order -- of course the go-plot command gets the
+order of plotting correct.
+
+{\large\em lookup table}
+\newline
+The lookup table controls the way in which grey scales are represented
+on the output device; each "grey-level" is mapped into a colour
+representation -- this way of representing data is called false colour.
+Anmap under UNIX does provide some support for true colour images which
+use colour and intensity to encode information.  This is provdided in the
+"true-colour" sub-system; the range of manipulations possible on true
+colour images is however more considerably limited than the full range
+of operations available for intensity images.
+
+To change the lookup table for the main Anmap display you can use the
+modify-lookup-table command.
+
+\subsection{title-plot}
+\Command{add a title to the plot}
+\Parameters{title}
+
+Add a title to the plot, plotted using the plot text command.
+
+
+\subsection{crosses-file}
+
+\Command{set options for displaying crosses}
+\Parameters{option}
+Options: on, off, file, size}
+
+Crosses can be added to the plot using this command.  The crosses must
+be specified in a file which has the following format:
+
+A number of lines each one representing a cross with the following entry
+per cross:
+
+    RA             DEC            label
+
+e.g.
+    01 03 45.6     34 56 29.5     Source: 3C405
+
+with RA and DEC refering to the cross position at the stanbdard epoch of
+the coordinate system and label a label for the cross.
+
+Options:
+
+   on   --    turn plotting of crosses on
+   off  --    turn plotting of crosses off
+   file --    file name of the crosses file
+   size --    size in UV of the cross to be drawn
+
+All the crosses listed in the crosses file will then be drawn with
+their respective labels.  The crosses will be drawn after a plot all
+or plot crosses command.
+
+\subsection{set-style}
+\Command{set-style options for map-display}
+\Parameters{option}
+\Options{title frame contours grid symbol vectors annotations scale-bar reset}
+
+This command enables a wide variety of "style" parameters for the map-display
+sub-system to be set.  The "reset" options resets all options to their
+default values.
+
+{\em title}
+\newline
+Set options for titles, sub-options:
+
+   on              turn plotting of title on
+   off             turn plotting of title off
+   text-style      set text-style for title (font, size, colour, width)
+
+See also the title-plot and initialise title commands.
+
+{\em frame}
+\newline
+Set options for the frame surrounding grey-scales/contour plots.
+Sub-options:
+
+   on              enable the plotting of the frame
+   off             turn off the plotting of the frame
+   text-style      set text style for markings on the frame
+                    (font size colour width)
+   line-style      set line-style for the frame itself
+                    (style width colour)
+   space           define an amount of space to leave around the frame
+                   as a fraction of the view-port.  You may get greater
+                   control of the size of the frame using the view-port
+                   setting for the current image graphic (see help on
+                   the graphic-systsem sub-system).
+   pip-size        set the pip size for the frame
+   pip-x-offset    set the offset of the labels from the right-hand edge
+                   of the frame.
+   pip-y-offset    set the offset of the labels from the bottom of the
+                   frame
+
+See also: set-pips set-grid "set-style grid"
+
+{\em contours}
+\newline
+Set options for contours.  Sub-options:
+
+   line-style  [style]     set the line-style for style "style" (style,
+                           width, colour).
+   positive-style [style]  set the default style for positive contours
+   negative-style [style]  set the default style for negative contours
+   zero-style [style]      set the default style for zero contours
+
+"style" is an integer representing one of the five styles of contours.
+
+{\em grid}
+\newline
+Set options for grid.  Sub-options:
+
+   line-style      set the line-style for grid lines (style, width, colour).
+
+
+{\em symbol}
+\newline
+Set options for symbol-text.  Sub-options:
+
+   text-style      set the text-style for symbols (font, size, colourm width).
+
+{\em vectors}
+\newline
+Set options for vectors.  Sub-options:
+
+   line-style      set the line-style for vectors (style, width, colour).
+
+
+{\em annotations}
+\newline
+Set options for annotations.  Sub-options:
+
+  date-on        add date
+  date-off       do not add date
+  label-on       add information
+  label-off      do not add information
+  text-style     annotation text style (font, size, colour, width)
+  text-drop      drop between lines (i.e. distance between successive
+                 lines of text on multi-line text output).
+  title-on       add title
+  title-off      do not add title
+  all-on         add everything
+  all-off        do not add anything
+
+The annotations controlled by this set-style option are those plotted using
+the plot text option.  For general annotations see the help entry on
+annotate.
+
+
+{\em scale-bar}
+\newline
+Set options for the display of a scale-bar on grey-scales. Sub-options:
+
+   on            turn on the display of the scale-bar
+   off           turn off the display of the scale-bar
+   width         set the width of the scale-bar as a fraction
+                 of the frame size
+   text-off      turn off adding an annotation to the scale bar
+   text-on       turn on adding an annotation to the scale bar
+
+{\em reset}
+\newline
+This option resets all style parameters to their default values (see also
+initialise options).
+
+{\em information attributes}
+\newline
+The following attributes may be set using the above style commands:
+
+\subsection{initialise}
+\Command{initialise the map-display sub-system}
+\Parameters{option}
+\Options{all plot options setup annotations title}
+
+Initialise various aspects of the map-display sub-system.  The options
+have the following meaning:
+
+      all            initialise everything equivalent to all of the
+                     other options
+      plot           initialse flags for plotting; this sets the state
+                     of the sub-system to one in which nothing has been
+                     plotted (useful after re-setting a map).
+      options        reset options and styles to their default values
+      setup          initialise the setup of maps and overlay maps etc.
+      annotations    initialise annotations and the annotation sub-system
+      title          initialise the title of the plot; reset the title.
+
+\subsection{vector-plot}
+
+
+\subsection{symbol-plot}
+
+\subsection{overlay-map}
+\Command{define an overlay map}
+\Parameters{option}
+\Options{set off on current-main current-overlay}
+
+The overlay-map command is used to control the display of two maps
+for comparison purposes, the main and overlay maps.  Other options
+also allow maps apart from the main map to be displayed, specifically
+the vector and symbol options, but the overlay map option enables a
+second map to be contours or grey-scaled.  All map-display commands
+act on the current-map, the two options current-main and current-overlay
+can be used to select the current map.   If an overlay map is selected
+then a plot all command will plot everything for both the main and
+overlay maps; this can be suppressed by selecting overlay-map off.
+
+The overlay-map command itself takes one of a number of options:
+
+   set                set the catalogue-entry for the overlay map, this
+                      automatically turns the overlay-map option on and
+                      makes the overlay map the dfault map.
+   on / off           turn the overlay map option on/off; you can toggle the
+                      overlay map action with these commands without
+                      re-defining the overlay map itself
+   current-main       make the main map current -- useful to enable you
+                      to go back and add contour levels etc.
+   current-overlay    make the overlay map current.
+
+It is strongly suggested that you use the main map for grey-scales
+and the overlay map for contours if this is the combination you wish to
+have -- you may of course have both using contours.  This requirement
+is needed so that "plot all" and "plot refresh" commands work properly
+since the main map is plotted first.
+
+The overlay-map restricts you to using just two maps on the same display;
+in fact you can achieve very complex plots by just using "set-map" and
+careful plot options, however you will have to give multiple commands
+to refresh the plot rather than the single plot refresh command needed if
+you make use of the overlay-map option.
+
+{\em Example}
+\newline
+Do a grey scale of a spectral index map with intensity contours
+overlayed:
+  set-map alpha-map
+  grey on 0.5,1.5
+  overlay-map set intensity-map
+  linear-contours .001,.001,.01
+  plot all
+
+In the previous example you decide you want to alter the grey-scale
+of the main map, you can then type
+  overlay-map current-main
+  grey-scale on 0.45,1.25
+  plot refresh
+
+Or you would like just a grey-scale of the spectral index map
+  overlay-map off
+  plot refresh
+
+
+
+\subsection{display}
+
+This command enables various attribute settings to be
+displayed. A number of sub-options are available:
+
+{\em levels}
+\newline
+The currently defined contour levels are listed on the text
+screen.
+
+{\em all}
+\newline
+Display all information concerning options. This is equivalent
+to the commands:
+
+                   display options
+                   display vectors
+                   display symbols
+                   display levels
+
+{\em options}
+\newline
+Display options and maximum/minimum values for the current map
+in the specified UV-range. Option settings and the settings of
+the text and mark fonts/sizes etc. are written to the text
+screen.
+
+{\em vectors}
+\newline
+Display information on the current options defining the vector
+plot.
+
+{\em symbols}
+\newline
+Display information on the current options defining the symbol
+plot.
+
+This command enables various attribute settings to be displayed.
+A number of sub-options are available:
+
+
+\subsection{plot}
+\Command{give a variety of plotting commands}
+\Parameters{option}
+\Options{all refresh frame grey contours 
+text crosses vectors symbols annotations}
+
+Issue a "plot" command to plot various parts of the display - to plot
+everything use the plot all command and to rfresh the plot use the
+plot refresh command.  Each option controls one aspect of the plot
+except for the "all" and "refresh" options -- the "all" option will
+plot all outstanding information while the "plot refresh" command
+will refresh the current plot (applying any changes of style).
+Plot followed by an option which is not "alL" or "refresh" will force
+that aspect of the plot to be plotted.  For example suppose one does the
+following:
+
+   grey-scale on 0.0,0.005
+   plot grey
+
+The command "plot all" would then add a frame and text to the plot, but
+would not replot the grey-scale, however a plot refresh would replot
+the greyscale, but nothing more.  Consider this slightly different
+example:
+
+   plot frame
+   grey scale on 0,0.05
+
+Now a plot grey would plot the grey-scle on top of the frame,
+obscuring part of it, you could then re-plot the frame with a
+plot frame command; however a plot all command would just plot the
+greyscale (and not replot the frame) and a plot refresh would just
+replot the frame and not the grey scale.
+
+An important use for plot refresh is to redraw the existing plot
+either in a different frame or to a new device.
+
+Options available are:
+
+{\em frame}
+\newline
+The frame is plotted. The frame is either an RA/DEC astrometric frame
+and/or a UV frame.  The frame may also have a grid (see set-grid).  The
+style of the frame is controlled using the set-style frame command
+and also the set-pips command to control the sorts of markings on
+the frame.
+
+{\em contours}
+\newline
+The currently defined contours will be added to the plot.  Only those
+contours not already marked as plotted will be plotted, but this can
+be changes using the reset-contour-levels command.
+
+
+{\em grey}
+\newline
+The currently defined grey scale is plotted.  On almost all device the
+greyscale is effectively opaque and therefore needs to be the first
+thing drawn on the plot if, for example, contours and frame are to
+be displayed properly.
+
+A call to set-grey-scale will need to have been made to turn grey-scaling
+on and to have defined the range.
+
+{\em vectors}
+\newline
+The options defining the vector plot must have already been defined
+using the vector-plot sub-system.  Vectors will then be added to the
+current plot, it is therefore possible to overlay vectors on contour
+or grey-scale plots.
+
+{\em symbols}
+\newline
+The options defining the symbol plot are setup using the symbol-plot
+sub-system and should already have been defined before this command is
+used.  Symbols will be added to an existing plot or a new frame etc.
+will be drawn and symbols plotted.
+
+{\em text}
+\newline
+The text (title, date/history, contour-levels) will be plotted. Exactly
+what is plotted can be controlled with the set-style annotations command.
+The list of contours is a list containing just the contours plotted to
+date -- the timing in the use of this command is therfore important.
+
+{\em crosses}
+\newline
+Crosses from a crosses file will be drawn -- you need to have defined
+necessary options for the crosses using the crosses-file command.
+
+{\em all}
+\newline
+Plot all plots everything which is outstanding -- it is similar, bt
+not strictly identical to the sequence of commands:
+
+  plot grey
+  plot frame
+  plot contours
+  plot text
+  plot vectors
+  plot symbol
+  plot annotations
+
+The difference occurs if one or more of the above commands have been
+given out of order.
+
+{\em refresh}
+\newline
+The plot refresh command will attempt to reproduce as closely as possible
+the current plot, however since the refreshing is done in a strict
+order (the same as for the plot all command) some differences may be
+apparent (see the option "alL" for more details).
+
+\subsection{surface-plot}
+\Command{plot a surface representation of the map array}
+\Parameters{catalogue-entry,bias,offset,range}
+
+A surface representation of the current map is plotted in the graphics
+overlay window or using the full plot device if graphics overlay is not
+active.  Only that region of the current map specified by the SET-UV-RANGE
+command is plotted.  The plot is represented as a succession of hidden-
+line histograms.  Bias represents the offset (in map values) between
+successive slices of the map where there is one slice for each row.
+Offset is an offset in pixels to sepcify between successive rows.
+Range specifies the range to plot from X_low to X_high and then
+Y_low to Y_high.
+
+The surface plot is drawn into the current scratch-plot definition and
+you can control the view-port, line-style etc. for the surface plot
+using the scratch-display sub-system.
+
+\subsection{isometric-plot}
+\Command{plot an isometric (joined surface mat) of the map array}
+\Parameters{catalogue-entry,viewing-angle (degrees)}
+
+An isometric plot of the specified map is made with a viewing angle
+as specified -- an angle of 0 degrees views the map-data edge-on and
+90.0 degrees views the map data directly from above.  This graphic
+is a scratch graphic and the view-port and line colours may be controlled
+with the scratch graphics subs-system.
+
+
+\subsection{using_the_cursor}
+
+\subsection{modify-lookup-table}
+
+\subsection{cursor-position}
+
+If you have a map drawn on the terminal (and have not used
+end-plot since it was drawn), then you can find the UV, RA/DEC
+and pixel value at any time by using this command. The cursor
+will appear on the screen and you simply position it at the
+point of interest and type any printing character (a-z, A-Z,
+1-0) except 'Q' or 'q' and the information for that location
+on the map will be printed on the terminal. This works very
+well for devices with dual screens (Xwindows, Pericoms, Selinars,
+Dacoll, or the LEXIDATA), but produces a messy result on a
+BBC.
+
+
+
+
+
+\section{The Data-Display Sub-System}
+
+Data-display -- a sub-system for the graphical display of 1D data sets.
+
+\subsection{Introduction
+*@/mrao/anmap_v7.5/help/Intro_Data_Display.help
+
+\subsection{line-options
+
+\Command{setup options for each line to be displayed.
+\Parameters{line option
+\Options{  reset-style reset-file file x-file y-file
+            x-column y-column
+            x-offset y-offset x-scale y-scale x-auto-scale y-auto-scale
+            x-error-bar y-error-bar x-log-scale y-log-scale
+            line-style line-type error-style
+            symbol-style symbol-type key-display
+
+The options for the specified line are set.  Once a file has been defined
+for a line that line will be "active" and will be displayed with a plot all
+or plot line command.  The default is to use column 1 and column 2 as the
+X and Y columns for the plot and to plot Y against X.  This can bechanged
+with the x-column and y-column options, but you may also have the x and
+y columns from different files using the x-file and y-file commands.
+Error bars in X and Y may be displayed either using columns from the main
+or other files (use x-error-bar y-error-bar options).  The data may be
+modified "on-the-fly" before plotting using the -offset -scale -auto-scale
+and -log-scale commands.   Scaling and offseting can be used to shift
+and expand a line to help overlay multiple lines, the -auto-scale options
+attempt to do this automatically.  The -log-scale commands take the logarithm
+of each data point before display; zero or negative points are trapped and
+set to zero on output.  The type of line/markers plotted is controlled
+with the line-style, line-type (none, standard or histogram) and symbol-type
+options, for example to plot a histogram-type line
+  line-options 1 line-type 2
+of to plot just symbols
+  line-options 1 line-type 0
+  line-options 1 symbol-type 2
+to get just crosses for example.  Line-style and symbol-styles (colours
+fonts size etc) are set with the line-style symbol-style commands.
+Whether there is an entry in the key, and the text to go with the
+entry, for a particular line is controlled with the key-display option;
+the default is to include an entry in the key and use the data file name
+as the text string.
+
+\subsection{data_format
+*@/mrao/anmap_v7.5/help/Spectral_data_files.help
+
+\subsection{set-frame-style
+*@/mrao/anmap_v7.5/help/Frame_Style.help
+
+\subsection{set-text-style
+
+\Command{set style for titles plotted in data-display graphics
+\Parameters{font, size, colour, width
+
+The standard parameters for a text style can be set with this
+command -- note that the style of any frame drawn (including text)
+is controlled with the set-frame-style command, but the titles are
+drawn with the text-style specified with this command.
+
+{\em attributes
+*@/mrao/anmap_v7.5/help/Attributes.help
+
+\subsection{set-title-options
+
+\Command{set options for titles
+\Parameters{title-type position outwards-displacement location justification
+
+This command sets options for where the titles are to be displayed, to set
+the text-style for titles use the set-text-style command.
+
+  title-type     this must be one of title, x-title or y-title
+  position       specifies which side of the frame to display the title
+                   value   title   x-title    y-title
+                     1     top     bottom     left
+                     2     bottom  top        right
+  outwards-displacement
+                 this is the displacement of the title from the frame
+                 measured in average width characters.
+  location       specifies the title location relative to the frame
+                 and is specified as a fractional position along the frame
+                 with the left/bottom being 0.0 and the right/top 1.0 --
+                 positions outside of the frame are allowed.
+  justification  specifies the title justificationtion relative to the
+                 location of the title and is specified as a fractional
+                 position along the title with 0.0 being the left of the
+                 title and 1.0 the right of the title.
+
+{\em examples
+
+To centre a title use location=0.5 justification=0.5
+   set-title-options title 1 3 0.5 0.5
+
+The following displays the top title aligned with the left of the frame,
+the y-title is moved outward to allow space for "horizontal labels".
+   set-frame-style rotate-labels
+   set-title-options title 1 3 0.0 0.0
+   set-title-options y-title 1 8 0.5 0.5
+
+To put the X-title on the top of the plot and the mai title above it.
+   set-title-options title 1 6 0.5 0.5
+   set-title-options x-title 2 3 0.5 0.5
+
+\subsection{set-key-options
+
+\Command{set options for the plotting of keys
+\Parameters{option
+\Options{on off position frame text-style
+
+Options for the key plotted on a data-display graph are controlled
+with this command.  Whether a paticular line/set of points is included
+in the key or not, and the label used in the key, is controlled with
+the line-options key-display command.
+
+The meaning of the options to the set-key-options command is:
+
+  on              turn the display of a key on
+  off             turn the display of a key off
+  position        specify the position of the key relative to the
+                  frame of the graph; the position is specified
+                  as an x- and y-position such that 0.0 aligns the
+                  left of the key with the left edge of the frame
+                  1.0 aligns the left edge of the key with the right
+                  edge of the frame -- for y 0.0 is the bottom and 1.0
+                  is the top and the top of the frame is aligned with the
+                  specified position.  For example:
+                    0.0,1.0   positions the key in the top left corner
+                    1.2,1.0   positions the key outside of the frame to the
+                              top right.
+                  It is not possible to align the key on any other edge
+                  as the size of the key is not known until after it is
+                  drawn as the information is contains is "dynamic".
+  frame           Turn the plotting of a frame around the key on or off.
+  text-style      set font, size, colour, width, drop for the text appearing
+                  in the key -- it is NOT possible to control the style of
+                  text for each entry in the key.  The text that is plotted
+                  is controlled by the line-options key-display command.
+
+See also: line-options
+
+\subsection{title
+
+\Command{set the title for the plot
+\Parameters{title
+
+Set the title for the plot to the specified text.  The title is plotted
+when the frame is plotted, if the frame is already drawn you will need to
+use either "initialise plot; plot all" or "plot refresh".
+
+\subsection{x-title
+
+\Command{set the title for the X-axis of the plot
+\Parameters{title
+
+Set the X-axis title for the plot to the specified text.  The title is plotted
+when the frame is plotted, if the frame is already drawn you will need to
+use either "initialise plot; plot all" or "plot refresh".
+
+\subsection{y-title
+
+\Command{set the title for the Y-axis of the plot
+\Parameters{title
+
+Set the Y-axis title for the plot to the specified text.  The title is plotted
+when the frame is plotted, if the frame is already drawn you will need to
+use either "initialise plot; plot all" or "plot refresh".
+
+\subsection{x-range
+
+\Command{set the x-range for the plot
+\Parameters{x1 x2
+
+Set the x-range for the plot.  If x1 and/or x2 are non-zero then the
+range is set to the explicit range sepcified so that the left edge of
+the plot is x1 and the right edge x2 (x2 may be < x1).  To request auto-
+scaling (the default) set x1 = x2 = 0.0.
+
+\subsection{y-range
+
+\Command{set the y-range for the plot
+\Parameters{y1 y2
+
+Set the y-range for the plot.  If y1 and/or y2 are non-zero then the
+range is set to the explicit range sepcified so that the left edge of
+the plot is y1 and the right edge y2 (y2 may be < y1).  To request auto-
+scaling (the default) set y1 = y2 = 0.0.
+
+\subsection{view-port
+
+\Command{set the (sub-)view-port for the data display, graph,  object
+\Parameters{u1,u2,v1,v2
+
+The view-port specified with this command is relative to the view-port of
+the graph graphic itself (set with the graphic view-port command).  The
+graph graphic is displayed with its frame aligned with this view-port,
+whereas the larger view-port of the graph graphic is the region of the
+display (or plot device) allocated to this graphic and if the mode is
+set to opaque, the region of the screen which will be cleared.  For example
+the following will ensure the entire screen is cleared when a graph graphic
+is defined, but sufficient space will be allowed for the plotting of
+labels and titles which are placed outside of the frame of the actual plot
+
+   graphic select graph 1
+   graphic view-port 0.0,1.0,0.0,1.0
+   data-display view-port 0.15,0.85,0.15,0.85
+
+Alternatively if the graph graphic is to appear in a small region of the
+screen to the top right (perhaps allowing space for an image to be displayed)
+then the following would be more appropriate
+
+   graphic select graph 1
+   graphic view-port 0.7,1.0,0.7,1.0
+   data-display view-port 0.15,0.85,0.15,0.85
+
+{\em examples
+
+Select the whole device for display of a linear graph
+   graphic
+     select graph 1
+     view-port 0.0,1.0,0.0,1.0
+   data-display
+     view-port 0.1,0.9,0.1,0.9
+     linear-graph ......
+
+Display a grey scale image then display a slice in a small box to the top right
+   map-display
+     set-map 1
+     grey on,,,,
+     plot grey
+   map-analysis
+     select-slice 1 -30,30,30,30
+   graphic
+     select graph 1
+     view-port 0.7,1.0,0.7,1.0
+   data-display
+     view-port 0.15,0.85,0.15,0.85
+     line-options 1 file anmap_results.dat
+     plot all
+
+
+
+\subsection{plot
+
+\Command{plot a data-display graph graphic object
+\Parameters{option
+Options: all line frame annotations refresh
+
+The plot command controls the plotting of information to the screen
+or output device.  The plot all command can be used to plot all
+the information you have requested/defined; once plotted plot all
+will not re-plot the same information even if you change some
+attributes such as line-colour etc. -- in this case you need to
+use "plot refresh" which refreshes the plot using the attributes
+for lines and text and other options in effect at the time you give
+the command.  You can control in more detail how the plot is put
+together using the plot line plot annotations and plot frame commands
+to plot just parts of the information on the plot.  There are also
+plot commands in the annotate sub-system to provide careful control
+over the plotting of annotations.
+
+The options have the following specific meanings
+   all              plot everything that is outstanding (i.e. not
+                    yet plotted.
+   refresh          re-plot the graphic using all attributes and options
+                    in effect when this command is given.
+   annotations      plot annotations, same as annotate plot all or
+                    plot all.
+   frame            plot just the frame and key for the plot.
+   line   n         plot just line n where line "n" has been defined with
+                    the line-options command.
+
+\subsection{initialise
+
+\Command{initialise the data-display sub-system
+\Parameters{option
+Options: all plot options annotations title setup
+
+This command can be used to initialise parts of the data-display
+sub-system. The options have the following meaning:
+
+   annotations     initialise all annotations and annotation options
+   options         initialise line, text, key and frame style options
+   title           initialise title strings
+   plot            initialise for (re-)plotting, the state of the
+                   sub-system is initialised so that it was as if
+                   nothing had yet be drawn on the plot; plot all
+                   will then plot everything.
+                      initialise plot ; plot all
+                   gives the same results as
+                      plot all ; plot refresh
+   setup           initialise the setup of line options specific to
+                   the files / data sets to be plotted.
+   all             equivalent to all the above
+
+
+\subsection{annotate
+*@/mrao/anmap_v7.5/help/Annotate.help
+
+\subsection{get
+
+\Command{retrieve information about the current sub-system
+\Parameters{option
+Options: cursor-input coordinates line frame key max-lines view-port range
+
+Get returns information about the current scratch-display definition or
+prompts the user for necessary input.  All information is returned via
+command-language parameters.
+
+   cursor-position     the user is requested to enter a position using
+                       the cursor.  The routine will return
+                         %X %Y       coordinate position in current graph
+                                     coordinates.
+                         %GR-X %GR-Y position in screen coordinates.
+                         %GR-CHAR    character typed
+
+   coordinates         return the current coordinates as an array
+                         %COORDINATES
+   view-port           return the current view-port as an array
+                         %GRAPH-VP
+   range               reruen the current data range in two arrays
+                         %X-RANGE %Y-RANGE
+
+   scratch             details of the options for the current scratch
+                       definition
+
+   max-lines           return the maximum number of lines as %MAX-LINES
+
+   frame               return frame details in standard parameters
+
+   key                 return key details in standard parameters
+
+   line  n             return details for line n in standard parameters
+
+{\em standard_parameters
+*@/mrao/anmap_v7.5/help/Standard_parameters.help
+
+\subsection{linear-graph
+
+Command-procedure: plot a data-file as a linear-scaled graph
+\Parameters{data-file
+
+This command plots a data file as a linear-scaled graph.  This provides
+a simplified interface to the facilities of the data-display system
+when you have a data file in the standard spectrum format and you want
+to plot the y-column (column 2) versus the x-column (column 1).  You
+specify just the file name and the plot is drawn automatically.  To
+alter aspects of the plot (e.g. add a title) use standard data-display
+commands after the linear-graph command and the say "plot refresh".
+
+For example to plot the anmap results file then add titles:
+
+   linear-graph anmap_results.dat
+   title Main title
+   x-title X
+   y-title Y
+   plot refresh
+
+\subsection{logarithmic-graph
+
+Command-procedure: plot a data-file as a log-scaled graph
+\Parameters{data-file
+
+This command plots a data file as a log-scaled graph.  This provides
+a simplified interface to the facilities of the data-display system
+when you have a data file in the standard spectrum format and you want
+to plot the y-column (column 2) versus the x-column (column 1).  You
+specify just the file name and the plot is drawn automatically.  To
+alter aspects of the plot (e.g. add a title) use standard data-display
+commands after the lograithmic-graph command and the say "plot refresh".
+
+For example to plot the anmap results file then add titles:
+
+   logarithmic-graph anmap_results.dat
+   title Main title
+   x-title X
+   y-title Y
+   plot refresh
+
+\subsection{examples
+
+*
+
+
+\section{The Drawing-Display Sub-System and Annotations}
+
+Annotate -- a sub-system to annotate plots.
+
+\subsection{Introduction
+
+The annotate system can be used to add simple annotation-like drawing elements
+to other plots or to produce more complex line-based graphics.  In addition
+to a number of basic drawing commands there is also the provision for a
+more complicated compound-object.
+
+The following commands define graphical objects (the system is highly
+object oriented):
+
+  line circle ellipe arc box erase cross arrow text compound-object
+
+while the following commands change the attributes of these objects:
+
+  set-text-style set-line-style set-fill-style set-arrow-style
+  update-object
+
+The objects may either be plotted after a plot command (the default
+action) or plotted immediately they are defined (using the set-plot-options
+command).  Furthermore the coordinates for each object may be specified by
+entering the coordinates in response to prompts or by using the cursor
+to position objects (this is again controlled with the set-plot-options
+command).  The coordinates used can either be physical device coordinates
+(the default) which have the advantage of preserving the correct aspect
+ratio of objects plotted among different devices, or user-defined coordinates
+(see the command set-coordinates and physical-coordinates).  A few commands
+exist to manipulate objects:
+
+  plot object, delete-object, list-object, update-object
+
+Finally the get command is provided to help in constructing command procedures
+which interact with the graphics device.
+
+The map-display, scratch-display and data-display sub-systems all have
+annotate sub-systems of their own.
+
+The coordinates used in all plotting are the corrdinates of the calling
+sub-system.
+
+\subsection{line
+
+\Command{define a line-type graphic object
+\Parameters{line-start line-end
+
+A line object is defined using the current line style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.  A multiple-element line can be drawn
+using many line objects or using the compound-object definition.  If the
+input mode is set to cursor-input simply mark each end of the line using
+the cursor.
+
+\subsection{arc
+
+\Command{define an arc-type graphic object
+\Parameters{arc-start arc-end arc-midpoint
+
+[NOT IMPLEMENTED YET]
+
+An arc object is defined using the current line style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.
+
+\subsection{ellipse
+
+\Command{define an ellipse-type graphic object
+\Parameters{centre, semi-major, semi-minor, position-angle
+
+An ellipse object is defined using the current line style and fill mode
+and is plotted after a plot command or will be plotted immediately if
+the set-plot-options auto-plot command has been given.   The default
+orientation for the ellipse is to have the major axis along the "x-axis",
+the position angle is then the angle the major axis makes with the x-axis
+measured in a positive (counter-clockwise) sense.  If the input mode is
+set to cursor-input then mark the centre end of the major and end of the
+minor axes.
+
+If a filled ellipse is drawn then the colour of the filling is the same
+as the outline colour.
+
+\subsection{circle
+
+\Command{define a circle-type graphic object
+\Parameters{centre radius
+
+A circle object is defined using the current line style and fill mode
+and is plotted after a plot command or will be plotted immediately if
+the set-plot-options auto-plot command has been given. If the input
+mode is set to cursor input the mark the centre of the circle and
+one point on the circumference.  If a filled circle is drawn then the
+colour of the filling is the same as the outline colour.
+
+\subsection{erase
+
+\Command{define an erase-type graphic object
+\Parameters{box-corner-1, box-corner-2
+
+An erase object is defined and is "plotted" after a plot command or
+will be plotted immediately if the set-plot-options auto-plot command
+has been given.  You should specify (or mark in cursor-input mode) opposite
+corners of the box you wish to erase -- only "box-shaped" erase regions
+are currently supported.
+
+\subsection{text
+
+\Command{define a text-type graphic object
+\Parameters{position, position-angle, 'text string'
+
+A text object is defined using the current text style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.  If the input mode is from the command line
+then you will be asked to specify the position for the bottom left point
+of the text and a position-angle for the text (measured in the positive sense,
+couter-clockwise, from the x-axis); if however you are in cursor-input mode
+then you mark the position of the text only -- in both input modes you will
+supply the text from the command line and if the text contains spaces the
+text should be quoted.
+
+\subsection{box
+
+\Command{define a box-type graphic object
+\Parameters{box-corner-1, box-corner-2
+
+A box object is defined using the current line style and fill mode and is
+plotted after a plot command or will be plotted immediately if the
+set-plot-options auto-plot command has been given. You should specify
+(or mark in cursor-input mode) opposite corners of the box; the box can be
+drawn in outline or filled if fill mode is set appropriately, in either case
+the fill colour is the same as the outline colour.
+
+\subsection{cross
+
+\Command{define a cross-type graphic object
+\Parameters{cross-centre arm-length
+
+A cross object is defined using the current line style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.   If the input mode is cursor-mode then
+you mark the centre of the cross and the end of one arm.
+
+At present crosses can only be drawn with their arms aligned with the
+x and y axes.
+
+
+\subsection{arrow
+
+\Command{define an arrow-type graphic object
+\Parameters{arrow-start arrow-end
+
+An arrow object is defined using the current line and arrow styles and
+is plotted after a plot command or will be plotted immediately if the
+set-plot-options auto-plot command has been given.  The form of the
+arrow head is controlled with the set-arrow-style command.
+
+\subsection{set-text-style
+
+\Command{set the text-style for subsequent objects
+\Parameters{font, size, colour, width
+
+Set the style for subsequent text -- this style can be used to update
+the style of existing objects using the update-object command.
+
+{\em attributes
+*@/mrao/anmap_v7.5/help/Attributes.help
+
+\subsection{set-line-style
+
+\Command{set the line-style for subsequent objects
+\Parameters{style, width, colour
+
+Set the style for subsequent line drawing -- this style can be used to update
+the style of existing objects using the update-object command.
+
+{\em attributes
+*@/mrao/anmap_v7.5/help/Attributes.help
+
+\subsection{set-fill-style
+
+\Command{set the fill-style for subsequent objects
+\Parameters{fill-mode
+
+Set the style for subsequent filled drawings -- this style can be used
+to update the style of existing objects using the update-object command.
+The fill style can be either:
+   1 = filled
+   2 = emty (outline only).
+
+The fill colour is the same as the colour selected for the outline which
+is the colour of the current line style.
+
+\subsection{set-arrow-style
+
+\Command{set the arrow-style for subsequent objects
+\Parameters{angle-of-head, head-length, arrow-fill
+
+Set the style for subsequent arrows -- this style can be used
+to update the style of existing objects using the update-object command.
+The angle of the head is the half-angle between the shaft of the arrow
+and the lines forming the arrow head itself; the head length is measured
+in proportion to the length of the arrow and the arrow-fill mode
+(either 1 filled or 2 outline) controls how the arrow head itself is
+drawn.
+
+\subsection{coordinates
+
+The coordinate system used in annotations is the same as the coordinate
+system in use in the map-display, scratch-display or data-display
+sub-system calling the annotate sub-system; this facilitates aligning the
+annotations with respect to the plots.
+
+\subsection{list-objects
+
+\Command{list all defined graphic objects
+
+A brief listing of all defined objects in the current annotate object is sent
+to the screen.  The object status is 1 if the object is defined, but not
+plotted and -1 if the object is defined and plotted.
+
+\subsection{delete-object
+
+\Command{delete an object from the current annotate object
+\Parameters{object-number
+
+The specified object can be deleted; note that this command does not
+effect the plot until a plot refresh command is given.
+
+\subsection{plot
+
+\Command{plot object(s) for the current annotation
+\Parameters{option
+Options: all object refresh
+
+The plot command does the actual work of plotting defined objects (but see
+also the set-plot-options auto-plot command).
+
+  plot all       plot all defined, but not plotted objects
+  plot object n  plot object n only
+  plot refresh   re-draw the plot, plotting only those objects already drawn,
+                 this command can be used to plot the current drawing into
+                 a new view-port or onto a new device.
+
+\subsection{initialise
+
+\Command{initialise aspects of the annotation
+\Parameters{option
+Options: all plot options drawing
+
+This command can be used to initialise aspects of the annotation:
+
+  initialise plot     initialise all objects so that they appear to be
+                      "not plotted"
+  initialise options  initialise options such a line, text fill and arrow
+                      styles
+  initialise drawing  initialise the list of objects (effectively delete all
+                      objects in the annotation).
+  initialise all      the combination of all of the above.
+
+\subsection{update-object
+
+\Command{update the style of a given object
+\Parameters{object-number | all
+
+Update the style of the specified object or "all" objects to the current
+style -- this applies the current line, text, arrow, and fill styles to the
+specified objects.  The effects of this command will not be appraent until
+the next plot refresh command.
+
+\subsection{set-plot-options
+
+\Command{set options for how the plot is updated
+\Parameters{option
+Options: auto-plot, deferred, cursor-input, command-input
+
+Set various options to control how the plot gets updated:
+
+  set-plot-options auto-plot      set the plot into auto-plot state so that
+                                  objects are plotted as soon as they are
+                                  defined.
+  set-plot-options deffered       set the plot into deffered state so that
+                                  objects are not plotted until an explicit
+                                  plot command.
+  set-plot-options cursor-input   set the input mode to cursor input --
+                                  coordinates are entered using the cursor
+  set-plot-options command-input  set the input mode to command-line input
+                                  -- coordinates are entered from the
+                                  command line.
+
+\subsection{get
+
+\Command{return information for the current annotation
+\Parameters{option
+Options: cursor-input, coordinates, max-objects, object-type, object-status
+
+Information for the current annotation is returned in command-language
+parameters of the form "%option-name".  The options have the following
+meaning:
+
+  cursor-input       cursor input from device
+  coordinates        current coordinates
+  max-objects        maximum number of objects
+  object-type        object type for object
+  object-status      object status for object
+
+
+\section{The Scratch-Display Sub-System}
+\section{The graphic sub-system}
+Graphic sub-system
+
+\subsection{introduction
+
+The graphic sub-system is used to coordinate and control all of the
+graphics tools within Anmap, including the manipulation of devices and
+device sizes and the allocation of regions of the device to specific
+plotting tasks.  Most of the commands within the graphics sub-system
+either operate on the current graphic or on the device.
+
+All graphics-based operations and tools in Anmap use a "graphic" definition;
+four basic types are currently defined:
+
+  image      For images and contours (used by map-display)
+  draw       For drawings (used by drawing-display)
+  graph      For graph-like graphics (used by data-display)
+  scratch    For various graphics utilities (used by various commands
+                 such as plot-slice in map-analysis).
+
+You may have more than one definition for each type which are labelled
+with the graphic index number.  When Anmap starts up one graphic of each
+of the above types is defined and initialised and each is given the index
+number 1.  The command list-graphics can be used to list the currently
+defined graphics.  Each graphic definition contains all the instructions to
+produce a plot.  The commands in the graphics sub-system enable you to
+manipulate graphics and their relationship to the physical device.
+For all graphics some basic information is recorded:
+
+   view-port     region on the device into which the graphic is drawn
+   transparancy  the transparency of the graphic with respect to underlying
+                 graphics on the device
+   depth         the depth of the graphic
+   line-style    a default line style
+   test-style    a default text style
+
+How the last three are used depends on the sub-system using the graphic. The
+default on Anmap's startup is to set the view-port to the entire screen and
+the transparency to opaque for all graphics except "draw" where the
+transparency is set to transparent.
+
+To illustrate the use of graphic definitions consider the following example
+in which a map is displayed using the default graphic, it is then re-drawn
+in a smaller region of the screen and another graphical object (a graph)
+is drawn in another part of the screen.
+
+! enter map display and display may number 1 as a grey scale image
+  map-display
+  set-map 1
+  grey on,,,,
+  plot grey
+
+! now re-display this image in the upper right hand quadrant
+  graphic
+! first clear the device
+    clear-device
+! now reset the view-port for the image
+    select image 1
+    view-port 0.5,1.0,0.5,1.0
+! return to map-display and re-plot
+   map-display
+     plot refresh
+! enter the data-display sub-system and plot a graph having setup the view-port
+   data-display
+     graphic
+       select graph 1
+       view-port 0,.5,.5,1
+     exit
+     linear-graph data.dat
+
+Note also in this example the use of "plot refresh" to update the plot.
+
+The graphical elements can be arbitrarily complicated, all the information
+is stored in the associated graphic.  Graphic definitions can also be saved
+and read back into Anmap using the save and recall commands. Finally it is
+possible to copy graphic definitions.
+
+The device can be controlled with a number of commands:
+  output-device     to set the output device
+  open-device       open the selected device
+  close-device      close the selected device
+  device-size       set the physical size for the "device" (e.g.
+                    size of X-window screen or plotting region on
+                    paper).
+  next-page         move to the next page (screen) of output.
+  segment-screen    break the screen up into a number of (logical)
+                    pages -- next-page will then move between them.
+
+For example having obtained the above plot on an X-window screen the
+following can be used to send the plot to a postscript file.
+
+  graphic
+    close-device
+    output-device test.ps/ps
+    refresh-all
+    close-device
+  exit
+
+Alternatively a better approach is to use the built-in postscript- procedures:
+
+  postscript-dump      will dump the current graphics
+  postscript-view      will view the dumped file
+  postscript-plot      will plot the dumped file
+  postscript-save      will save the dumped file to a new file
+
+For example the following will save the graphics as a postscript file and
+then send it to the laser printer.
+
+  postscript-dump ; postscript-print
+
+\subsection{output-device
+
+\Command{set the output device for subsequent graphics
+\Parameters{device-name
+
+Set the output device for subsequent graphics -- the default device is
+an X-window device.  To make the device accept graphics you may need to
+close any existing device; you may also open the new device using
+device-open, but this will happen automatically when there is an attempt
+to write to the device.
+
+\subsection{close-device
+
+\Command{close the current graphics device
+\Parameters{NONE
+
+Close the current graphics device -- this is necessary to flush output
+to say a file containing POSTSCRIPT graphics.
+
+\subsection{open-device
+
+\Command{open the currently selected device
+\Parameters{NONE
+
+Open the device previously selected with the output-device command. If
+a size has been specified for the device then this size will take effect.
+
+\subsection{next-page
+
+\Command{move the the next (logical) page
+\Parameters{NONE
+
+Move to the next logical page.  For output to a hard-copy device or a
+file (e.g. a POSTSCRIPT file) a new physical page will be selected,
+for output to a screen a new screen will be started; it is NOT possible
+to move to the previous page.  If the device/screen has been segmented then
+this commands moves to the next segment or logical page of the device,
+in this case the logical pages start in the top left of the physical
+device and move to the bottom right.  More control over the appearance
+of the screen may be obtained by specifying the drawing area using the
+view-port command to setup the drawing view-port.
+
+\subsection{segment-screen
+
+\Command{divide the screen up into a number of logical segments
+\Parameters{number-of-horizontal-segment
+
+The screen is divided according to the specified number of horizontal
+segments, the number of segments in the vertical (y) direction is
+always set to 1 or 2 and the number of horizontal segments must be less
+than or equal to 3.   More control over the appearance
+of the screen may be obtained by specifying the drawing area using the
+view-port command to setup the drawing view-port.
+
+\subsection{device-size
+
+\Command{specify the physical size (in cm) for the device
+\Parameters{plot-size, aspect-ratio
+
+The device is set to the specified size in cm with the specified aspect
+ratio (width/height).  A square plot is therefore obtained with aspect-ratio
+set to 1.0, a "landscape" plot is obtained with aspect-ration < 1.0 and
+a "portrait" plot is obtained with aspect-ratio > 1.0.  This command
+can be used to match the physical size between screen and hard-copy
+devices, to reduce "screen clutter" by reducing the size of the requested
+graphics window, or to maximise the size of the plotted region.  Not all
+devices may honour a request to specify a size to the plotting region.
+To obtain the default size specify a size of 0.0 cm.
+
+\subsection{select
+
+\Command{select a new of existing graphic
+\Parameters{graphic-name, graphic-index
+
+A new or existing graphic definition is selected.  The graphic name must
+be one of the recognized types of graphic structure:
+
+    image      for use in map-display
+    graph      for use in data display
+    draw       for use in drawing-system
+    scratch    for use in "scratch" plots produced by various Anmap commands.
+
+For information on graphic structures see the introduction to the graphics
+sub-system.  The graphic-index is a unique index (for each graphic definition)
+which labels to definition, you are free to choose the index provided it is
+an integer with a value greater than zero.  New graphics are initialised
+and made current, existing graphics are simply made current -- commands in the
+grahics sub-system operate on either the current device or the current
+graphic.
+
+{\em advanced_information
+
+When a new graphic is selected then the procedure display-default is
+run with parameter SUB-SYSTEM where sub-system is the appropriate name
+of the sub-system to which the graphic-name applies.  For example the
+command:
+
+   select image 2
+
+if "2" is a new image graphic will result in the following command being
+executed:
+
+   default-setup map-display
+
+this is turn will execute a procedure to actually perform the initialisation.
+Standard procedures are provided for these actions, but they can be
+overiden by the user by re-defining the the display-default procedure; if
+you intend to do this start with the existing definition as an example
+and modify the procedure(s) as required.
+
+\subsection{plot
+
+\Command{plot the current graphic
+\Parameters{NONE
+
+This command is equivalent to running the plot all command in the sub-system
+appropriate to the currently defined graphic.
+
+\subsection{refresh
+
+\Command{refresh the current graphic
+\Parameters{NONE
+
+This command is equivalent to running the plot refresh command in the sub-system
+appropriate to the currently defined graphic.
+
+\subsection{initialise
+
+\Command{initialise the current graphic
+\Parameters{NONE
+
+This command is equivalent to running the initialise all command in the
+sub-system appropriate to the currently defined graphic.
+
+\subsection{default-text-style
+
+\Command{setup the default text style
+\Parameters{TEXT-STYLE-PARAMETERS
+
+The text style to be used as a default by the currently selected graphic
+is defined.  The way in which the default is used depends on the application.
+
+{\em text_style
+*@/mrao/anmap_v7.5/help/Text_style.help
+
+\subsection{default-line-style
+
+\Command{setup the default line style
+\Parameters{LINE-STYLE-PARAMETERS
+
+The line style to be used as a default by the currently selected graphic
+is defined.  The way in which the default is used depends on the application.
+
+{\em line_style
+*@/mrao/anmap_v7.5/help/Line_style.help
+
+\subsection{transparent
+
+\Command{set the transparency of the current graphic to transparent
+\Parameters{NONE
+
+The current graphic is set to transparent -- in this mode the graphics
+underlying the current graphics will not be cleared when the graphic is
+drawn or refreshed -- in the standard setup this is the default for
+drawings, but no other graphics.
+
+The region of the device effected by the transparency is the view-port
+of the graphic.
+
+\subsection{opaque
+
+\Command{set the transparency of the current graphic to opaqe
+\Parameters{NONE
+
+The current graphic is set to opaque -- in this mode the graphics
+underlying the current graphics will be cleared when the graphic is
+drawn or refreshed -- in the standard setup this is the default for
+all graphics expect drawings.
+
+The region of the device effected by the transparency is the view-port
+of the graphic.
+
+\subsection{depth
+
+\Command{set the depth of the graphic
+\Parameters{depth
+
+The depth of the graphic is used to specify the order in which overlapping
+graphics are re-drawn with the device-refresh procedure.
+
+\subsection{view-port
+
+\Command{set the view-port for the current graphic
+\Parameters{u1,u2,v1,v2
+
+The view-port for the current graphic is specified in normalized device
+coordinates.  The physical region of the plot (sepcified if appropriate with
+the device-size command) is mapped into the region of normalized device
+coordinates:
+                  0.0 <= u <= 1.0      0.0 <= v <= 1.0
+This command sets the region of the plot to use for the current graphic to
+a sub-region of the whole device "screen or page" by specifying the
+region in terms of normalized coordinates.  All plotting will be scaled to
+fit in this region and the effects of the graphic's transparency will
+only be effective within the view-port of the graphic.
+
+\subsection{list-graphics
+
+\Command{list all the currently defined graphics
+\Parameters{NONE
+
+List all the currently defined graphics.
+
+\subsection{save
+
+\Command{save the current graphic to a file
+\Parameters{file-name
+
+The current graphic is saved to the specified file -- the file contains
+a dump of the graphic in binary form and may not be read or edited.  The
+graphic can be read back into Anmap at a later time using the recall command.
+
+\subsection{recall
+
+\Command{read a previously saved graphic definition
+\Parameters{file-name
+
+A graphic definition previously saved with the save command is read back into
+Anmap.  The graphic type and index are the same as for the saved graphic --
+if the index is the same as an existing graphic of the same type then the
+existing graphic is overwritten, if not a new graphic is created.
+
+\subsection{copy-definition
+
+\Command{copy graphic definitions
+\Parameters{from-type from-index to-type to-index
+
+A graphic of the specified type is copied to the specified type and
+index -- most usually only copies between graphics of the same type are
+useful, in other cases only the basic graphic definition is usefully
+copied and the new copy should be initialised for the appropriate sub-system.
+The copy-definition command can be useful in conjunction with the save/recall
+mechanism which does not allow the type or index of saved graphics to
+be changed.
+
+\subsection{display-graphic
+
+Procedure: display information for graphics
+Paramneters: option
+
+Option may be one of
+
+  current -- display information for the current graphic
+  all     -- display information for all graphics
+
+{\em advanced_information
+
+The display command is implemented as a procedure; information is retrieved
+using the get command -- users may re-define the action of the display
+commmand by re-defining the procedure.
+
+\subsection{get
+
+\Command{get/retrieve information for graphics into parameters
+\Parameters{option
+
+The get command takes one of a number of options and information is
+returned in standard parameters.
+
+   cursor-position     return the cursor position in normalized device
+                       coordinated %x, %y %gr-x %gr-y are all set by this
+                       call.
+   current-index       the index of the current graphic is returned in
+                       %current-graphic
+   current-type        the type of the current graphic is returned in
+                       %current-type
+   current-graphic     the sequence number of the current graphic is
+                       returned in %current-graphic
+   maximum-graphics    the maximum number of graphics is returned
+                       in %maximum-graphics
+   graphic  n          information for graphic of sequence number n
+                       is returned:
+                        Default line-style
+                          %LINE-STATUS %LINE-STYLE
+                          %LINE-COLOUR %LINE-WIDTH
+                        Default text-style
+                          %TEXT-STATUS %TEXT-FONT
+                          %TEXT-COLOUR %TEXT-WIDTH %TEXT-SIZE
+                        Graphic details for graphic n
+                          %GRAPHIC-STATUS        status
+                          %GRAPHIC-TYPE          type
+                          %GRAPHIC-TRANSPARENT   transparency
+                          %GRAPHIC-INDEX         index
+                          %GRAPHIC-DEPTH         depth
+                          %GRAPHIC-FILL          fill-mode
+                          %GRAPHIC-VP            view-port (array)
+
+
+\subsection{refresh-all
+
+Procedure: to refresh all plotted elements on the device
+\Parameters{NONE
+
+This command can be used to refresh all plotted graphics on the
+device -- in most cases it should reproduce the orginal screen
+output if graphic depths have been set correctly, however a different
+results will occur if you have made a lot of use of the graphic clear
+commmand -- in these cases refresh each graphic element in turn.
+
+\subsection{postscript-output
+
+Procedures: to handle postscript output from a PGPLOT graphics device
+
+There arefour procedures designed to simplify obtaining hard copy from
+Anmap as postscript files.
+
+  postscript-dump      will dump the current graphics
+  postscript-view      will view the dumped file
+  postscript-plot      will plot the dumped file
+  postscript-save      will save the dumped file to a new file
+
+For example the following will save the graphics as a postscript file and
+then send it to the laser printer.
+
+  postscript-dump ; postscript-print
+
+With the exception of the postscript-save command none of the above commands
+require any parameters; the postscript-save command can be used to save the
+current dumped postscript to a permanent file.
+
+*
+
+
+
+\end{document}
+
+
+
+
+
+

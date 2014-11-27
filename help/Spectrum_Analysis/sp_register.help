@@ -1,0 +1,31 @@
+Spectrum-analysis-program: perform a minimization of scaling and shift 
+                           parameters for one spectrum to register it 
+                           as closely as possible with a second spectrum.
+
+Keys:
+
+    outfile   nokeyok         output file name [-]
+    infile    nokeyok,needed  input file name
+    model     nokeyok,needed  model file against which registration is done
+    xc                        X-column in the infile [1]
+    xcm                       X-column in the model file if not equal to XC
+    yc                        column to register [2]
+    ycm                       Y-column in the model file to register against
+                              if not equal to YC
+    title                     new title for output file
+    comment                   user defined comment text
+    logx                      specify a registration using log( X ) values
+    logy                      specify a registration using log( Y ) values
+    scale                     request registration uses scaling
+    shift                     request registration uses shifting
+    mode                      specify minimization mode
+                              minimize (y(i) - f(x(i)))**2/(f(x(i))**mode) [0]
+
+
+This routine will attempt to register two spectra as closely as possible.
+The axes with which the registration will be attempted may be specified 
+and the parameters (shift and scale) to do the registration may also
+be controlled; optionally the registration can be done in log-space
+(shift and scale apply AFTER taking of logarithms if log/logy is specified).
+
+

@@ -1,0 +1,14 @@
+#!/mrao/anmap/anm3d/ida
+
+     set iaxis 3
+     if {[llength $argv] > 3} {
+        set axis [lindex $argv 3]
+        if {expr $axis == "x"} then {set iaxis 1}
+        if {$axis == "y"} then {set iaxis 2}
+        if {$axis == "z"} then {set iaxis 3}
+     }
+     set im1 [img_image read -file [lindex $argv 0] -type 1]
+     set im2 [img_fit $im1 velocity [lindex $argv 2] $iaxis]
+#     set im3 [img_geom $im2 subimage -z1 2 -z2 2]
+     img_image write $im2 -file [lindex $argv 1] -type 1
+     

@@ -1,0 +1,27 @@
+
+Spectrum-analysis-program: Take the logarithm of selected column
+
+      SPEC(outfile) = log(SPEC(infile[cols]))
+
+Keys:
+   xc                           X-column in data [1]
+   cols                         list of columns to "log" [ALL]
+   title                        title for outfile
+   comment                      user comment for outfile
+   infile      nokeyok          input file name [-]
+   outfile     nokeyok          output file name [-]
+
+All columns except the X-columns are "logged" which are included in
+the cols list.
+
+Examples:
+
+To take the logarithm of all columns in the data except the X-column
+%    sp_log in.dat out.dat
+
+
+To take the logarithm of all columns, including the X-column set the
+x-column key-word (xc) to a column not actually present in the data:
+%    sp_log in.dat out.dat xc 100
+
+

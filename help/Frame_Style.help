@@ -1,0 +1,157 @@
+
+Command: set options for frames
+Parameters: option
+Options: reset grid-option rotate-labels line-style grid-style text-style
+         ticks x-ticks y-ticks axes x-axis y-axis labels x-labels y-labels
+         size x-size y-side log-labels log-x-labels log-y-labels
+
+Frame options can be set using this command.  The options can be
+summarized as follows:
+
+   reset              reset to default options
+   grid-option        turn grid on/off
+   rotate-labels      rotate labels to frame
+   line-style         set line-style for frame
+   grid-style         set line-style for grid
+   text-style         set text style for labels
+   ticks              set tick options for X,Y axes
+   x-ticks            set tick options for X axis
+   y-ticks            set tick options for X axis
+   axes               turn axes on/off
+   x-axis             turn X-axis on/off
+   y-axis             turn Y-axis on/off
+   labels             options for labels
+   x-labels           options for x-labels
+   y-labels           options for y-labels
+   side               list sides to draw
+   x-side             list sides (top/bottom) to draw
+   y-side             list sides (left/right) to draw
+   log-labels         select logarithmic labelling
+   log-x-labels       select logarithmic X labelling
+   log-y-labels       select logarithmic Y labelling
+
+Each of the options controls an aspect of the display, many of the
+options provide ways of acting on both or one of the x- and/or y-axes.
+
+
+Option: reset reset all styles/options to default values
+Parameters: none
+
+The reset option resets all options for the frame.
+
+
+Option: grid-option sets options for the grid
+Parameters: on/off
+
+Turn the plotting of a grid on/off.
+
+Option: rotate-labels sets option for rotating y-labels to horizontal
+Parameters: on/off
+
+By default labels for the y-axis are drawn parallel to the frame; tge
+rotate-labels on option requests that the labels be drawn "horizontal"
+i.e. parallel with the x-axis of the frame.  See also the labels, x-labels
+and y-labels options and note that you may need to reposition axis titles
+to avoid running into the text on the frame iself.
+
+
+Option: line-style set style for lines used to draw the frame
+Parameters: style width colour
+
+Set the style for the lines used to draw the frame.
+
+Option: text-style set style for text used to annotate labels on the frame
+Parameters: font size colour width
+
+Set the style for the text used to annotate the labels on the frame.
+
+
+Option: grid-style set style for the grid lines
+Parameters: style width colour
+
+Set the style for the lines used to draw the grid.
+
+
+Option: ticks x-ticks y-ticks
+        set the tick options for both axes or x- or y-axis
+Parameters: major-on/off minor-on/off major-separation minor-number
+             type
+
+Set the options for tick marks on the frame.  A value of "0" for the
+separation will get the default which is determined from the specified
+range when the frame is drawn, otherwise the supplied value is taken
+as the actual separation of the major ticks.  Note that requesting "0"
+minor-ticks will in fact get the default for the minor ticks and you need
+to explcitly turn off the plotting of minor ticks (see first two parameters
+to this option).  The type has the following value:
+   1   place ticks into the frame
+   2   place ticks out of the frame
+   3   extend ticks from outside to the inside of the frame
+
+
+Option:  axes x-axis y-axis
+         set options for both axes or the x-axis or the y-axis
+Parameters: on/off
+
+Turn on/off the plotting of axes (as oppposed to sides of box).  Axes
+pass through the y=0, x=0 point for the x and y axes respectively.
+The axes, x-axis, y-axis options apply to both axes, x-axis and
+the y-axis respectively.
+
+Option: labels x-labels y-labels
+        control the plotting of labels on both sides of the frame
+        or just the x-labels and/of the y-labels
+Parameters: option
+
+This option to frame style controls how labels are displayed on the
+frame; option can take one of four values:
+   0    no labels
+   1    labels on bottom/left of frame
+   2    labels on top/right of frame
+   3    labels on both bottom/left and top/right of frame
+   -1   as 1 but forcing exponential notation
+   -2   as 2 but forcing exponential notation
+   -3   as 3 but forcing exponential notation
+   -10  as 1 but forcing decimal notation
+   -20  as 2 but forcing decimal notation
+   -30  as 3 but forcing decimal notation
+The labels, x-labels and y-labels options apply to both x- and y-,
+x-, and y- respectively.
+
+
+Option: side x-side y-side
+        set the options for the sides of the frame
+Parameters: option
+
+This option to frame-style controls which (sides) of the frame are drawn.
+Option can take one of the following four values:
+   0    no sides to frame
+   1    draw sides on bottom/left of frame
+   2    draw sides on top/right of frame
+   3    draw sides on both bottom/left and top/right of frame
+The side, x-side and y-side options apply to both x- and y-,
+x-, and y- respectively.
+
+
+Option: log-labels lo-x-labels log-y-labels
+        set the options for plotting logarithimic axes on the frame
+Parameters: on/off
+
+This option to frame-style controls whether the labels are to be plotted
+in logarithmic notation (i.e. 10**value) or just as the logarithm of the
+number (value).  It does not affect scaling of the axes or whether the
+supplied data are "logged" before plotting, but simply the appearance of the
+labels.  log-labels, log-x-labels, log-y-labels control the appearance
+on both x axes, on the x-axis and on the y-axis respectively.
+
+
+*2 attributes
+*@$ANMHELP/Attributes.help
+
+*2 example
+
+Select a frame with x-side, y-side and x axis.
+  set-frame-style  side 1
+  set-frame-style  x-axis on
+
+*

@@ -1,0 +1,263 @@
+\documentstyle[12pt]{article}
+\include{anmap_macros}
+\begin{document}
+\begin{center}
+\vspace*{4.0cm}
+{\Large\bf Anmap User Guide} \\
+\vspace{1.0cm}
+{\large\bf to} \\
+\vspace{1.0cm}
+{\Large\bf Commands for Publication Graphics}
+\end{center}
+
+\newpage
+\section{Introduction}
+
+Publication quality graphics in \Anmap\ are provided for graphs
+and images in a large variety of styles with control over almost
+every aspect of the output.  Complicated figures can be composed
+using the tools provided which include commands to layout various
+aspects of the figure, annotate them and even add simple line
+drawings.  The graphics facilities are {\em object oriented}, this
+means that you construct plots by building up a description and
+then displying it, the power of this approach comes when you want to
+change an aspect of the plot, for example the line style or text size,
+all you have to do is alter these aspects of the plot and then re-display,
+you do not have to repeat a perhaps long and complicated series of
+actions to  re-display the figure.
+
+This Users' Guide describes the command interface to the publication
+graphics facilities of \Anmap; it will therefore be of interest to
+all users wanting to display such graphics and users writing scripts
+which nake use of the graphics facilities.  
+
+The graphics-related commands are organised into five sub-systems.
+The {\em graphics} sub-system provides basic commands to control the
+layout of graphical objects on the page, specify basic attributes for
+graphical objects and control the graphic devices which \Anmap\ can send
+its output to.  Each of the other sub-systems provide facilities to
+construct graphic objects of one of four basic types (image, graph,
+drawings and scratch graphics in the {\em map-display}, 
+{\em data-display}, {\em drawing-display} and {\em scratch-display}
+sub-systems respectively).  Multiple objects of each type may also be
+defined all with their own (different) set of attributes.  For each
+graphic object (excluding drawings) you may also specify annotations
+such as text, arrows etc.
+
+In the {\em map-display} sub-system you construct plots (graphic objects)
+of two-dimensional images --- maps.  You can display the images as 
+grey-scales or in false-colour, or using contours, 
+vectors (for appropriate data), or symbol plots to mark specified 
+data points; these various styles can be combined on a single plot.
+You have full control over the style of the plot including the frame,
+grid, text annotations, contour line styles, scale-bar for the grey-scale
+etc.
+
+The {em data-display} sub-system is used to create plots of 
+one-dimensional data or functions where a series of ``y-values''
+are specified at a series of ``x-values''.  The data may either
+form a continuous graph or histogram, or they could represent points
+in a scatter plot.  The data points may be annotated with error bars
+in both the ``x'' and ``y'' directions, and you have full control over
+the appearance of the plot deciding on whether individual points are
+marked with symbols, joined by a continuous curve or a histogram-type
+curve and so on.  All aspects of the frae, titles and annotations may
+be specified and a key generated automatically.  On a single plot
+you can specify many ``lines'' and facilities exist to provide automatic
+scaling (both in y and x for comparison of say spectra) and offsetting
+in y and x directions to produce a stacked-plot.  Data can be supplied
+either as a file in the standard format used by \Anmap\ (it is a simple
+multi-column ascii (ordinary text) file, or as a mathematical
+function given in a intuative form (such as $sin(x)/x$ if you wanted to
+plot a {\em sinc} function).  
+
+The final two sub-systems, the {\em scratch-display} sub-system and 
+the {\em drawing-display} sub-system provide facilities to control
+the style of scratch graphics and to annotate the entire figure 
+respectively.  Scratch-graphics are those graphics produced by 
+various commands within \Anmap\ such as isometric or surface plots,
+scatter plots or histograms of image values.  The {\em scratch-display}
+sub-system provides facilities for specifying the size of such plots,
+line- and text-styles.  Although each graphics sub-system provides
+a set of annotation commands, there is also a {\em drawing-display}
+sub-system to complement these facilities.  The annotations associated
+with a particular graphic object are tied to that object (and indeed
+use the same coordinate system as the object).  When you compose
+a complete figure out of a number of graphic objects (for example a
+number of different images), you may well wish to annotate the complete
+composition perhaps with a title, or lines or arrows linking
+various graphic objects; these facilities are provided for in the
+{\em drawing-display} sub-system.
+
+The remainder of this Users' Guide is organised as follows.  In the
+next section commands are described which operate on the complete figure, 
+or which are common to all subs-systems.  An example is then given
+illustrating the basic principles of the object-oriented graphics
+approach and then a more detailed description of the facilities 
+available within each sub-system is given.  The aim of this guide is
+to show you how to use the publication graphics, it is not an exhaustive
+list of all the facilities or options available and you should consult
+the on-line help documentation for a complete description of all of
+the available commands.
+
+\section{Basic Graphics Commands}
+
+There are a number of commands which are available from all the
+graphic-based sub-systems within \Anmap\, the most important of these
+are the {\em plot} and {\em initialise} commands.  Since the graphic's
+system is {\bf object-oriented} you construct graphics by specifying
+options and when you have a complete set of options defined then you
+can give a plot command.  The {\em plot} command itself requires you
+to specify one of a number of options which differ between sub-systems,
+but all sub-systems have at least the options {\em all} and {\em refresh}.
+Similarly the {\em initialise} command requires an option and all
+sub-systems support {\em all} and {\em plot}.  A simple example will
+illustrate the use of these commands.
+
+In the {\em map-display} sub-system we can can setup to display a
+grey-scale representation of an image in the map-catalogue as
+follows:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf set-map 3} \\
+\> Map-Display$>$ \> {\bf grey on 0.0 0.15} \\
+\> Map-Display$>$ \> {\bf plot grey} \\
+\end{tabbing}
+
+Nothing appears on the graphic device until the plot command is given. 
+If you were to have said {\em plot all} then in addition to the grey-scale
+you would have a frame, title and other annotations plotted.\footnote{The
+exact output will depend on the default options specified in the system,
+or your own, initialisation file}  This sequence of commands will have
+drawn a scale-bar on the grey-scale with text indicating the range displayed;
+to turn off the text on the scale bar you can use the following command
+to change one of the many options for the scale bar:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf set-style scale-bar text-off} \\
+\> Map-Display$>$ \> {\bf plot refresh} \\
+\end{tabbing}
+Here the {\em plot refresh} command will re-draw the grey-scale image,
+but with the new option (turning off text on the scale-bar) applied. 
+The command {\em plot all} would not have had any effect since it is
+an instruction to plot any outshanding graphic elements not yet plotted,
+whereas {\em plot refresh} is an instruction to {\bf update} the current
+displayed graphic.  To illustrate these differences let us take the 
+above example a step further by adding contours to the plot.  We could
+try to get contours plotted using the following commands:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf linear-contours 0.02,0.02,0.14} \\
+\> Map-Display$>$ \> {\bf plot refresh} \\
+\end{tabbing}
+This will have defined 7 contour levels, but the {plot refresh}
+command will not have caused them to be plotted, instead the grey-scale
+would have been re-displayed since the contours are a new element to the
+plot.  To get the contours plotted we must say {\em plot contours}
+({\em plot all} would also display the contours but add a frame etc, as well),
+therefore the correct sequence would have been:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$ \> {\bf linear-contours 0.02,0.02,0.14} \\
+\> Map-Display$>$ \> {\bf plot contours} \\
+\end{tabbing}
+and subsequent {\em plot refresh} commands would plot a grey-scale
+overlaid with contours.  Although this is a very simple example it
+serves to illustrate the way the graphic environment within \Anmap\
+is organised.
+
+In addition to the basic commands available within all graphic-sub-systems,
+their are the important commands in the {\em graphic} sub-system
+itself which are used to control the overall appearance of the display
+and to construct complex graphics.  It is in the {\em graphic} sub-system
+that the object-oriented approach to the graphical system within
+\Anmap\ becomes clear since all the available commands act on complete
+graphical objects.  The commands types above to the {\em map-display}
+sub-system are in fact specifying options to a graphic object of type
+{\bf image} and the plot commands are performing operations to display
+graphics of type {\bf image}.  Each graphical sub-system has a different
+type of graphics object as listed in Table 1.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Object type} & {\bf sub-system} \\
+& \\ \hline
+& \\
+image & map-display (contours, grey-scales, vectors etc.) \\
+& \\
+graph & data-display (graphs, histograms, scatter-plots etc.) \\
+& \\
+draw & drawing-display (drawings: lines, circles, text, etc.) \\
+& \\
+scratch & scratch-display (various graphical output) \\ 
+& \\ \hline
+\end{tabular}
+\caption{Graphical objects available.  Commands in the
+{\em graphic} sub-system control the properties of these objects.}
+\end{table}
+
+The {\em select} command selects a particular graphical object to
+which the {\em graphic} sub-system commands apply.  You may have
+more than one graphical object of a given type and they are
+distinguished by specifying an integer key; when \Anmap\ is
+initialised one graphical object of each type is defined and is
+given the numerical key of ``1'' (unity).  Therefore, to select the
+{\bf image} object we have already used as an example we would type
+the following:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Graphic$>$ \> {\bf select image 1} \\
+\end{tabbing}
+or to start a new {\bf image} object (retaining the original for future
+use):
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Graphic$>$ \> {\bf select image 2} \\
+\end{tabbing}
+where in fact the ``2'' could be any integer key chosen by us for
+convenience.\footnote{Supplied procedures use graphical objects with
+keys above 100, you should avoid using these or confusing effects may
+result, especially for novice users.}
+
+Having selected a particualr graphical object all subsequent {\em graphic}
+commands are applied to this object.  The most important commands used
+to alter the properties of a particular graphic are listed in Table 2.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Command} & {\bf Action} \\
+& \\ \hline
+& \\
+view-port & specify the view-port into which the graphic is drawn \\
+& parameters: $x1$,$x2$,$y1$,$y2$ (normalised device coordinates) \\
+& \\
+opaque &  specify an opaque rendering for the graphic, \\
+& any graphics below this object cannot be seen \\
+& (default for {\bf image}, {\bf graphc} and {\bf scratch} objects \\ 
+& \\
+transparent & specify a transparent rendering for the graphic, \\
+& graphics below this object will show through \\
+& (default for {\bf draw} objects \\
+& \\ \hline
+\end{tabular}
+\caption{Graphic sub-system commands used to alter the properties of
+graphical objects.}
+\end{table}
+
+\section{A Tutorial Example}
+
+\section{The Map-Display Sub-System}
+\section{The Data-Display Sub-System}
+\section{The Drawing-Display Sub-System}
+\section{The Scratch-Display Sub-System}
+\section{Information For Script Writers}
+
+
+\end{document}
+
+
+
+
+

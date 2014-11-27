@@ -1,0 +1,35 @@
+
+The symbols supported by Anmap graphics and their associated codes are
+as follows:
+
+  0      open square
+  1      dot
+  2      plus-sign cross
+  3      open star
+  4      circle
+  5      times-sign cross
+  6      open square
+  7      triangle
+  8      plus-sign cross with circle surround
+  9      dot with circle surround
+ 10      wave edge square
+ 11      open diamond
+ 12      star of david
+ 13      filled triangle
+ 14      open red-cross cross
+ 15      thick-line star of david
+ 16      filled square
+ 17      filled circle
+ 18      filled star
+ 19      large open square
+ 20      small circle
+ 21      medium-small circle
+ 22      circle
+ 23      medium large circle
+ 24-27   large circles
+ 28      left arrow
+ 29      right arrow
+ 30      up arrow
+ 31      down arrow
+
+

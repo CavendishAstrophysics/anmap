@@ -1,0 +1,68 @@
+# Command-Selection tool
+# ----------------------
+#
+# Default Anmap menu bindings; last updated 21/08/93
+#
+# Copyright P. Alexander, MRAO Cambridge.
+#
+# Format of this file is as follows:
+#
+#   set menu_name(element) "{Menu-entry name} {command to execute}"
+#
+# Note the use of " and {} are mandatory.  Each statement is in fact a
+# standard TCL array list assignment.  The supported values for menu_name
+# are:
+#
+set menus 5
+set menu_names(1) "Tools" 
+set menu1(01_Coco)        "{Coco}        {exec /mrao/bin/Xcoco &}" 
+set menu1(02_Ghostview)   "{Ghostview}   {exec ghostview &}"
+set menu1(03_xterm)       "{Xterm}       {exec xterm &}"
+set menu1(04_Calculator)  "{Xcalculator} {exec xcalc &}"
+
+set menu_names(2)   "Interaction"
+set menu2(0_asp)    "{Scratch Pad} {Anmap_ScratchPad}" 
+set menu2(0_editor) "{Text Editor} {Anmap_LaunchTed .anmted}"
+set menu2(1_sc)     "{Postscript output} {Anmap_postscript}"
+set menu2(2_sc)     "{Screen Capture} {screen_capture .sc -toplevel}"
+
+# The "Help" menu
+set menu_names(3) "Help"
+set menu3(0_help) "{Anmap Help} {Anmap_Help}"
+set menu3(1_help) "{Anmap News} {Anmap_News}"
+
+# Analysis menu
+# Package control menu
+set menu_names(4) "Analysis"
+set menu4(1_ia) "{Interactive Analysis} {Anmap_IA}"
+set menu4(1_ib) "{Synchrotron Analysis} {Xsynch}"
+set menu4(2_ct) "{Colour Table} {Anmap_LTControl}"
+set menu4(3_gt) "{Graph Tool} {exec /mrao/anmap_v7.5/bin/graph_tool &}"
+
+# Package control menu
+set menu_names(5) "Other"
+set menu5(01_menu_props) "{Menu bindings}  {Menu_EditAll }"
+set menu5(02_options)    "{Options editor} {option_setup .anmopts -toplevel}"
+set menu5(99_exit)       "{Exit} {AnmapExit}"
+
+# define dummy entries for remaining menus
+set menu6(0) "{No entries} { }"
+set menu7(0) "{No entries} { }"
+set menu8(0) "{No entries} { }"
+set menu9(0) "{No entries} { }"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

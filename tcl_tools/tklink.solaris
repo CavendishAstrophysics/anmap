@@ -1,0 +1,3 @@
+echo -L/soft/tcl/v7.3/lib /soft/tcl/v7.3/lib/libtk.a -ltcl -ltkXAccess \
+	-ltclRawTCP /soft/tcl/v7.3/lib/libXpm.a \
+	-L/usr/lib/X11 -lX11 -lsocket -lnsl

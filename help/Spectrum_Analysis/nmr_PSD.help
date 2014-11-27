@@ -1,0 +1,23 @@
+
+Spectrum-analysis-program: Analysis nmr data file [M(t)] 
+                           for pore-size distribution
+
+
+Keys:                        Default
+
+ file       nokeyok,needed                     Input data file
+ psd                         psd_output.dat    Output pore-size distribution
+ fit                         fit_output.dat    Output fit to M(t) data
+ m0                          1.0               Normalization of relaxation curve
+ nj                          5                 No. points in PSD
+ tmin                        0.1               Min T1 to fit
+ tmax                        1.0               Max T1 to fit
+ t1                          0.5               Estimate of a single T1 which
+                                               fits the data
+ alpha                       1.0               Alpha parameter of the model
+ beta                        1.0               Beta parameter of the model
+
+
+A fit is made to the recovery data M(t) to determine a PSD.  The recovery
+curve should be of the inversion-recovery type.
+

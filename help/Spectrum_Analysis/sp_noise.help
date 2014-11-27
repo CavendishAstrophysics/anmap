@@ -1,0 +1,21 @@
+
+Spectrum-analysis-program: Perform a noise analysis on a spectral file
+
+Keys:
+
+     infile       nokeyok             input spectrum file [-]
+     xc                               x-column [1]
+     yc                               y-column [2]
+     window1                          }   windows on the input data
+     window2                          }   to include in the noise
+      .                               }   analysis. The windows are
+      .                               }   specified as cordinate pairs
+      .                               }   along the x-axis and
+     window9                          }   only data within these windows
+                                          is included in the analysis
+
+
+
+The results of the noise analysis are written to the standard output.
+
+

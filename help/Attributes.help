@@ -1,0 +1,67 @@
+
+*1 fonts
+
+Information: on fonts
+
+Text may be drawn in a number of different fonts.
+
+The fonts available are specified by an integer code as follows:
+
+0  --   hardware font (device dependent)
+1  --   normal (simple)
+2  --   roman
+3  --   italic
+4  --   script
+
+The default is 1 for all text and markers. Note that the other fonts take
+an appreciable time to plot as the are written to the screen as a long
+list of vector move-to/draw-to commands.
+
+*1 line_style
+
+Information: on line style
+
+Line styles are specified by an integer code as follows:
+
+1  --   full (solid)
+2  --   long dashes
+3  --   dash-dot-dash-dot
+4  --   dotted
+5  --   dash-dot-dot-dot
+
+The defaults are 1 for solid-contours and 2 for dash contours.
+
+See also the help entries on line-colours and line-widths.
+
+*1 colours
+
+Information: on colours for lines and text
+
+Colours are represented by an integer code, but usually you will specify
+the colour by name.
+
+0    --    black (background)
+1    --    white/black depending on device (default)
+2    --    red
+3    --    green
+4    --    blue
+5    --    cyan
+6    --    magenta
+7    --    yellow
+8    --    orange
+14   --    dark-grey
+15   --    light-grey
+
+Other colours are not supported.
+
+*1 line_widths
+
+Information: on line widths
+
+Line widths are specified as a multiple of the default width which is
+the width of the pen -- i.e. the thinnest possible line. As devices
+simulate the drawing of wide lines by multiple "brush-strokes" this can
+significantly slow down the plotting of contour levels etc. with this
+attribute.
+
+*

@@ -1,0 +1,1 @@
+echo -L/usr/lib/X11 -lX11 -lsocket -lnsl

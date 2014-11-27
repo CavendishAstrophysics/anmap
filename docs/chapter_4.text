@@ -1,0 +1,1498 @@
+                1. THE MAP DISPLAY ENVIRONMENT
+                ______________________________
+ 
+ 
+ 
+1.1 Introduction
+________________
+ 
+Anmap has a versatile way of displaying your data -- the map-
+display sub-system which is entered by typing map-display.
+This sub-system has its own set of commands and a help, try
+'?' within map-display and help.
+ 
+Map-Display provides a powerful contouring and image-
+processing tool which can send its output to all the devices
+supported on the NORD. The program uses the PGPLOT package and
+therefore has access to all the supported characters and
+fonts. You can type commands to set various options, define
+contour levels and generally control the layout of the
+display. Additionally on interactive devices once you have
+displayed an image, information such as positions (UV, RA/DEC)
+can be read from the display at any time.
+ 
+When you enter map-display the prompt will change to Map-
+display>. The commands you will need to use most often when
+you are getting started are:
+ 
+ 
+    set-map                  [catalogue-entry]
+    set-uv-range             [uv-range]
+    add-title                [text]
+ 
+ 
+and the ...-contours routines to define the contour levels.
+Once everything is set up, just type
+ 
+      go-plot
+ 
+This is exactly equivalent to the command plot full or the
+commands plot frame, plot grey, plot contours, plot vectors,
+plot symbol, plot text obeyed sequentially. The power of the
+command-line driven program lies in the ability to change the
+options which control the style of the plot, to do multiple
+plots or to send output to another device. For instance, once
+you have drawn your contour plot you can add more contour
+levels just by giving one of the ...-contour commands and the
+contours will be added to the current plot by typing plot
+contours. To send the output to another output device you
+simply have to say
+ 
+      end-plot
+ 
+followed by go-plot again and specify a different output
+device in response to the prompt. The devices follow the
+standard PGPLOT convention -- a list of valid devices can be
+obtained by typing a '?' in response to the prompt. [1] As a
+complete example consider the following. You have already
+____________________
+ 
+[1]  Alternatively you could use the output-device command to
+     reset the output device, but note that in this case the
+     setting remains in force until another output-device.
+added a map of size 128x128 onto the map-catalogue (entry 1)
+and have entered map-display; then type
+ 
+      set-map 1
+ 
+to specify the map to display and
+ 
+      set-uv-range -25,25,25,-25
+ 
+to set the UV-range to plot the central part of the map, (a
+128x128 image has coordinates from -64 to 63 in U and 64 to
+-63 in V)
+ 
+      add-title NGC 3690; 5.0GHz (RT)
+      linear-contours 0.0005,0.0005,0.015
+      go-plot
+ 
+This produces a contour plot on the device you specify with
+contour levels 0.5,1.0,1.5,...15 mJy/Beam and a title above
+the plot. After seeing the plot we decide we need some
+negative contours so we specify them as dashed contours as
+follows
+ 
+      dash-contours -0.0005,-0.001,-0.0015,,,
+      plot contours
+ 
+the extra ',,' terminates the input list. Three dashed
+contours will now appear on the screen. We could have achieved
+the same result by typing:
+ 
+      linear-contours -0.0015,0.0005,0.015,no
+      plot contours
+ 
+where the last argument, 'no', specifies that the zero contour
+should not be included. The default is to plot negative
+contours as dashed. Logarithmically spaced contour levels can
+be specified with log-contours -- for each positive level a
+negative level will be plotted automatically.
+ 
+Having got the plot you want you decide a copy on the ANADEX
+would be useful: to do this type
+ 
+      end-plot
+      go-plot
+ 
+and reply '/ANADEX' in response to the prompt asking for an
+output device. This will produce an A4-page size plot -- to
+get a double-sized plot use the '/BIG:us:ANADEX'
+specification. [2] Alternatively you decide that you want to
+look at the region -25, 0, 25, -5 in this case we could end-
+plot but as you don't want to change output device you can
+just say
+____________________
+ 
+[2]  Some useful device specifications are: /PERICOM; /DACOLL;
+     /BBC; /LEXI; /PS; /ANADEX; /BIG:us:ANADEX. Most of these
+     can be abbreviated to three letters. The /PS option is
+     for POSTSCRIPT, you should specify this in conjunction
+     with a file name, e.g. plot-file:psf/ps. This may be sent
+     to the laser printer.
+      next-frame
+ 
+and then reset the UV-region with:
+ 
+      set-uv -25,0,25,-5
+      go-plot
+ 
+the final go-plot will draw the plot with the same contour
+levels. If the levels were incorrect you could have started
+again by typing:
+ 
+      reset-levels
+ 
+and then inputting some new contour levels. Having drawn the
+plot on the screen you decide that you would like to know the
+position of the peak on the map, simply give the command
+ 
+      cursor-position
+ 
+The cursor will appear on the plot: position the cursor using
+the arrow keys on the terminal (or the 'joy-stick' on the
+LEXIDATA) and press any printing character (except 'q' or 'Q')
+when the cursor is in the correct place -- on your terminal
+will appear the RA/DEC of the cursor position, the nearest
+pixel (IU, IV) and the map value at the cursor location
+(interpolated if not exactly at a grid point).
+ 
+Grey-scales are an excellent way of displaying certain types
+of data, for instance spectral index plots, and make full use
+of the LEXIDATA. They are very easy in Anmap, the following
+will produce a grey-scale plot on the ANADEX:
+ 
+      set-map 1
+      set-uv-range -20,20,20,-20
+      grey-scale on 0.0, 1.5
+      go-plot /ANADEX
+      end-plot
+ 
+where black = 1.5 and white = 0.0. [3] To overlay contours on
+top of a grey-scale on the LEXIDATA:
+ 
+      set-map 1
+      grey-scale on 0.4, 1.5
+      go-plot /LEXI
+      linear-contours 0.4, 1.5, 0.1
+      plot contours
+ 
+If the output were being directed to a hardcopy device you
+would now need to add an end-plot to make the output appear.
+ 
+The colour/grey-scale can be changed interactively on the
+LEXIDATA using the TV-fiddle command. To do a simple display
+on the LEXIDATA of an image, you can use TV-load (in fact is
+it a simple procedure) which combines the above sequence of
+commands to speed up your working.
+ 
+____________________
+ 
+[3]  Note that the lowest level is white on the ANADEX and
+     black on the LEXIDATA.
+When you get used to using the program you may like to alter
+the type of plot you produce. You can change the font and size
+of characters used in the plot or you can choose to annotate
+the frame with U and V rather than RA and DEC coordinates. The
+style of the plot is controlled with options of the set-style
+command. RA/DEC or U/V grids may also be drawn and the default
+action of pips being drawn may be turned off or replaced by
+UV-pips -- separate set-... commands exist for these
+operations.
+ 
+If you want to stick to one output device then it can be a
+good idea to use the output-device command to save quite a bit
+of typing. Another useful feature is the ability to segment
+the screen into 4 or 9 smaller "screens" in each of which you
+can draw a separate map. To move between them use the next-
+frame command (the end-plot command will always start the
+screen afresh). In this way you can have plots of different
+sources or frequencies on the screen for easy comparison --
+you may like to ask for larger mark sizes in this case so that
+you can read them easily. It is also possible to plot two maps
+on the same frame, perhaps using dash and solid contours for
+the different images although you have to plot them in the
+same UV window -- this is the overlay-map facility.
+ 
+Complicated plots can be built up using the graphics overlay
+facility which enables plots to be positioned anywhere on the
+screen (or paper) and of any size -- other Anmap commands
+which also produce graphical output can be used with this
+facility as well. The commands which produce graphical output
+(e.g. map-histogram, slice ) usually cause the screen to be
+cleared and the new plot to appear -- this can be rather
+inconvenient if you have just finished a large plot. The
+graphics-overlay-mode allows you to specify exactly where the
+the new plot is to go overwriting anything already there on
+the plot -- the coordinates used are such that the bottom left
+hand corner of the screen (or paper) is 0.0, 0.0 and the top
+right hand corner is 1.0, 1.0.
+ 
+ 
+ 
+1.2 Commands Used to Define the Map and Plot
+____________________________________________
+ 
+ 
+1.2.1 Set-Map
+1.2.1 Set-Map
+ 
+Parameters: map-entry
+ 
+You specify the map to be plotted which must be in the map
+catalogue. If you want to overlay a map onto the current plot,
+use the overlay-map command. Set-map will result in a new plot
+being set up an implicit next-frame command is executed; the
+screen will be cleared and a new plot drawn when you next type
+go-plot.
+ 
+ 
+1.2.2 Set-UV-Range
+1.2.2 Set-UV-Range
+ 
+Parameters: UV-range
+ 
+ 
+Specify the UV-range to plot. Before a go-plot or plot frame
+command this defines the window on the screen which affects
+the size and shape of frame. If you specify a further UV-
+window between a plot frame and a plot contours command then
+only that region of the map in the intersection of the two
+windows will appear.
+ 
+ 
+1.2.3 Solid-contours
+1.2.3 Solid-contours
+ 
+Parameters: levels
+ 
+Specify solid contour levels. If the frame already exists use
+the plot contours command to add them to the plot. Pressing
+return will terminate the input list.
+ 
+ 
+1.2.4 Dash-contours
+1.2.4 Dash-contours
+ 
+Parameters: levels
+ 
+Specify dashed contour levels. If the frame already exists
+then use the plot contours command to add them to the plot.
+Pressing return will terminate the input list.
+ 
+ 
+1.2.5 Linear-contours
+1.2.5 Linear-contours
+ 
+Parameters: start-contour, interval, end-contour
+ 
+Specify linear contour levels as follows:
+ 
+ 
+          level(n) = start-contour + (n-1)xinterval
+ 
+ 
+up to the "end-contour". Negative contours are added to the
+dashed-contour list, positive to the solid-contour list. To
+plot the contours on an existing frame use the plot contours
+command.
+ 
+If the set of contours you specify includes the zero-contour
+(or one numerically very close) you will be prompted and asked
+if you want to include it on the plot.
+ 
+The default for the end-contour is the maximum on the map in
+the specified UV-range: a map must be specified before you can
+define linear contours for this reason (in fact an allowance
+for the peak height increasing slightly when the data are
+interpolated is made if you are using the interpolation option
+-- the default).
+ 
+ 
+1.2.6 Log-contours
+1.2.6 Log-contours
+ 
+Parameters: start-contour, factor, end-contour
+ 
+Specify logarithmic contour levels as follows:
+ 
+ 
+ 
+        level(n) = +  abs(start-contourx(factor(n-1)))
+                   _
+ 
+ 
+up to the "end-contour". Both positive and negative contours
+are specified with the negative contours added to the dash
+list and the positive to the solid list. To plot contours on
+an existing frame use the plot contours command.
+ 
+The default for the end-contour is the maximum on the map in
+the specified UV-range: for this reason a map must be
+specified before you can define linear contours (see note
+under Linear-contours).
+ 
+ 
+1.2.7 Reset-levels
+1.2.7 Reset-levels
+ 
+Reset the specified contour level lists. This does not effect
+the plot on the screen, but clears the solid and dash contour
+lists ready for more ...-contours commands.
+ 
+ 
+1.2.8 Grey-Scale
+1.2.8 Grey-Scale
+ 
+Parameters: on/off, low-level, high-level
+ 
+Turn grey-scaling on or off and define the map values to be
+mapped into the low level and the high level. On the TV device
+the low-level will be black and the high level white whereas
+on a hard-copy device the reverse scaling is used. The grey-
+scale will be added to the same frame as the pips, grid,
+contours and labelling with a go-plot command. The lookup-
+table between pixel values and intensity levels is linear by
+default. For the TV device the command TV-fiddle can be used
+to change the look-up table interactively: linear,
+logarithmic, colour power-law and inverse lookup-tables are
+supported. The default for grey-scale is off.
+ 
+ 
+ 
+Examples:
+ 
+To plot a grey-scale with a labelled frame on the ANADEX
+printer:
+ 
+      set-map 1
+      set-uv-range 20,,,,
+      grey-scale on, 0.0, 0.01
+      go-plot /ANADEX
+      end-plot
+ 
+the scaling is from 0.0 (white) to 0.01 (black).
+ 
+To plot a grey-scale with contours overlayed:
+ 
+ 
+ 
+ 
+ 
+ 
+      set-map 1
+      set-uv-range -10 10 10 -10
+      grey-scale on, 0.0, 0.01
+      log-contours .001, 2, .032
+      go-plot
+      end-plot
+ 
+To plot a grey-scale of one-map (2) superimposed on contours
+of another (1) -- e.g. grey-scale of spectral index map on
+I-map contours:
+ 
+      set-map 2
+      set-uv-range -10 10 10 -10
+      grey-scale on 0.4, 1.5
+      go
+      overlay-map 1
+      grey-scale off
+      log-contours .001, 2, .032
+      plot contours
+      end-plot
+ 
+Note that the grey-scale is plotted before the contours --
+this is necessary on certain devices, specifically the
+LEXIDATA and the Laser-Printer, since the action of plotting
+the grey-scale is to overwrite everything currently on the
+screen. The order of the plot type commands is therefore
+important in determining the final appearance of your plot,
+commands defining the grey -scale and contour levels may be
+given in any order -- of course the go-plot command gets the
+order of plotting correct.
+ 
+ 
+1.2.9 Add-Title
+1.2.9 Add-Title
+ 
+Parameters: title
+ 
+Add a title to the plot, plotted using the plot text command.
+ 
+ 
+1.2.10 Add-Cross
+1.2.10 Add-Cross
+ 
+Parameters: crosses-file (on/off) [file] [RA/DEC-position,
+text]
+ 
+Add crosses at the specified positions with the text label.
+The information may either be typed at the terminal -- in
+which case reply 'no' to the question about whether you have a
+crosses file -- or supplied in a file. The format of the file
+is the same as you would expect from terminal input to the
+routine
+ 
+    RA             DEC            text
+e.g.
+    01 03 45.6     34 56 29.5     Source: 3C405
+ 
+ 
+The style of the cross is controlled with the set-style CROSS
+and TEXT commands. Crosses may also be drawn a specific UV
+locations in the draw-on-plot system (see below). If the input
+is from a file then when no more input is found you will be
+prompted at the terminal for additional input -- either type
+return to terminate the list or add additional crosses
+interactively.
+ 
+ 
+1.2.11 Add-text
+1.2.11 Add-text
+ 
+Parameters: RA/DEC-position, text
+ 
+Add text to the plot at the specified location. Text may also
+be drawn at a specific UV location in the draw-on-plot system.
+ 
+ 
+1.2.12 Vectors Sub-System
+1.2.12 Vectors Sub-System
+ 
+The vectors sub-system can be used to setup and define various
+options for vector plots. The commands available within the
+sub-system are as follows:
+ 
+on
+ 
+This command must be given if vectors are to be plotted. In
+addition it will be necessary to define the map to use as the
+position angle map and (optionally) the map to use as the
+intensity scaling map.
+ 
+off
+ 
+You can suppress the plotting of vectors using this command:
+other options are not changed with this command.
+ 
+position-angle-map
+ 
+Parameters: map-entry
+ 
+This command is always required if vectors are to be plotted,
+it defines which map in the map catalogue is the map of
+position angles. This map must always be defined for vector
+plots.
+ 
+intensity-map
+ 
+Parameters: map-entry
+ 
+If the vectors are to have variable length scaled by an
+intensity image then you should use this command to define the
+map to use for the intensity scaling. Two further options
+exist in the way the vectors are scaled for the plot:
+ 
+(1)  You specify a scale of grid-points per map unit
+ 
+(2)  You specify the length of the longest vector (in grid
+     points)
+ 
+sampling
+ 
+Parameters: sampling-in-u, sampling-in-v
+ 
+This command provides the facility for plotting vectors at
+every:
+              sampling-in-U'th   grid point in U
+              sampling-in-V'th   grid point in V
+ 
+For highly over-sampled images this will produce a more
+comprehensible plot than one sampled at every grid point.
+ 
+gate
+ 
+Parameters: gate (intensity map units)
+ 
+Specify a gate value on the intensity image below which
+vectors will not be drawn. Alternatively, you may use mask-map
+to mask the position-angle map since pixels which equal the
+BLANK-VALUE on the image will not be plotted.
+ 
+scaled-vectors
+ 
+Parameters: vector-scale (grid-points per map units on
+intensity map)
+ 
+Request a plot of vectors scaled by the magnitude of the
+intensity map. The user supplies a scale in terms of the
+number of grid-points per unit on the intensity map. For those
+cases in which the dynamic-range of the intensity map is
+uncertain you may specify a maximum length of vectors in terms
+of the longest vector; to do this enter a negative number in
+response to the prompt for the scale factor -- the longest
+vector on the plot will then be the absolute value of the
+number you type in grid-points.
+ 
+display
+ 
+The current options for the vector plot are displayed on the
+terminal. There is also a vectors option for the display
+command at the main map-display sub-system level.
+ 
+help
+ 
+The help information on the vectors sub-system is entered. To
+access other help information you must be at the main map-
+display sub-system level.
+ 
+ 
+1.2.13 Symbol-plot Sub-system
+1.2.13 Symbol-plot Sub-system
+ 
+Symbol plot is a facility for marking certain pixels on an
+image with a specified symbol. It is possible to specify the
+following:
+ 
+                   Blank pixels
+                   Pixels below a gate
+                   Pixels above a gate
+ 
+Use the sub-system symbol-plot to setup the options then use
+go-plot or plot symbol as appropriate to add symbols to your
+plot.
+ 
+The display command in symbol-plot can be used to see what
+options are currently active. Command available in the symbol-
+plot sub-system are described below. A symbol option also
+exists for the display command at the main map-display sub-
+system level.
+ 
+on
+ 
+This command must be given if the symbol plot option is to be
+enabled.
+ 
+off
+ 
+This command can be used to suppress the plotting of symbols.
+ 
+display
+ 
+This command can be used to display the options currently
+setup for the symbol-plot option. If symbol-plot is active
+(enabled) then the go-plot command will add symbols to the
+plot.
+ 
+help
+ 
+Help information on the symbol-plot sub-system is made
+available.
+ 
+mark-blank-pixels
+ 
+Parameters: on/off, character
+ 
+Turn the marking of blank pixel values on/off and select a
+symbol to mark them with. The currently available symbols for
+this and the other options are:
+ 
+                         + - * o . x
+ 
+mark-max-pixels
+ 
+Parameters: on/off, gate-high, character
+ 
+Turn the marking of maximum pixel values on/off, specify a
+gate value and select a symbol to mark them with. All pixels
+above the specified gate will be marked with the chosen
+symbol.
+ 
+mark-min-pixels
+ 
+Parameters: on/off, gate-low, character
+ 
+Turn the marking of minimum pixel values on/off, specify a
+gate value and select a symbol to mark them with. All pixels
+below the specified gate will be marked with the chosen
+symbol.
+ 
+ 
+ 
+1.3 Controlling the Style of the Plot
+_____________________________________
+ 
+ 
+ 
+ 
+ 
+1.3.1 Set-Style
+1.3.1 Set-Style
+ 
+The set-style command can be used to change the style of the
+plot. A number of options are available which are described
+below. The default style settings of map-display may be
+restored on entry to Anmap since a number of parameters are
+initialised with the necessary commands to achieve this, they
+are:
+ 
+                   %set-style-text
+                   %set-style-frame
+                   %set-style-grid
+                   %set-style-cross
+                   %set-style-date
+                   %set-style-lines
+                   %set-style-contours
+ 
+Note that the initial percent character in the names of these
+parameters is there simply to minimise the possibility of a
+name clash with other user-defined parameters. To restore the
+style of the plot next time you enter ANMAP include lines such
+as the following in you initialisation file (ANMAP-INIT:COM):
+ 
+      <%set-style-xxx>
+ 
+where 'xxx' is text, frame, grid, cross, date, lines or
+contours.
+ 
+Note that you may stop these variables being initialised by
+use of the option save off within the set-style command in
+map-display, for example
+ 
+      set-style save off
+      set-style date off
+      go-plot
+ 
+will cause a plot to appear without the date etc. This option
+will become the defaul when you next enter ANMAP even if you
+have included the line
+ 
+      <%set-style-date>
+ 
+in your initialisation file. See the examples for details of
+how to use these parameters.
+ 
+The other options of set-style are as follows:
+ 
+ 
+FRAME:    Parameters: mark-size, mark-font
+          Specify the size and font for the characters used to
+          annotate the frame, the title and contour-levels.
+          For other text use the set-style TEXT command. The
+          sizes are specified as a multiple of the default
+          size which is approximately 1/40th of the screen or
+          view surface.
+ 
+ 
+TEXT:     Parameters: text-size, text-font
+          Set the style options for the text written to the
+          plot using the add-text and add-cross commands. The
+          size is specified as a multiple of the default text
+          size which is approximately 1/40th of the screen or
+          the view surface. This also affects the text drawn
+          with other plotting commands.
+ 
+ 
+LINES:    Parameters: solid-style, solid-colour, solid-width,
+          dash-style, dash-colour, dash-width
+          Set the style of lines for the solid and dashed
+          contour lists. It is possible with this command to
+          remap the list of solid-contours into a dash-dot
+          line style and the list of dashed contours into a
+          solid line style or any other combination. Only a
+          limited number of colours are supported at present
+          and only the BENSON can support coloured output. The
+          line width is specified as a multiple of the default
+          width which is a single pen width -- i.e. as thin as
+          possible. All devices support wide lines in one form
+          or another, but the plotting of wide lines can be
+          considerably slowed on, say, an interactive device
+          such as the PERICOM as the lines are produced by
+          plotting a large number of small vectors
+          perpendicular to the line: while this achieves the
+          desired effect the time taken to plot contours is
+          greatly increased.
+ 
+ 
+CROSS:    Parameters: cross-size
+          Set the size for crosses plotted using the add-cross
+          command. The unit is pixels and the dimension refers
+          to each half-arm of the cross.
+ 
+ 
+CONTOURS: Parameters: on/off
+          Control whether a list of the contours which have
+          been plotted is added to the final plot. It may be
+          desirable to remove this feature especially on grey
+          scale plots. The default is on.
+ 
+ 
+DATE:     Parameter: on/off
+          Control whether the map date and name of the program
+          used to make the map are plotted. It may be useful
+          to stop this being added to the plot either when you
+          wish to have a long title, or perhaps when you wish
+          to move the plot right into the top left-hand corner
+          of the screen, a facility used by the start-survey
+          command file.
+ 
+ 
+RESET:    Parameters: None
+          All the style settings are reset to their values
+          when ANMAP starts up -- note that any special
+          initialisation in your own initialisation file will
+          be lost.
+ 
+ 
+ 
+ 
+ 
+1.3.2 Set-Interpolation
+1.3.2 Set-Interpolation
+ 
+Parameters: on//off
+ 
+Control which routine is used for contouring -- by setting
+interpolation on the map will be interpolated to mid-points
+prior to plotting. This option can only be used if the region
+of the map to be plotted is smaller than 256x256 pixels.
+ 
+ 
+1.3.3 Set-Pips
+1.3.3 Set-Pips
+ 
+Parameters: RA/DEC-pips (on/off), [UV-pips (on/off)]
+ 
+You can turn the RA/DEC pips on or off. If you choose off you
+can choose to have the UV pips on or off. You can't have both.
+ 
+ 
+1.3.4 Set-Grid
+1.3.4 Set-Grid
+ 
+Parameters: RA/DEC-grid, [grid-RA, grid-DEC], UV-grid, [grid-
+U, grid-V]
+ 
+Control plotting of RA/DEC and UV grids. If you specify 'on'
+to either you must also supply the interval for the grid:
+ 
+ 
+minutes-of-time, minutes-of-arc --  for RA/DEC grid
+pixels-U, pixels-V           --  for UV grid
+ 
+ 
+The default (obtained by typing a '0') will plot approximately
+five grid lines on the plot. To obtain, for example, a grid of
+the actual pixel positions set RA/DEC-grid = 'off', UV-
+grid = 'on' and grid-U = grid-V = 1.
+ 
+ 
+ 
+1.4 The display command
+_______________________
+ 
+This command enables various attribute settings to be
+displayed. A number of sub-options are available:
+ 
+ 
+1.4.1 levels
+1.4.1 levels
+ 
+The currently defined contour levels are listed on the text
+screen.
+ 
+ 
+1.4.2 all
+1.4.2 all
+ 
+Display all information concerning options. This is equivalent
+to the commands:
+ 
+                   display options
+                   display vectors
+                   display symbols
+                   display levels
+ 
+1.4.3 options
+1.4.3 options
+ 
+Display options and maximum/minimum values for the current map
+in the specified UV-range. Option settings and the settings of
+the text and mark fonts/sizes etc. are written to the text
+screen.
+ 
+ 
+1.4.4 vectors
+1.4.4 vectors
+ 
+Display information on the current options defining the vector
+plot.
+ 
+ 
+1.4.5 symbols
+1.4.5 symbols
+ 
+Display information on the current options defining the symbol
+plot.
+ 
+ 
+ 
+1.5 Commands Used to Cause Something to Plot
+____________________________________________
+ 
+ 
+1.5.1 Go-Plot
+1.5.1 Go-Plot
+ 
+Parameters: output-device
+ 
+Plot the contour map. If the output device is not specified
+you will be prompted for it. If a plot already exists this
+will have no effect, you must use a next-frame or end-plot
+command first. The command is exactly equivalent to
+ 
+      plot frame
+      plot grey
+      plot contours
+      plot vectors
+      plot symbol
+      plot text
+ 
+obeyed sequentially. Plot all is synonymous with go-plot.
+ 
+ 
+1.5.2 Plot
+1.5.2 Plot
+ 
+Parameters: option
+ 
+Issue a plot command to plot various parts of the display --
+plot FRAME must be the first command as no other plotting is
+possible before the frame has been drawn. The go-plot command
+is shorthand for
+ 
+      plot frame       <output-device>
+      plot grey
+      plot contours
+      plot vectors
+      plot symbol
+      plot text
+ 
+and is equivalent to plot all. Users can, by using the plot
+command gain complete control over the appearance of their
+plots; for instance if you wish to add a contours to an
+existing grey-scale lot, in this case use, for example,
+linear-contours to define the contour levels, then plot
+contours to actually plot them -- a go will get a similar
+effect but will in addition plot any outstanding text etc.
+ 
+ 
+FRAME:    <output-device>
+          The frame is plotted. If the output device has not
+          been specified then you will be prompted. If the
+          plot already exists then you will need to use a
+          next-frame or end-plot command first or otherwise
+          nothing will happen.
+GREY:
+          A call to set-grey-scale will need to have been made
+          to turn grey-scaling on and to have defined the
+          range. Plot grey will on certain devices, such as
+          the LEXIDATA, overwrite any contours or other
+          annotations on the plot -- plot grey should
+          therefore be used before any other plotting commands
+          which add to the frame. If no frame exists a frame
+          will drawn.
+CONTOURS:
+          The currently defined contours will be added to the
+          plot. If no frame exists a frame will be drawn.
+VECTORS:
+          Vectors are added to the current plot. The map for
+          position angles and intensity scaling must have been
+          defined using the vectors-plot option. If no frame
+          exists a frame will drawn.
+SYMBOL:
+          The plot is annotated with symbols as specified by
+          the symbol-plot option. If no frame exists a frame
+          will drawn.
+TEXT:
+          The frame must already have been drawn. The text
+          (title, contour-levels) will be plotted.
+ 
+ 
+1.5.3 End-Plot
+1.5.3 End-Plot
+ 
+This command ends the current plot -- you can not add more to
+it, but you can new send the next plot to a new device for
+instance a printer or plotter. If output is to a hard-copy
+device you must use the end-plot command before you get any
+output. If you want to use the cursor to read a position from
+the screen then do not use the end-plot command.
+ 
+ 
+1.5.4 Segment-Screen
+1.5.4 Segment-Screen
+ 
+Parameters: horizontal-segments
+ 
+Segment the screen so that you can plot multiple plots on the
+same screen. Due to poor resolution it is not sensible to
+segment the screen into more than two horizontal divisions.
+This gives 4 small screens as the number of vertical segments
+is always equal to the number of horizontal segments. To move
+onto the next segment use the next-frame command.
+1.5.5 Next-Frame
+1.5.5 Next-Frame
+ 
+This allows you to move to the next frame. If the screen has
+not been segmented then the next plot will refresh the screen.
+If the screen has been segmented you will move onto the next
+segment of the plot. You cannot change the output device with
+this command. The screen will not be refreshed until the next
+go-plot or plot frame command is given.
+ 
+ 
+1.5.6 Set-Output-Device
+1.5.6 Set-Output-Device
+ 
+Parameters: device-name
+ 
+Specify an output device. You will not then be prompted for a
+new device name each time you use go-plot or plot after an
+end-plot command. Known devices are:
+ 
+/PERicom      --   pericom terminal
+/DAColl       --   dacoll
+/BBC micro    --   bbc
+    _
+/TEK          --   tektronix
+/ANAdex       --   anadex
+/BIG ANADEX   --   anadex (two page plot)
+    _
+/BENson       --   benson plotter
+/LEXI         --   lexi data
+/PS           --   postscript output (landscape)
+/VPS          --   postscript output (vertical page)
+ 
+You may send output to other than the current terminal by
+specifying the "terminal-line". Note the terminal must be free
+and not logged on, for example.
+ 
+      T38/dac
+ 
+for one of the PERICOMs in the MNOO. If you direct output to a
+device other than a terminal then you will need to use the
+end-plot command to get any output on those devices.
+ 
+ 
+1.5.7 Clear-Screen
+1.5.7 Clear-Screen
+ 
+The graphics screen is cleared, or the next frame is chosen if
+the plot is open.
+ 
+ 
+ 
+1.6 Advanced Features
+_____________________
+ 
+ 
+1.6.1 Overlay-Map
+1.6.1 Overlay-Map
+ 
+Parameters: map-entry
+ 
+It is possible to define a map to overlay on the current UV-
+grid. The screen will not be re-drawn and the
+pips/grid/contour-levels plotted on the screen will not
+change. You may re-define the current contour levels (so that
+they are suitable for the new map) by using reset-levels and
+then one of the ...-contour routines. You will get un-
+predictable results if you change the UV-range before re-
+plotting. To plot the new data use go (do not use next-frame
+or end-plot as these will refresh the screen).
+ 
+For example, one possible use of this facility is to plot
+spectral index and overlay it with total intensity contours.
+You may wish to change the style of the contours, perhaps to
+dot-dash or by making them thicker (see set-style lines). If
+the overlay map does not contain the current plotted UV-range
+the overlay-map command will be faulted. If you intend to
+'overlay' grey-scale and contours it is essential you plot the
+grey-scale first as loading the grey-scale will, on many
+devices, overwrite everything else in the current frame.
+ 
+ 
+1.6.2 Graphics-Overlay-Mode
+1.6.2 Graphics-Overlay-Mode
+ 
+Parameters: overlay-option, plot-position-(n.d.c.)
+ 
+This command determines how the contouring/grey-scale plots
+interact with other commands producing graphical output (e.g.
+slice, map-histogram). The default action is that any new
+graphical output is sent to the screen and the current picture
+cleared before the new plot is drawn. The graphics-overlay
+option allows the slice plot to appear in just a portion of
+the screen, thereby retaining (most) of the original plot.
+ 
+You will be prompted first for whether you want the overlay
+option (type yes if you do), then for the position on the
+screen -- the coordinate system (in fact Normalized-Device-
+Coordinates) is such that the bottom left-hand-corner of the
+screen is 0, 0 and the top-right 1.0, 1.0. Specify a region on
+the plot in this way - the default is a small region in the
+top right-hand corner (0.7, 1.0, 0.7, 1.0).
+ 
+The graphics overlay facility also enables you to control the
+size of your contour plot or grey-scale. All plotting uses the
+currently defined window.
+ 
+ 
+Examples:
+ 
+To position the plot in the top right-hand quarter of the
+screen:
+ 
+      graphics-overlay on, 0.5,1.0,0.5,1.0
+ 
+To plot a contour plot of map 1, followed by a slice in the
+top right hand corner and a histogram of map values in the
+bottom right:
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      set-map 1
+      set-uv-range 35,,
+      log-contours .0025, 2,,,
+      go-plot ,,,,
+      graphics-overlay on, 0.5,1,0.5,1
+      slice
+        > cursor 
+        > cursor 
+      graphics-overlay on, 0.5,1,0,0.5
+      map-analysis map-histogram 1,,,,
+ 
+For details of the slice and map-histogram commands see the
+entries below and the chapter on the map-analysis sub-system.
+ 
+Other commands producing graphical output are:
+ 
+     map-histogram
+     slice
+     scatter-plot
+     results-analysis
+ 
+ 
+1.6.3 Slice
+1.6.3 Slice
+ 
+Parameters: left-end-slice, right-end-slice
+ 
+Plot a slice through the map data -- the result is displayed
+as a simple line graph. The user must specify the start and
+end uv-positions and this can be done very usefully using the
+cursor to mark them. By default, the plot will appear on the
+screen and overwrite any contour plot etc. you have -- this
+can be avoided using the graphics-overlay facility (see
+above).
+ 
+ 
+ 
+1.7 The Draw-On-Plot Sub-System
+_______________________________
+ 
+A simple command driven sub-system is provided within Anmap to
+allow you to annotate plots. It is possible to save the
+commands you type (and convert cursor positions to map
+positions) so that after constructing a plot on the screen you
+can very easily send it to a second output device.
+ 
+ 
+ 
+Drawing-Commands:
+ 
+line
+Parameters: x1,y1,x2,y2
+draw a straight line from (x1,y1) to (x2,y2)
+ 
+box
+Parameters: x1,y1,x2,y2
+draw a box with opposite corners at (x1,y1) and (x2,y2)
+ 
+text
+Parameters: x,y,"text"
+write "text" at x,y
+ 
+cross
+Parameters: x,y "text"
+draw a cross at x,y and label it with "text"
+ 
+circle
+Parameters: x,y,radius
+draw a circle of given radius centred at x,y
+ 
+ellipse
+Parameters: x,y,major,minor,angle
+draw an ellipse centred at (x,y) with given major and minor
+axes the major axis making an angle "angle" with respect to
+the V direction on the plot.
+ 
+beam
+Parameters: x,y,beam-u,beam-v
+draw a telescope beam shape centred at (x,y). The dimensions
+of the beam are entered in arcseconds.
+ 
+erase
+Parameters: x1,y1,x2,y2
+erase the rectangular region of the plot with opposite corners
+(x1,y1) and (x2,y2).
+ 
+All coordinates are specified in terms of UV grid cells.
+ 
+You will notice that the default for the prompt asking for a
+UV (x,y) position is "[ cursor ]" -- by pressing return (or
+specifying 'CURSOR') the cursor will appear on the screen (if
+you are at an interactive graphics device AND the output is
+being sent to it). To specify a position simply position the
+cursor and type any printing character. If you want to abandon
+the current drawing operation simply type a 'Q' in response to
+the cursor appearing on the screen.
+ 
+ 
+ 
+Style-Commands:
+ 
+The style of the drawing may be changed using the following
+commands:
+ 
+set-line-style
+set the line style [default = 1]
+ 
+set-line-width
+set the line width in terms of the standard line width
+(0.005") [default = 1]
+ 
+set-text-size
+set text size (multiple of the standard size) [1.0]
+ 
+set-text-font
+set the text font [1]
+ 
+set-cross-size
+set the size of the cross (cells)
+ 
+Available line styles are:
+ 
+ 
+  1 -- solid  2 -- long-dash  3 -- dash-dot
+ 
+  4 -- dot  5 -- dash-dot-dot
+ 
+ 
+Available fonts are:
+ 
+ 
+  0 -- machine  1 -- normal
+ 
+  2 -- roman  3 -- italic  4 -- script
+ 
+ 
+In addition all the standard PGPLOT escape sequences may be
+used to inbed special characters in the text strings; for
+example:
+ 
+    \u   -- start superscript (or end subscript)
+    \d   -- start subscript (or end superscript)
+    \g   -- interpret next character as a greek letter
+ 
+Note the attribute settings only apply within draw and are
+reset when you re-enter the sub-system.
+ 
+ 
+ 
+Saving-Commands:
+ 
+Commands from DRAW may be spooled to the file DRAW-
+COMMANDS:SYMB by giving the command save-commands. The command
+replay-commands will then read the commands from this file.
+Note that on exiting from the draw sub-system this file is
+closed and no further commands are written to the file; if you
+re-enter draw and give another save-commands instruction then
+the commands previously saved in the file are overwritten.
+ 
+The procedure to obtain draw commands on say the ANADEX
+printer after constructing the plot on a graphic terminal is
+therefore:
+ 
+        .
+        .
+      normal map-display commands to set up the plot 
+        .
+        .
+      go-plot /PERI
+      draw-on-plot
+      save-commands
+ 
+then normal drawing commands (including cursor input)
+ 
+      quit
+      end-plot
+      go-plot /ANADEX
+      draw-on-plot
+      replay-commands
+      quit
+      end-plot
+ 
+and the plot -- with all the drawing attributes overlayed will
+appear on the ANADEX printer.
+ 
+ 
+ 
+1.8 Some Terms Explained
+________________________
+ 
+ 
+1.8.1 Fonts
+1.8.1 Fonts
+ 
+The fonts available are specified by an integer code as
+follows:
+ 
+    1    --   normal (simple)
+    2    --   roman
+    3    --   italic
+    4    --   script
+ 
+The default is 1 for all text and markers. Note that the other
+fonts take an appreciable time to plot as they are written to
+the screen as a list of vector move-to/draw-to commands. Any
+font or character available in PGPLOT may be plotted -- you
+can use the escape sequences in character strings as described
+in the PGPLOT manual to achieve any effect you desire
+including subscripts and superscripts.
+ 
+ 
+1.8.2 Line Styles
+1.8.2 Line Styles
+ 
+Line styles are specified as an integer code as follows:
+ 
+    1    --   full (solid)
+    2    --   long dashes
+    3    --   dash-dot-dash-dot
+    4    --   dotted
+    5    --   dash-dot-dot-dot
+ 
+The defaults are 1 for solid-contours and 2 for dash contours.
+ 
+ 
+1.8.3 Line Colours
+1.8.3 Line Colours
+ 
+Only the contours may have the colours specified. They are
+given by an integer code as follows:
+ 
+    0    --   black (background)
+    1    --   white/black depending on device (default)
+    2    --   red
+    3    --   green
+    4    --   blue
+ 
+Other colours are not supported. Using the 'background' colour
+it is possible to 'erase' lines selectively.
+ 
+ 
+1.8.4 Line Width
+1.8.4 Line Width
+ 
+Line widths are specified as a multiple of the default width
+which is the width of the pen -- i.e. the thinnest possible
+line. As devices simulate the drawing of wide lines by
+multiple "brush-strokes"; this attribute this can
+significantly slow down the plotting.
+ 
+ 
+1.8.5 Grey Scales
+1.8.5 Grey Scales
+ 
+Grey scales of maps are possible in Anmap. You have to specify
+that a grey scale is required and what the low and high limits
+(black and white or vice versa) should be. The commands you
+will need are:
+ 
+grey-scale               setup grey scale
+go-plot                  complete plot including frame,
+                         contours and grey scale
+plot grey-scale          add a grey scale to the current
+                         frame, the frame must already exist.
+end-plot                 you must "end" a plot to a hardcopy
+                         device before you get any output (the
+                         end-plot command).
+ 
+One use of grey-scales is to overlay contours and a grey-scale
+of different maps on the same graphics plot. This is possible
+using the overlay-map command to specify the second map: by
+using set-grey-scale and perhaps reset-levels followed by ...-
+contours commands you can achieve a useful effect. Please see
+the section on grey-scale for more information especially if
+you want to combine grey-scales and contours on the same plot.
+ 
+ 
+1.8.6 Using the Cursor
+1.8.6 Using the Cursor
+ 
+Most of the the interactive graphics devices we have support
+input from the cursor. There are a number of places when
+cursor input can be used:
+ 
+(1)  Some commands will prompt for a UV-position and offer a
+     default of "[cursor]" -- pressing return will make the
+     cursor appear and you will then have the cursor
+     positionas input.
+ 
+(2)  In response the any prompt for a UV-range you may specify
+     'CURSOR' (or any valid abbreviation) and you may then
+     specify the UV-range using the cursor by marking two
+     opposite corners of the UV-box.
+ 
+(3)  Some special commands clearly activate the cursor -- for
+     example cursor-position (which may be called at any
+     time).
+ 
+It is clearly important when you measure UV-positions/ranges
+etc. that the map you are trying to process is the one
+displayed on the screen -- the UV-position returned is taken
+from the map on the screen.
+ 
+When you have positioned the cursor, simply press any printing
+character character (A-Z or a-z are best) except Q (or q) -
+the latter stands for Quit and is equivalent to typing ESC in
+response to a normal prompt (unfortunately the graphics
+interface routines do not understand ESC or other control
+characters and in general when the cursor appears you should
+avoid typing ESC, RETURN or other non-printing characters).
+ 
+ 
+1.8.7 Cursor-Position
+1.8.7 Cursor-Position
+ 
+If you have a map drawn on the terminal (and have not used
+end-plot since it was drawn), then you can find the UV, RA/DEC
+and pixel value at any time by using this command. The cursor
+will appear on the screen and you simply position it at the
+point of interest and type any printing character (a-z, A-Z,
+1-0) except 'Q' or 'q' and the information for that location
+on the map will be printed on the terminal. This works very
+well for devices with dual screens (Pericoms, Selinars,
+Dacoll, or the LEXIDATA), but produces a messy result on a
+BBC.
+ 
+ 
+1.8.8 Screen Dumps
+1.8.8 Screen Dumps
+ 
+Screen dumps are possible only from the DACOLL terminal in the
+MNOO or any BBC with attached EPSON printer. To obtain output
+from the DACOLL, first ensure that the grey-coloured ANADEX
+printer is on-line. Then depress the "DIAL/CNTRL" followed by
+the "PAGE/MODE" keys. To obtain a small-sized picture now
+simply press the "COPY" key. For a double-sized plot (similar
+to the 2X option) depress the "TRAIL" key then the "COPY" key.
+Note that it will normally be necessary to press "DIAL/CNTRL"
+followed by "ROLL/MODE" to return to normal terminal
+operation.
+ 
+For other devices output may be sent directly to the ANADEX
+using the /ANADEX or /BIG ANADEX device types.
+                         _
+ 
+ 
+1.8.9 Hardcopy Devices
+1.8.9 Hardcopy Devices
+ 
+ANMAP supports output to the following hardcopy output
+devices:
+ 
+   ANADEX printer/plotted
+          specify /ANADEX (/ANA) as the output device. For
+          large format output (two pages) use /BIG ANADEX.
+                                                  _
+ 
+   BENSON plotter
+          specify /BENSON as the output device -- note that
+          grey scales are not supported, but coloured lines
+          are possible.
+ 
+   LASER printer
+          specify file-name/PS as the output device (or /PS)
+          -- this is the best device for grey-scale output.
+ 
+ 
+1.8.10 Terminal Output
+1.8.10 Terminal Output
+ 
+The terminals currently supporting graphical output are:
+ 
+ 
+ 
+ 
+DACOLL     -- dual screen    -- /DACOLL    (/DAC)
+PERICOM    -- dual screen    -- /PERICOM   (/PERI)
+LEXI       -- television     -- /LEXIDATA  (/LEXI)
+BBC-micro  -- single screen  -- /BBC MICRO (/BBC)
+                                    _
+ 
+The facilities and resolution of the BBC are very limited.
+ 
+It is possible to send output to a terminal other than you own
+by specifying the terminal number in the output device
+specification:
+ 
+               T"terminal number"/"device type"
+                         _               _
+ 
+for example
+ 
+      T38/T
+ 
+will send output to one of the PERICOMs in the MNOO. The
+output terminal must of course be switched on and no one
+logged in.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

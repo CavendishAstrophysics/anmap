@@ -1,0 +1,112 @@
+
+Since Anmap is divided into sub-systems the following table
+may be useful in directing you to the right section of Anmap
+to solve a particular problem.
+
+Getting data into Anmap.
+          If your data is in standard MAP format use the map-
+          catalogue command add-to-catalogue to add your map
+          to the catalogue.
+          If your data is in a non-standard format use the
+          read-data-file basic command.
+          If your data is in DISC-FITS use the read-data-file
+          command.
+          ANMAP cannot read directly from tape; you will need to
+          cope the data to disc or use a TAPE FITSREADer
+
+Correcting the redtape of images.
+          Use the edit-redtape sub-system.
+
+Correcting and editing image values
+          Use the edit-image sub-system or the commands
+          zap-map, scale-map, gate-map, mask-map in the map
+          analysis sub-system.  Note that complex masks for
+          images may be created with the mask-map command in the
+          map-analysis sub-system.
+
+Displaying images.
+          To display images on any device use the map-display
+          sub-system.  You can choose output to a standard graphics
+          screen or (and/on under UNIX) to a TV-type device.
+
+Displaying data.
+          1D data can be displayed using the data-display sub-system,
+          also various commands produce 1D data and/or scratch plots
+          these can be displayed using the data-display sub-system
+          and the scratch-plots controlled using the scratch-display
+          sub-system.  Simple drawings and annotations can be made
+          using the drawing-system and the annotate commands in the
+          map-display data-display and scratch-display sub-systems.
+
+CLEANing maps.
+          To CLEAN a map use the CLEAN sub-system.
+          To print pixel values use the print-map command
+          in the map-analysis sub-system.
+
+Calculating statistics, noise and fluxes.
+          Use scan-map, noise-map and map-histogram in the
+          map-analysis sub-system to analyse the
+          noise on a map. To calculate the flux the
+          commands add-flux, strip-flux and ring-flux are
+          available.
+
+Finding positions and pixel values.
+          The basic command cursor-position return the cursor
+          position and map value using a interactive plot
+          device. The map-analysis command local-maximum
+          will locate the position of the maximum on a map
+          within a specified search area, while the command
+          convert-position can be used to convert between
+          pixel positions (U,V) and sky coordinates (RA,DEC).
+
+Analysing polarization maps.
+          Commands exist to analyse polarization data to
+          produce polarized intensity maps (mI-map),
+          percentage polarization (perc-map) and position-
+          angle maps (CHI-map). To display polarization maps
+          the map-display sub-system command vectors and plot
+          vectors can be used.
+
+Combining maps.
+          Maps can be added/subtracted (add-maps) or divided
+          (divide-maps).
+
+Transforming maps.
+          Maps may be transformed to a new coordinate system
+          (reproject-map, stretch-map, uv-shift-map) and made
+          smaller (shrink-map) or other numerical
+          transformations applied (logarithm-map,
+          exponentiate-map, scale-map); these are all map-
+          analysis commands.
+          Regions of a map may have their value set to
+          'undefined' either by specifying a particular map
+          range (zap-map) or by masking with themselves or
+          other maps (gate-map, mask-map) -- Section 5.3).
+          The edit-image sub-system can also be used for complex
+          editing of pixel values in an image.
+
+Smoothing and filtering.
+          A map may be convolved with a gaussian using smooth-
+          map  or with a general 2D array using convolve-map.
+
+Analysing multi-frequency data.
+          Simple spectral index maps can be made constructed
+          (alpha-map) or more complex synchrotron spectral
+          analysis performed.  More sophisticated analysis of maps
+          in terms of standard forms of continuum emission (synchrotron
+          and thermal emission) are possible in the synchrotron
+          sub-system.
+
+Analysis results files and spectral-type (1D) data
+          Many Anmap routines produce 1D data as output (e.f. extract-slice)
+          and these data can be analysed in the spectral-analysis sub-system
+          and also displayed using the facilities in data-display.  The
+          data-analysis sub-system allows for the analysis of 1D vector-like
+          data using arithmetic operations from the command line.
+          Spectral-type files have a simple format which you can also
+          utilise.
+
+True-colour support
+          True colour images in a standard, but non-map, format may be
+          analysed and displayed in the true-colour sub-system.
+

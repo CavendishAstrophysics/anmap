@@ -1,0 +1,33 @@
+#!/soft/tcl/v7.0/bin/tclsh
+#
+#
+# Script to setup new users for Anmap
+#
+# construct directory structure
+  cd ~
+  if ![file exists mrao] then {
+    exec mkdir mrao
+    puts "Directory ~/mrao created"
+  } else {
+    puts "Directory ~/mrao exists"
+  }
+  set user [exec whoami]
+  if ![file exists /data1/$user] then {
+    exec mkdir /data1/$user
+    puts "Directory /data1/$user created"
+  } else {
+    puts "Directory /data1/$user exists"
+  }
+  if ![file exists images] then {
+    ln -s /data1/$user images
+    puts "Directory  ~/images created"
+  } else {
+    puts "Directory  ~/images exists"
+  }
+
+#
+# copy default files to home directory
+  if ![file exists .wishrc] then {
+    cp /mrao/anmap_v7.5/wishrc .wishrc
+  }
+

@@ -1,0 +1,178 @@
+
+Information: on draw and annotate compound drawing objects
+
+Compound drawing objects are available to produce highly specific graphical
+objects; the objects are defined by constructing a file containing commands
+to be interpreted by the drawing system.  The object is drawn into the
+region of the screen specified by the window defined when the compound
+object is invoked as a drw or annotate object and all coordinates used in
+the compound object are relative to this window.
+
+The object is added to a drawing with the "compound" command:
+
+   compound x1,y1,x2,y2,file
+
+where (x1,y1), (x2,y2) specify the opposite corners of the "bounding-box"
+for the compound object; "file" is the name of the file containing the 
+compound object instructions, if the file name is null then compound object
+commands may be entered interactively.  
+
+To provide maximum flexibility minimal checking (except for data type on
+entry) are performed on compound object commands; it is the programmer's or
+designer's responsibility to ensure compound object defnitions are bug free!
+
+Functionality is provided at a much lower level than other drawing objects
+and at present there is no support for programming structures or user
+defined variables (this may be changed in future if the need arises).
+
+*1 commands
+
+The following is a list of the available commands, their calling sequence
+and a brief descrition of their functionality.
+
+# or !  "text"                Introduce a comment in the file -- blank lines
+                              or NOT allowed these will treated as an exit
+                              from the script.
+buffer-start                  Start buffering graphic output
+buffer-end                    End buffering and flush to display
+update                        Update the graphics device
+window  "x1,x2,y1,y2"         Specify coordinates for the compound object
+                              window and view-port.
+view-port                     Specify a view-port for within the compound
+                              object bounding box using coordinates 
+                              normalized to the bounding box.
+move "x,y"                    move "pen" to (x,y).
+draw "x,y                     draw from current position to (x,y).
+line "x1,y1,x2,y2"            draw a line from (x1,y1) to (x2,y2).
+text "'quoted-text'" "x,y"
+     "angle (degrees)"
+     "justify"                draw text at (x,y) making an angle "angle" to
+                              the horizontal (measured counter-clockwise).
+                              Justification of the string with respect to 
+                              (x,y) is controlled by "justify" such that
+                              (x,y) will be a proportion "justify" along 
+                              the string.
+font "font-number"            Select font number:
+                              1 = simple; 2 = roman; 3 = italic; 4 = script.
+size "text-size"              Set size of text a multiple of default.
+colour "colour index"         Set colour index (1-256).
+rgb "index" "red" "green"
+    "blue"                    Set colour representation for colour "index"
+                              with the three primary colour intensities in the 
+                              range 0.0 - 1.0.
+hls "index" "hue" "lightness" 
+    "saturation"              Set colour representation for colour "index"
+                              using the hue (0-360), lightness (0-1) and
+                              saturation (0-1) model.
+style "line-style"            Set line style "line-style" is from 1 to 6.
+fill "fill-mode"              Set fill style 1 = solid; 2 = hollow.
+width "line-width"            Set line width as an integer multiple of 
+                              the default width.
+box "X-opt" "X-tick" "X-sub"  
+    "Y-opt" "Y-tick" "Y-sub"  Draw a labelled box: -opts's follow PGPLOT 
+                              conventions and are text strings;  -tick
+                              is the interval between ticks (0.0 = default)
+                              -sub gives the number of sub-disvisions for
+                              minor ticks (0 = default).
+err-x "y" "err-x1" "err-x2" 
+      "top"                   Plot an X error bar at y from x1 to x2; top
+                              specifies the size of the "hat" on the error
+                              bar.
+err-y "x" err-y1" "err-y2"
+      "top"                   Plot a Y error bar (see above).
+label "'quoted-text'" "side"
+      "displ" "coord" 
+      "justify"               Plot a label on "side" of frame (side = 
+                              L R T or B) displaced displ characters from
+                              edge at a fractional coordinate along the
+                              frame edge coord justifying the text with respect
+                              to this location via justify (see text).
+point "x,y" "symbol"          Plot symbol of code "symbol" at (x,y).
+rectangle "x1,y1,x2,y2"       Plot a rectangle bounded by (x1,y1), (x2,y2).
+box "X-opt" "X-tick" "X-sub"  
+    "Y-opt" "Y-tick" "Y-sub"  Draw a labelled "time" RA/DEC box -- options as
+                              for box.
+polygon "n-data" ("x,y")      Plot a polygon of "n-data" x,y pairs which must
+                              be specified.
+multi-line  "n-data" ("x,y")  Plot a multi-line of "n-data" x,y pairs which must
+                              be specified.
+multi-line  "n-data" "symbol"
+            ("x,y")           Plot a set of multi-points of "n-data" x,y pairs 
+                              (using symbol "symbol") which must be specified.
+histogram "n-data" "central"
+            ("x,y")           Plot a set of multi-line elements of length
+                              "n-data" x,y pairs in the form of a histogram-type
+                              plot; "central" can be 1=data are mid points
+                              or 0=data are edge values.
+contour "nx,ny" ("trans")
+        "nc" ("cont")
+        ("data")              Contour the array (data) with nx, ny data
+                              values using nc contour levels (cont);
+                              transformation to specified coordinates is 
+                              controlled y (trans) (see PGPLOT manual).
+grey "nx,ny" ("trans")
+     "foreground" "background"
+        ("data")              Grey-scale the array (data) with nx, ny data
+                              values using the "foreground" "background"
+                              values to map onto the range of available
+                              grey levels (or colours if the colour 
+                              representation is modified after the command);
+                              transformation to specified coordinates is 
+                              controlled y (trans) (see PGPLOT manual).
+pixel "nx,ny" "x1,x2,y1,y2"
+        ("data")              Grey-scale the array (data) with nx, ny data
+                              values using the supplied values as colour
+                              indices; the range to display the data in
+                              is specified by (x1,x2,y1,y2).
+exit                          Exit the compound object.
+
+*1 examples
+
+The following example displays a grey-scale pattern and overlays some text
+
+# ANMAP logo - Version 1.0
+#
+# This is a compound object for inclusion in ANMAP drawings
+#
+#
+# define coordinate system
+view-port 0.05,0.95,0.05,0.95
+window 0.0,1.0,0.0,1.0
+#
+# create a background
+grey 19,19,0.0,0.05,0.0,0.0,0.0,0.05,100,0
+5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  
+5 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10  5
+5 10 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 10  5
+5 10 20 30 30 30 30 30 30 30 30 30 30 30 30 30 20 10  5
+5 10 20 30 40 40 40 40 40 40 40 40 40 40 40 30 20 10  5
+5 10 20 30 40 50 50 50 50 50 50 50 50 50 40 30 20 10  5
+5 10 20 30 40 50 60 60 60 60 60 60 60 50 40 30 20 10  5
+5 10 20 30 40 50 60 70 70 70 70 70 60 50 40 30 20 10  5
+5 10 20 30 40 50 60 70 80 80 80 70 60 50 40 30 20 10  5
+5 10 20 30 40 50 60 70 80 90 80 70 60 50 40 30 20 10  5
+5 10 20 30 40 50 60 70 80 80 80 70 60 50 40 30 20 10  5
+5 10 20 30 40 50 60 70 70 70 70 70 60 50 40 30 20 10  5
+5 10 20 30 40 50 60 60 60 60 60 60 60 50 40 30 20 10  5
+5 10 20 30 40 50 50 50 50 50 50 50 50 50 40 30 20 10  5
+5 10 20 30 40 40 40 40 40 40 40 40 40 40 40 30 20 10  5
+5 10 20 30 30 30 30 30 30 30 30 30 30 30 30 30 20 10  5
+5 10 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 10  5
+5 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10  5
+5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  
+#
+# change colours and size
+size 6.0
+width 2
+colour 2
+font 2
+#
+# now add some text to the logo
+text 'Anmap' 0.5 0.45 0.0 0.5
+size 4.0
+font 3
+colour 4
+text 'MRAO Cambridge' 0.05,0.05,0.0,0.0
+#
+exit
+

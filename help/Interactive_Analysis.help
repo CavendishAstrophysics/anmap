@@ -1,0 +1,191 @@
+*1 Introduction
+
+The Interactive Analysis (IA) window of Anmap provides access to basic
+operations used to analyse and interprete image data.  An image may be
+displayed using a grey-scale image representation, the colours and
+region of the image to be displayed can be controlled by simple mouse
+interaction.  There are available from the IA window the following
+functions:
+
+   slice            :    display a slice
+   pixel            :    read/display pixel values
+   region           :    calculate statistics in a region
+   length           :    calculate length (in pixels) between image features
+   angle            :    calculate angle (in degrees) between image features
+
+   grey scale       :    control display of grey scale / false colours
+   histogram        :    histogram of data values
+   integration      :    simple integration in a specified region
+   ring integration :    simple integration in circular annuli 
+
+Along the top of the window is a command bar with:
+   Dismiss          :    a button to dismiss the IA window
+   Image...         :    a button to to pull down a menu giving 
+                         options effecting the image
+   message window   :    a window in which messages appear
+   Help             :    a button to provide an interactive help
+
+To the left of the main window is the information panel in which non-graphic
+results of queries you make on the image are displayed.  An entry window
+is provided for entering the catalogue entry you want to analyse and
+below this statistic are displayed for the whole image and for selected
+regions you select with the Region option.  The results of querying pixel
+values and integrations are also displayed here.
+
+To the right of the window are command panels for various command options
+    Grey scale      :    display image in grey-scale/false colour
+    Histogram       :    plot a histogram of selected image values
+    Integration     :    integrate a region of the image
+    Ring Integration:    perform integration in circular annuli
+
+To the lower left of the window are five buttons which specify options to
+enable you to query the displayed image:
+   Slice            :    display a slice
+   Pixel            :    read/display pixel values
+   Region           :    calculate statistics in a region
+   Length           :    calculate length (in pixels) between image features
+   Angle            :    calculate angle (in degrees) between image features
+
+To use IA, simple enter an image cataloigue number in the catalogue entry
+window and then click on update in the Grey scale panel to make the image
+appear on the graphics window.  You can click on colour to bring up a window
+to allow you to edit the colour map to enhance various image features.
+After this, clicking on any button will activate the associated query
+on the image; textual output is written to the left of the screen and
+graphical output is plotted in the upper right of the graphic window
+adjacent to the grey-scale/false-colour image.
+
+*1 Grey_Scale
+
+The Grey-scale panel enable you to display an image in grey-scale/false
+colour.  The two slider bars let you specify the range of image values
+(expressed as a percentage of the full range) to display.  Move the
+sliders to the percentage values you reguire and clisk on update to update
+the display.  The default display is a linear grey-scale, but by clicking
+on the Colour button the standard colour-map window will appear which allows
+you to edit and modify the false-colour colour-map for the image display.
+
+*1 Histogram
+
+Histogram will produce a graphical plot of the histogram of image values
+in a specified region of the image.  You should enter the required range
+of image values in the entry windows in the Histogram panel (they default
+to the full range on the image).  When you click on OK, the cursor will
+change to the entry cursor (red cross) on the graphic device and you
+should specify a region of the image to use for analysis by marking opposite
+corners; the graphical output will be displayed on the main graphics window.
+
+*1 Integration
+
+Integration integrates image values in a specified region of the image.  
+You should enter the required gate value in the entry window in the 
+Integration panel (it defaults 0.0).  When you click on OK, the cursor will
+change to the entry cursor (red cross) on the graphic device and you
+should specify a region of the image to use for analysis by marking opposite
+corners; the output will be displayed in the information panel to the left of
+the IA window.  The integration is a sum of all values with:
+   |image_value| > gate
+Output is this sum, together with a corrected value if a normalisation
+constant for integration is specified in the image header.
+
+*1 Ring_Integration
+
+Ring Integration integrates image values in a circular annuli of the image.  
+You should enter the required number of bins/annuli and the width of each 
+annulus (in pixels) in the entry windows in the Ring Integration panel 
+(they default to 50 and 1 respectively).  When you click on OK, the cursor will
+change to the entry cursor (red cross) on the graphic device and you
+should specify the centre of the integration region.  The output is displayed
+as a graph of the average integrated intensity as a function of radius -- for
+a region of uniform intensity the output will therefore show a constant value
+(i.e. the output is average intensity essentially per unit area of the image).
+The graphical output is displayed on the main graphics window.
+
+*1 Dismiss
+
+Clicking on Dismiss will dismiss the IA window.
+
+*1 Image_menu
+
+The Image menu has two entries
+  Resize displayed image    :   select a region of the image to display
+                                by marking opposite corners with the cursor
+  Full size displayed image :   redisplay the image at full size
+
+To make these options take effect you should click on update when you want
+to see the image resized.
+
+*1 Help
+
+Clicking on Help brings up the help window displaying this help information
+
+*1 message_bar
+
+The message bar is located in the centre of the command bar at the top
+of the window.  Messages will be displayed here telling you what to do
+in various options selected from those available in IA; usually they will
+describe use of the mouse and mouse buttons in selecting image regions.
+
+*1 catalogue_entry
+
+The catalogue entry window is wwhere you specify which catalogue entry to
+examine/analyse using IA --- you should specify a catalogue entry using its
+catalogue number.
+
+*1 information_panel
+
+
+The information panel is the region of the IA window to the left and is
+where various textual results are displayed; the display will be updated
+as the result of queries made.
+
+*1 measurements
+
+The buttons to the lower-left of the IA window enable various measurements
+to be made on the image; textual information is written into the information
+panel and grapphical information to the main graphics window.
+
+*2 Slice
+
+A slice is plotted between two points on the image; when you click on
+Slice the cursor in the graphics window changes to the entry cursor 
+(red cross) and you should mark ends of the slice to display by clicking
+with the left mouse button.
+
+*2 Pixel
+
+After clicking on Pixel the  cursor in the graphics window changes to 
+the entry cursor; clicking with the left mouse button in the graphic
+window at a legal point in the displayed image will show the pixel
+value and location under the cursor.  This command will "loop" until
+you press the right mouse button.
+
+*2 Region
+
+Region will display statistics of the pixels in a region of the image.
+After clicking on Region the  cursor in the graphics window changes to 
+the entry cursor; you should specify the region to analyse by clicking
+with the left mouse button to mark opposite corners of a box in the image.
+
+The results are displayed in the information panel.
+
+*2 Length
+
+Length will display the length in pixels between two points on the image.
+After clicking on Length the  cursor in the graphics window changes to 
+the entry cursor; you should specify the two points by clicking
+with the left mouse button to mark them.
+
+The results are displayed in the information panel.
+
+*2 Angle
+
+Angle will display the angle in dgrees between two three on the image.
+After clicking on Angle the cursor in the graphics window changes to 
+the entry cursor; you should specify the three points by clicking
+with the left mouse button to mark them, the middle point should be
+specified second.
+
+The results are displayed in the information panel.
+
+*

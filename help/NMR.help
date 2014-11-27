@@ -1,0 +1,40 @@
+
+NMR specific commands
+
+*1 nmr-image-read
+
+Command: read an NMR image file
+Parameters:  image file name (.imag), title for catalogue
+
+
+The image file is read.  This command will read the image dimensions and
+the number of images in the image file from the image header.  One
+catalogue entry will be created for each image in the NMR image file.
+
+*1 nmr-aphi-read
+
+Command: read an NMR image file consisting of Amplitude/phase or Real/Imaginary
+Parameters:  image file name (.imag), title for catalogue
+
+
+The image file is read.  This command will read the image dimensions and
+the number of images in the image file from the image header.  Two
+catalogue entries will be created for each image in the NMR image file,
+the entries will be either REAL/IMAGINARY or AMPLITUDE/PHASE depending
+on what is in the image.  The entries are always labelled as REAL/IMAG in
+the catalogue; you should use catalogue rename to rename the catalogue
+entries to more appropriate names if desired.
+
+*1 nmr-serial-read
+
+Command: read an NMR serial file
+Parameters: serial file name (.ser), title for catalogue, no FIDs
+
+The serial file is read into Anmap as two images (real & imaginary).  The
+number of FIDs must be specified as this information cannot be ectracted
+from the header of the Serial File.
+
+*
+
+
+

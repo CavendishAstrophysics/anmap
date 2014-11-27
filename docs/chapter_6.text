@@ -1,0 +1,571 @@
+                    1. IMAGE DECONVOLUTION
+                    ______________________
+ 
+ 
+ 
+1.1 Introduction to the use of CLEAN
+____________________________________
+ 
+CLEAN is a simple image deconvolution algorithm and is
+available in a number of forms at most observatories. This
+version is command-line driven and follows the original
+prescription of Hogbom. The main steps in the algorithm are:
+ 
+(1)  Define the region of the map to CLEAN and the region(s)
+     of the map in which to search for real signal.
+ 
+(2)  Loop for a set number of iterations.
+ 
+(3)  At each iteration find the maximum on the map in the
+     regions you have defined as containing real signal,
+ 
+(4)  from this location subtract a fraction of the telescope
+     beam shape centred at this point. The flux removed at
+     this stage is recorded in the CLEAN-components source
+     list and the fraction removed is called the loop-gain.
+ 
+(5)  If the maximum on the map is less than or equal to the
+     flux-limit, or alternatively if the maximum number of
+     iterations has been reached, proceed to the next stage.
+     If neither conditions are met, then return to (3).
+ 
+(6)  At this stage the process has deconvolved the original
+     image into a set of delta-functions (located at integral
+     grid points) together with a residual map (the remaining
+     un-CLEANed image). This is not an adequate representation
+     of the sky and it is necessary to add-back the
+     deconvolved delta-functions, but convolved with a CLEAN
+     beam -- usually a gaussian beam whose inner section
+     closely resembles the inner portion of the dirty beam.
+ 
+(7)  Output the restored map (CLEANed map), together with the
+     residual map and the CLEAN-components source list needed
+     if further iterations are required.
+ 
+The parameters that control CLEAN have to set the parameters
+using the set- commands. Their values can then be inspected
+with the display-options command before sunning CLEAN. The
+most useful things to change are:
+ 
+set-map             name of map to clean. You will need to use
+                    this command before setting windows or
+                    running clean. You will also be prompted
+                    for the beam -- both must be in the map
+                    catalogue.
+set-search-window   set up the search windows to look for
+                    maxima. Up to nine windows may be
+                    specified.
+set-clean-beam      set size of the clean beam.
+set-iteration-limit set the limit on the number of iterations.
+set-flux-limit      set the limiting flux.
+ 
+ 
+display-options     display the current settings on your
+                    terminal.
+go-clean            run clean in online (only small CLEANs
+                    with map and beam both smaller than
+                    256x256 pixels may be run on line).
+make                run CLEAN in batch mode.
+ 
+ 
+help                for more information.
+ 
+ 
+ 
+If running CLEAN online then you can interrupt the CLEAN by
+pressing ESC, wait for a few moments, then, when prompted,
+type Q to finish the CLEAN or N to continue the process.
+ 
+After the maps are cleaned and restored a number of files are
+created on disc all with different file type. For example if
+you started with 3C111-f5-map-mapper and 3C111-f5-beam-mapper
+in the map catalogue then you will get the following files:
+ 
+    3C111-f5:RESI --         residual map
+    3C111-f5:CLN  --         CLEANed map
+    3C111-f5:CCMP --         CLEAN components map
+ 
+The CLEANed map will also be added to your map catalogue as:
+ 
+    3C111-f5-CLN-CLEAN
+ 
+ 
+1.1.1 Generic-Name
+1.1.1 Generic-Name
+ 
+'3C111-F5' is an example of a generic-name which is used to
+construct the output file names produced by CLEAN. The files
+created will be the residual file containing the map after
+CLEANing (subtraction of all the sources -- ':RESI'), the map
+with the sources restored -- the CLEANed map (':CLN'), and a
+clean-components list (or source list -- ':CCMP'). These files
+have default names:
+ 
+    generic-name:resi        -- residual map
+    generic-name:cln         -- CLEANed map
+    generic-name:ccmp        -- CLEAN components map
+ 
+You may not call these files anything else.
+ 
+The CLEAN components map is a special format of map file
+holding only the non-redundant information. It may be
+displayed and analysed using the standard Anmap utilities.
+ 
+ 
+ 
+1.2 Commands Used to Set CLEAN Options
+______________________________________
+ 
+ 
+1.2.1 Set-Map
+1.2.1 Set-Map
+ 
+Parameters: map-catalogue-entry, beam-catalogue-entry
+ 
+ 
+This command defines the map and beam to use for the CLEAN
+process; the CLEAN components output map is also created at
+this time. Both the map and beam must be in your map
+catalogue.
+ 
+ 
+1.2.2 Set-Clean-Window
+1.2.2 Set-Clean-Window
+ 
+Parameters: clean-window
+ 
+The CLEAN-window is the region of the map from which the dirty
+beam is subtracted. This command sets the window on the input,
+the window must be on the map. The default is the whole map
+and there is little to be gained in restricting this window
+for standard CLEANs as the subtraction step of the CLEAN
+algorithm is not rate controlling -- this does not apply to
+setting the search windows.
+ 
+ 
+1.2.3 Set-Beam-Window
+1.2.3 Set-Beam-Window
+ 
+Parameters: beam-window
+ 
+It is possible to restrict the region on the beam map to use
+in the CLEAN process. This can be useful in two main cases:
+ 
+(1)  If the beam map actually contains many beams (a beam
+     set).
+ 
+(2)  If the 'BEAM' is in fact a 'MAP' and you are using a
+     point source from the map to clean some other extended
+     source. This procedure may produce considerably better
+     results than using an ideal telescope beam as the effects
+     of, for instance, the ionosphere will be properly
+     represented. Clearly the process is only viable for
+     telescopes with large fields-of-view such as the CLFST.
+ 
+The default is to use the whole beam and in general you should
+use as much of the beam map as possible or incomplete CLEANing
+of the map will result. To obtain uniform CLEANing of a
+complete map you need a beam which is twice the size of the
+region of the map you are CLEANing. However the program copes
+correctly with any size of beam and beam-window.
+ 
+ 
+1.2.4 Set-Search-Windows
+1.2.4 Set-Search-Windows
+ 
+Parameters: number-search-windows, list-of-clean-windows
+ 
+Up to nine search windows may be specified. The search for
+local maxima on the map to be CLEANed is only done in these
+windows. They are useful therefore if you wish to define the
+region of the map containing true signal (e.g. for difficult
+CLEANs). Specifying windows will also speed the algorithm
+considerably as the search for maxima is one of the most time
+consuming steps in CLEAN. The default is for one window
+covering the entire map.
+ 
+A convenient way to set all windows, and especially search
+windows is ot use the cursor. Firstly use the normal commands
+in map-display to produce an image of the map on an
+interactive graphics device (i.e. a contour map or a grey
+scale); do not terminate the plot with the end-plot command.
+Continue with setting up the CLEAN run in the normal way and
+give the set-search-windows command; however in response to
+the prompt for a UV-range:
+ 
+      Search-window 1 [-120,120,120,-120] :
+ 
+reply, not with a numeric range, but by typing CURSOR or any
+valid abbreviation (a simple C will do). The cursor will now
+appear on the graphics device. Position the cursor at one
+corner of the UV box and type any printing character (A-Z, 0-9
+except Q or q) character then repeat the process for the
+opposite corner. The box you define in this way will be the
+search window. This is a general prescription and you can do
+it whenever a prompt for a UV-window appears in any part of
+Anmap. Typing 'Q' or 'q' when the cursor is on the screen will
+have the same effect as ESC when a normal prompt appears, i.e.
+to return you to the Clean> prompt.
+ 
+ 
+1.2.5 Set-Iteration-Limit
+1.2.5 Set-Iteration-Limit
+ 
+Parameters: iteration-limit
+ 
+Set the maximum number of iterations allowed, the default is
+100. CLEAN will terminate on reaching this limit: together
+with the flux limit this parameter will control how many
+iterations CLEAN actually performs.
+ 
+ 
+1.2.6 Set-Flux-Limit
+1.2.6 Set-Flux-Limit
+ 
+Parameters: flux-limit
+ 
+Set the limiting flux density down to which the map will be
+CLEANed. If the maximum value on the residual map falls below
+this value CLEAN is terminated. Together with the iteration-
+limit this parameter control how deep CLEAN will clean and
+therefore the time CLEAN will take to run. For a complete
+image deconvolution using CLEAN the limiting flux density
+should be set to the lowest believable level anywhere on the
+map which you wish to properly represent in the final image.
+You may wish to set this parameter to a larger value if, for
+example, you only wish to remove the effects of the brightest
+sources or components on the map. It is important to stress
+that for a proper deconvolution and subsequent quantitative
+analysis (e.g. using add-flux, strip-flux, ring-flux or
+perhaps alpha-map etc.) all the flux on the sky should
+strictly be represented in the CLEAN components and therefore
+the limiting flux density should be set to a value just above
+the noise level or to the lowest believable level on the map.
+ 
+ 
+1.2.7 Set-Fraction
+1.2.7 Set-Fraction
+ 
+Parameters: loop-gain
+ 
+ 
+The loop gain is the fraction of the peak subtracted at each
+iteration normally in the range 0.1-0.4. The larger the loop
+                                   >
+gain the more flux CLEAN removes at each iteration but the
+coarser the CLEAN. For maps with large amounts of extended
+structure we recommend a loop gain of 0.1-0.2, but for maps
+                                         >
+with essentially just point sources 0.2-0.4 is generally fine.
+Reducing the loop gain will of course mean more iterations are
+required to remove the same total CLEANed flux so you should
+use this command in combination with set-iteration-limit.
+ 
+ 
+1.2.8 Set-Clean-Beam
+1.2.8 Set-Clean-Beam
+ 
+Parameters: size-u, size-v
+ 
+The CLEAN beam is the ideal gaussian beam that CLEAN uses in
+the restore process. The list of point sources (CLEAN
+components) which CLEAN finds in the deconvolution (CLEAN)
+stage of the algorithm are 'restored' to the residual map by
+interpolating the deconvolved points onto the image using this
+CLEAN-beam as an interpolating (convolving) function. This has
+the net effect of removing unwanted side-lobes from the image
+without introducing super-resolution.
+ 
+This command enables you to set the size of the clean beam in
+arcseconds in U and V. Defaults are sensible for the telescope
+and frequency combination of your map, but may not take
+account of any grading you may have applied during the mapping
+process. You may also like to set the position angle of the
+CLEAN beam; this is particularly true if you want to match the
+beam shape of, say, the VLA.
+ 
+If only one value is given the other is calculated using a
+factor of cosec d. All map projections are correctly handled.
+                d
+You should supply the beam size on the sky, if in doubt supply
+a single number and the beam dimensions will be correct for an
+East-West telescope.
+ 
+ 
+1.2.9 Set-Position-Angle
+1.2.9 Set-Position-Angle
+ 
+Parameters: position-angle
+ 
+If the beam is not aligned with the 'major-axis' North-South
+as on the RT or other East-West synthesis telescopes, it may
+be specified at an arbitrary position angle -- this is
+especially useful for VLA maps, or for matching the resolution
+of the VLA.
+ 
+ 
+1.2.10 Reset-Defaults
+1.2.10 Reset-Defaults
+ 
+This command is implicitly performed after each get-map
+command to reset the parameters to their standard values:
+ 
+ 
+ 
+ 
+ 
+ 
+    clean-window  --         whole map
+    search-window --         whole map
+    beam-window   --         whole beam
+    iteration-limit          -- 100
+    flux-limit    --         0.001 Jy
+    loop-gain     --         0.2
+    clean-beam    --         standard telescope values
+    position-angle           -- 0.0
+ 
+and the options for not-box, stop-at-zero, prussian-hat,
+truncated-beam are all switched off.
+ 
+ 
+1.2.11 display-options
+1.2.11 display-options
+ 
+Display all the parameters as set for the clean run. If the
+map has been CLEANed before then the results of that CLEAN are
+also given. Note the parameter values are for the CLEAN run
+which you are now setting up, not the one completed.
+ 
+ 
+ 
+1.3 Specialized CLEAN Operations
+________________________________
+ 
+ 
+1.3.1 prussian-hat
+1.3.1 prussian-hat
+ 
+Parameters: on/off, hat-height
+ 
+A small spike is added to the top of the dirty beam during
+CLEANing. It is believed to stop certain "striping" effects
+which develop during CLEANing of maps with very extended
+structure. See the discussion in Tse Tan's thesis and his
+paper on CLEAN for more information and a critique. The
+default is off.
+ 
+ 
+1.3.2 stop-at-zero
+1.3.2 stop-at-zero
+ 
+Parameters: on/off
+ 
+When using CLEAN to construct a model for auto-calibration you
+might not want negative components in the source list as they
+cannot represent true structure on the sky. This option stops
+CLEAN as soon as it reaches the first negative component. This
+is not useful in a normal CLEAN as the iterative nature of the
+process means that it may have over-shot, and therefore should
+be allowed to continue. Default is off.
+ 
+ 
+1.3.3 set-not-box
+1.3.3 set-not-box
+ 
+Parameters: on/off, box-window
+ 
+A UV-box can be specified as an exclusion from the search
+windows. This is most useful if you are "constructing a beam"
+from a nearby bright point source to use instead of the ideal
+telescope beam. In this case you wish to remove the effects of
+all sources except the bright central source which is to be
+used as the telescope beam.
+1.3.4 sorted-mode
+1.3.4 sorted-mode
+ 
+This is an option to setup the "sorted" mode for CLEAN - a
+faster algorithm.
+ 
+The "sorted-mode" is a locally written modification to the
+CLEAN algorithm which results in a considerable time saving
+especially for maps dominated by a few point sources. The
+modification is as follows:
+ 
+(a)  Start by determining the top "sort-depth" maxima on the
+     map and record the pixels in which the occur. Only points
+     above the "sort-gate" are stored in the list.
+ 
+(b)  Loop for "inner-loop" iterations performing a normal
+     CLEAN except that the next maximum on the map is found
+     from the list found at stage (a). As a search is not made
+     over the entire map there is a considerable time saving
+     at this stage.
+ 
+(c)  After "inner-loop" iterations the sort-list is
+     recalculated as in (a) and the process repeats.
+ 
+Work is still in progress to find optimal settings for
+parameters and at the present time the system should be
+regarded as experimental and only for expert use. Sensible
+defaults are to set the "sort-depth" to some number in the
+range 100-500 and the "inner" loop iterations to this same
+         >
+number. The "sort-depth" should not at present exceed 500.
+ 
+ 
+ 
+1.4 Commands Used to Run CLEAN
+______________________________
+ 
+ 
+1.4.1 make
+1.4.1 make
+ 
+A CLEAN job is appended to the batch queue. You may examine
+the queue using the list-queue-entries command of the batch-
+monitor sub-system. If your job is top of the queue it does
+not mean your job will necessary run as the batch may be
+operating on a non- cleaning job.
+ 
+You will be prompted for your password the first time you
+submit a CLEAN job -- this is necessary since the job will run
+under your own user identifier. The :CCMP map file will
+contain details of how the CLEAN job worked -- to inspect it
+simply use the set-map command for the catalogue entry of the
+original DIRTY map you have CLEANed then use the display-
+options command. Further information on the CLEAN run can be
+found in the log file, CLEAN:LOG which will appear on your own
+file space. You may type or print this file using the file-
+system commands type-file or print-file. This file will be
+added to each time you run a CLEAN job and therefore it is
+necessary to delete this file from time-to-time to avoid your
+disc quota being exceeded.
+ 
+ 
+ 
+ 
+1.4.2 go-clean
+1.4.2 go-clean
+ 
+The CLEAN process is run interactively at the terminal. You
+may stop the CLEAN at any time by pressing the space bar, at a
+suitable moment CLEAN will then terminate in a sensible manner
+and retain all output. Interactive use of CLEAN should only be
+used for small jobs as it will tie up a terminal.
+ 
+The maximum size of CLEANs that may be run online is
+restricted to 256x256 pixels for both the map and the beam.
+ 
+ 
+1.4.3 clear-clean-run
+1.4.3 clear-clean-run
+ 
+This command essentially delete a clean run, it resets the
+number of clean iterations completed to zero and tidies up the
+:CCMP, :RESI and :CLN files.
+ 
+ 
+1.4.4 Beam-Set CLEANs
+1.4.4 Beam-Set CLEANs
+ 
+If the beam map you are using in the CLEAN is in fact a beam-
+set then CLEAN will automatically make use of this facility.
+For each subtraction CLEAN performs it will use the most
+appropriate beam from the beam-set (usually the closest). This
+has significant advantages for large field CLEANs where the
+telescope beam varies significantly across the field. There
+are however two things to be remembered:
+ 
+(1)  The effects of side-lobes etc. from a source at large
+     distances cannot be removed by this method since the
+     beams in the beam-sets only occupy a small region.
+ 
+(2)  Positions deduced from CLEANed maps should be regarded as
+     dubious far from the map-centre due to the beam
+     distortion.
+ 
+Beam-set CLEAN is not an adequate replacement for remove for
+bright sources.
+ 
+ 
+1.4.5 Restarting CLEAN
+1.4.5 Restarting CLEAN
+ 
+CLEAN map be restarted and a deeper clean performed. Simply
+specify the residual map as the map to clean. The new residual
+map will overwrite it. The CLEAN components file will be a
+concatenation of the two runs. The display-options command
+gives information on the total CLEANs performed.
+ 
+The restored map (-CLN-CLEAN catalogue entry) will be
+duplicated.
+ 
+ 
+1.4.6 Clean components map -- :CCMP
+1.4.6 Clean components map -- :CCMP
+ 
+The clean components from the CLEAN run are written to disc as
+a compacted map format file. All Anmap utilities, including
+map-display, can be used to display and analyse the clean
+components map. In fact the :CCMP map is not a complete map,
+but a file containing a standard map REDTAPE and then a list
+of those non-blank map pixel values; in this way the CLEAN
+components are stored efficiently, but in a way transparent to
+other routines.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

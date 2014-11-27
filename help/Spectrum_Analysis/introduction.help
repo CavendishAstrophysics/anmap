@@ -1,0 +1,117 @@
+
+Spectrum-analysis-package : Introduction
+
+The Anmap spectrum analysis package is designed to analyse multi-column
+type data stored in a standard format.
+
+The package consists of number of programs which can be accessed from
+Anmap or a standard UNIX command line (shell) -- most commands have a prefix 
+sp_ but some have a prefix nmr_ or ra_ for programs specific to analysis of nmr
+or Radio Astronomical data.  At the present time there is no Anmap sub-system
+available for analysis of spectral data; this has the effect that none of the
+commands will prompt for input, instead all parameters for a given command
+must be specified as "keys" on the command line much like other standard
+UNIX commands.
+
+Each command takes a number of options specified by keys, like UNIX
+options.  The keys may be either specified as they appear in the help
+documentation or by preceeding them with a "-" in the standar UNIX
+fashion.
+
+In the following help documentation all keys for a given command are
+listed and where appropriate some indication of the type of key is
+given as follows:
+
+   nokeyok   --- this indicates that the key may be omitted and the data
+                 for this key specified by position alone
+   nodata    --- this inidcates the key does not take any data
+   needed    --- this indicates that the key (or its data if it is also
+                 nokeyok) must be specified
+
+Also, where appropriate, defaults for various keys are given in square brackets
+after the key definition, for example [1] specifies default value of 1.
+Keys may be specified on the command line to a command in any order, except
+that data for keys specified by nokeyok, should come first and be in the
+same order as the keys are sepcified in the help file -- if in any doubt
+specify the key explicitly.  Additionally, keys may be sepcified via UNIX
+environment variables using a fully uppercased version of the key.
+Examples of this use are given in the help files, but also consider the
+sp_display command, the following will plot a file on the X-window device
+
+   sp_display my_file.dat plot_device /xwindow xrange 0,10
+
+Note the sp_display takes an key of file1 which has a nokeyok property,
+therefore my_file.dat is associated with the key file1.  We could
+alternatively use environament variables, e.g. from a SHELL
+
+  setenv FILE1 my_file.dat
+  setenv PLOT_DEVICE /xwindow
+  setenv XRANGE 0,10
+  sp_display
+
+or from within Anmap:
+
+  set env(FILE1) my_file.dat
+  set env(PLOT_DEVICE) /xwindow
+  set env(XRANGE) 0,10
+  sp_display
+
+
+Alternatively you can specify all options on the
+command line using a unix-like syntax:
+
+   sp_display my_file.dat -plot_device /xwindow -xrange 0,10
+
+An important point (which is the same as for most UNIX commands) the
+data given to a key must not contain spaces -- if it does then it should
+be enclosed in quotes, for example
+
+   sp_display my_file.dat plot_device /xwindow xrange 0,10 title "My title"
+
+You will note that many input /output files have a default [-].  This indicates
+that the input or output file defaults to the standard input or output
+respectively.  This enables the spectral commands to be used in pipes: for
+example the  data in my_file.dat could be scaled before displaying it:
+
+   sp_scale my_file.dat scale 0.002 | sp_display
+
+This will output a plot of the scaled data to the default device for
+sp_display which is in fact the /xwindow (X-window) device.  Pipes (or
+unix re-direction of output using >, >>, >! etc, see your UNIX man pages
+for the shell you are using), can only be used when the output defaults
+to [-].
+
+
+
+*1 file-format
+
+The file format is very simple and consists of an ASCII 
+(i.e. ordinary editable file) with a few header lines 
+followed by lines of data.  The header lines consist of a key
+which always begins with a "%" and a value following the key.  Two keys
+must be present in all files:
+
+   %ndata  --- giving the number of lines of data
+   %ncols  --- giving the number of columns per line
+
+Other keys may be present so as to store information about the data set,
+but routines in the package will (in general) work on files just 
+containing the above keys. After the keys the data follows with
+each line of the file containing data for all colums.  
+
+For example a very simple file would look like:
+
+%ndata 5
+%ncols 3
+1 1.0 2.0
+2 2.0 3.0
+3 3.0 4.0
+4 4.0 5.0
+5 5.0 6.0
+
+Data may be entered with a standard editor if required.
+
+Note that Anmap uses this format for all spectral-type files, such as the
+anmap_results.dat -- the anmap standard results file.
+
+*

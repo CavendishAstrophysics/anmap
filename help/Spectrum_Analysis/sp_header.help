@@ -1,0 +1,17 @@
+
+Spectrum-analysis-program: Print the header of a spectrum.
+
+Keys:
+   infile      nokeyok               The input file name to display the
+                                     header for. [-]
+
+Example:
+Display the header information for the spectrum test.data
+
+%      sp_header test.data
+
+Pipe the output of the header command to the line printer
+
+%      sp_header test.dat | lpr
+
+

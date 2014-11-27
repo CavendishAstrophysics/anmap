@@ -1,0 +1,49 @@
+
+Spectrum-analysis-program: Rebin a spectrum to a new sampling
+
+Invocation:
+
+    sp_rebin
+
+Keys:
+
+   xc                           X-column in data [1]
+   average     nodata           Key to specify averaging mode
+   binsize                      Width of bin in output, data is re-binned
+                                to this value
+   width                        width in cells for binning this number
+                                of cells are binned together
+   title                        title for outfile
+   comment                      user comment for outfile
+   infile      nokeyok          input file name [-]
+   outfile     nokeyok          output file name [-]
+
+if Width is specified then:
+  Re-bin the input spectrum; the number of cells in the output
+  spectrum will be given by:
+      NDATA(output) = NDATA(input)/width
+otherwise, if binsize is sepcified then re-bin the data so that
+the specified binsize is given, the number of output data points
+are adjusted accordingly.
+
+The key AVERAGE determines how the output data are scaled.  If
+AVERAGE is set then the output is the average over the input
+cells.  If AVERAGE is not set then the output is the simple
+sum over the input cells.  The X-column is ALWAYS averaged in the
+above sense; use XC to specify the X-column [default=1]
+
+Examples:
+
+Simple rebinning without averaging
+%    sp_rebin in1.dat out1.dat width 2
+
+Rebinning with averaging
+%    sp_rebin in1.dat out1.dat width 2  average
+
+Specifying averaging as a global mode
+%    setenv AVERAGE Y
+%    sp_rebin in1.dat out1.dat width 2
+
+
+
+

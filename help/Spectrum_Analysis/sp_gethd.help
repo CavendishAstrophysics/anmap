@@ -1,0 +1,29 @@
+Spectrum-analysis-program: Print a specified item/parameter from the header 
+                           to the standard output
+
+Keys:
+   infile      nokeyok               The input file name to display the
+                                     header item for. [-]
+   parameter   nokeyok               The parameter/item name from the header;
+                                     if the named parameter is not in the header                                     then the routine returns NOT_FOUND
+
+
+Example:
+Show the number of data points in a file
+
+%      sp_gethd test.data ndata
+
+Set the shell variables ncols to be the number of columns in the file test.data
+
+%      set ncols = `sp_gethd test.data ncols`
+
+Test to see if the header item "xtitle" is specified in the data file and
+if so use it as the title to sp_display:
+
+%      set xtitle = "`sp_gethd test.data xtitle`"
+%      if ( $xtitle == NOT_FOUND ) then
+%        sp_display test.data plot_device /xwindow
+%      else
+%        sp_display test.data xtitle "$xtitle" plot_device /xwindow
+%      endif
+

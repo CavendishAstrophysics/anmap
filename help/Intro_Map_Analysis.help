@@ -1,0 +1,692 @@
+Map Analysis is the main purpose of Anmap and in the Map-
+Analysis sub-system a number of different map utilities are
+provided. In this section a brief introduction to some of the
+facilities available is given and it may well be the case that
+the particular routine you need to use is not described here,
+please refer to the detailed description in the manual or to
+the online documentation available via help. To get started
+just type map-analysis and the prompt will change to Map-
+Analysis>. Basic commands are of course available and those
+used to access the map-catalogue.
+
+
+*1 making_new_maps_from_old
+
+A number of routines will make a new map from an old one. As
+an example suppose you have a 512x512 map, but you are in fact
+only interested in the source located in the inner 64x64
+region. It is wasteful to keep manipulating the entire image
+so you decide to reduce its size -- the command to use in this
+instance is shrink. Suppose the map you wish to 'shrink' is in
+catalogue entry number 1, and is called (in full in the
+catalogue system) 3C219-MAP-MAPPER then
+
+      shrink 1,-32,31,32,-31
+
+will have the desired affect as shrink takes the map-catalogue
+entry for the input range and the output UV-range as its
+arguments. Of course shrink will prompt for all the
+information required if you do not supply it on the command
+line. Alternatively you could have referred to the map by
+name:
+
+      shrink 3c219-map,-32,31,32,-31
+
+where we have used the minimal-matching facilities used
+throughout Anmap.
+
+The output map will be placed in the lowest unused catalogue
+entry, and if there had not been anything else in the
+catalogue this will just be catalogue-entry number 2 -- it
+would be a good idea to try a list-catalogue at this stage to
+check what you have got. Note that the output will look
+something like:
+
+1   3C219-MAP              MAPPER       512 x 512
+2   3C219-MAP              SHRINK        64 x 64         T
+
+Two things should be noticed: the first is that the program
+which was last used to generate the map is named (in our case
+SHRINK specifying the shrink command) and the stack entry is
+marked as 'temporary' meaning you have created a new map which
+has been written to an anonymous file on disc -- the data are
+perfectly secure and will not be lost even if you leave Anmap.
+The full name of the map as far as Anmap is concerned is
+3C219-MAP-SHRINK and you can refer to this map from now on
+either by its catalogue-entry number (2) or its catalogue
+name.
+
+You may wish to change this map to be a permanent map on disc
+with a sensible file name understood to the filing system: to
+do this use the export-permanent-map command in the map-
+catalogue sub-system:
+
+*!S      map-catalogue export-permanent-map 2 3C219-SHRINK:MAP
+*!S      map-catalogue export-permanent-map 2 3C219_shrink.map
+
+The default file name would have clashed with that of the
+original map and therefore we have supplied a new name for the
+file. On completion of this command you will still be in the
+map-analysis sub-system: if you type map-catalogue on a line
+by itself then you will enter the map-catalogue sub-system and
+the prompt will change to Map-Catalogue> and you have
+available the full range of map-catalogue commands. To return
+to the map-analysis sub-system from the map-catalogue sub-
+system simply type exit.
+
+To export a map for use in other applications you can use the
+write-map command to write out a map (temporary or permanent)
+in a suitable format for the external application.
+
+Other commands which make new maps from old are:
+
+add-maps            adds two maps together with the same or
+                    different different weights.
+reproject-map       reprojects a map to another coordinate
+                    system -- it can be used to change the
+                    sampling of the map as well as rotating
+                    the image on the computing grid -- more
+                    general reprojections are available.
+shrink-map          reduce the size of a map.
+stretch-map         stretch map if pixels not square
+smooth-map          convolve a map with a gaussian beam.
+mask-map            mask one map with another.
+gate-map            gate out values on a map
+scale-map           apply a scaling and zero-level correction
+                    to a map.
+zap-map             set regions of a map to a specified value
+                    (BLANK or ZERO usually).
+change-blank-values change the values of BLANK to some other
+                    value in the map.
+horizontal-flip     flip image about a horizontal axis
+vertical-flip       flip image about a vertical axis
+UV-shift-map        shift map on the grid
+
+See also information on the edit-image sub-system.
+
+
+A second class of commands which produce output maps are those
+to work on multi-frequency and polarization data:
+
+alpha-map           makes a spectral index map from two input
+                    maps at different frequencies.
+chi-map             make a position-angle map x from a Q and U
+                                              x
+                    map.
+mI-map              make a map of polarized intensity mI = (Q2
+                    + U2)1//2.
+PERC-map            make a map of percentage polarization
+                    100 x mI//I.
+makei               makes an I map from a linear combination
+                    of a I+Q map and a Q map.
+                          _
+This is not a complete list and you should refer to the on-
+line help documentation for a complete list of available
+commands.
+
+
+The second class of commands with the exception of makei
+produce two output maps -- the maps as specified by the
+command name and an error map. The two output maps occupy the
+lowest unused entries in the catalogue and can be identified
+with the list-catalogue command.
+All the map utilities prompt for the data they need and are in
+general fairly easy to drive -- you are referred to the
+appropriate sections in help for more details. The remainder
+of this section introduces some of the problems you can
+attempt to solve using these programs.
+
+
+A third class of commands takes one or more images and combines
+them to a larger image:
+
+add-maps             add two maps with weights
+multi-add            add more than two maps with weights
+multiply-maps        multiply-maps
+divide-maps          divide two maps
+
+For more complicated combinations you can take logarithms and
+their inverse:
+
+logarithmic-map      take natural logarithm (ln) map
+exponentiate-map     take exponential of map
+
+Finally taking the Fourier transform of an image is also
+available via the command:
+
+image-fft            take fourier transform of image
+
+This when combined with the command
+
+make-mask-image      make a mask to apply to an image
+                     for example an fourier-space image
+                     before doing an inverse FFT
+
+makes a powerful set of tools for modifying images.
+
+*2 adding_observations_of_the_same_field
+
+If you have made two separate observations of the same field,
+it is very often the case that you want to average them to
+obtain an improvement in the signal-to-noise. Suppose you have
+the two maps in catalogue entries 1 and 2. The following will
+add the maps with the correct weight:
+
+      add-maps 1,0.5,2,0.5
+
+the output map will then be in catalogue-entry number 3. One
+or two complications may arise however. Suppose the second map
+has a small zero level offset from the first, this can be
+corrected using scale-map which applies a scaling:
+
+     output-map   =  input-map x scale   +   zero-level
+
+so just type
+
+      scale 2,1.0,0.050
+      add-maps ,,0.5,1,0.5
+
+to add a 50 mJy zero-level correction to catalogue-entry 2.
+Note that the output from scale is in a new catalogue entry
+(probably number 3), but we have used the fact that the output
+map from the scale command is then the default map which is
+taken as input to the add-maps command.
+
+If you want to average more than two maps the multi-add facility
+should be used -- this is more efficient and flexible than the
+repeated use of the add-maps command and can easily run jobs
+offline.  For example to add four maps with equal weighting use
+the following:
+
+Enter the multi-add sub-system
+
+      multi-add
+
+Define a "list" of maps with their weights, all the maps must be
+in the map catalogue.
+
+      add-to-map-list 1 0.25 0.0
+      add-to-map-list 2 0.25 0.0
+      add-to-map-list 4 0.25 0.0
+      add-to-map-list 5 0.25 0.0
+
+Here we are adding together the maps in entries 1,2,4 and 5 with
+equal weights and no zero-level offsets.  Now check the list:
+
+      list-maps
+
+and finally if all is OK, run the addition off line.
+
+      make
+
+Finally, if the second map has a slightly different map centre
+from the first this, can be corrected using reproject-map:
+take all the defaults except those requesting a change in map-
+centre, answer yes to the relevant question and then type in
+the RA and DEC of the map centre of catalogue entry number 1
+-- you will need to call the new map centre by a name, but
+this is only for the redtape and can be ignored.
+
+
+
+*2 spectral_index_map
+
+To make a spectral index map, you require two maps at
+different frequencies which we will assume are in catalogue
+entries numbers 1 and 2 respectively. You will first need to
+determine the noise on the map: to do this use either scan-map
+or noise-map both of which are described in the next section,
+then simply use the spectral index program -- alpha-map:
+
+      alpha-map 1,0.001,3, 2,0.002,3
+
+the data supplied to the program are, for each map, the noise
+and a gate which works such that only pixels which satisfy:
+
+
+                 map-1  >  gate-1 x noise-1
+                 map-2  >  gate-2 x noise-2
+
+
+will be included in the output. The output map will be in
+catalogue entry number 3 (if no other maps were in the
+catalogue) and in catalogue entry number 4 will be the error
+map -- this is simply the error in the spectral index at each
+point given the noise on the map.
+
+A common problem when trying to compare maps is that they do
+not have the same map centre -- this may be due either to
+different observations actually having different phase
+centres, or to some other error in pointing or software. To
+diagnose the problem the overlay-map facility in the map-
+display sub-system may prove useful (see below in the section
+on advanced plotting) and may be corrected using reproject-map
+or shift-map. The former can be used to shift the map centre
+to a new RA and DEC (you will have to change offsets in
+acrseconds to a new map centre position) or to rotate a map:
+errors in the map redtape may be corrected using edit-redtape;
+the shift-map command can be used just to shift the map
+relative to the computing grid and is considerably faster than
+the reproject-map command for this simple operation.
+
+
+
+*2 reprojecting_maps
+
+In both the two examples considered so far the possible need
+to reproject the map to another coordinate system or grid has
+become apparent. Here we describe briefly the facilities of
+reproject-map -- a very general facility which can be used in
+a variety of ways.
+
+Although the nomenclature (and the majority of the features) of
+reproject-map allow for reprojections based on astronomical data,
+the command can be used on non-astronomical images although the
+commands UV-shift-map, stretch-map, horizontal-flip,
+vertical-flip, shrink-map may be more appropriate (and easier to
+use).
+
+Reproject will prompt for the following in turn:
+
+
+Map                      this is the catalogue entry of the
+                         map to reproject.
+
+Projection type          the projection type of the map is the
+                         type of coordinate system used to
+                         represent the map. The types
+                         reproject knows about are sky,
+                         equatorial (telescope coordinates),
+                         tangent-plane. Sky coordinates and
+                         tangent-plane are very similar for
+                         small maps near to the phase centre
+                         -- tangent plane is closest to the
+                         projection of an optical plate.
+                         Equatorial coordinates are the
+                         natural coordinates of the telescope
+                         and are really the only sensible ones
+                         for large areas of sky. You can
+                         therefore change the projection from
+                         equatorial to sky if you want your
+                         map to 'look' more like the actual
+                         image on the celestial sphere.
+
+Epoch of projection      due to precession the coordinate
+                         system of the celestial sphere
+                         changes. We use either epoch of
+                         observation coordinates or 1950.0
+                         coordinates at a standard reference
+                         date. For comparison of maps made at
+                         different epochs it is essential that
+                         they are reprojected to the same
+                         reference date -- usually 1950.0;
+                         this is especially important at high
+                         declinations where differential
+                         precession across even a small area
+                         of sky can be significant.
+
+Sampling in U            the sampling of the map in arcseconds
+                         per grid point can be changed -- you
+                         supply the U coordinate value and the
+                         V coordinate is determined by the
+                         projection type you have already
+                         chosen.
+
+Position-angle
+or Skew-angle            the map may be rotated by changing
+                         this parameter. For a sky coordinates
+                         map you will be asked for the
+                         position angle of the new V direction
+                         of the output map. If the map is in
+                         equatorial coordinates this
+                         description is not appropriate
+                         (especially for wide fields) so you
+                         are asked for the skew-angle, the
+                         angle between the V direction and
+                         North through the phase centre --
+                         this is then most conveniently
+                         expressed in terms of hours-minutes-
+                         seconds.
+
+UV-range                 the UV-range on the output map.
+
+Do you want to change
+the map-centre           if you reply yes you will be prompted
+                         for (a) a source name for the new map
+                         centre -- if you supply a source in
+                         the internal list (basically 3C) then
+                         the map will be shifted to this
+                         position. For a general shift supply
+                         any name and you will then be
+                         prompted for (b) an RA and DEC of the
+                         new map centre.
+
+Convolution-type         the possible convolution types used
+                         in interpolating the old map onto the
+                         new grid are Gaussian x sinc or
+                         linear. Although the former is more
+                         accurate the latter is considerably
+                         faster.
+
+Precession-type          can be either fast or slow. The
+                         former does not use the accurate
+                         precession formula when performing
+                         the trigonometry to determine the
+                         correct location for a pixel on the
+                         output map -- this is adequate in a
+                         number of cases, for instance simple
+                         rotations or change of sampling. It
+                         is never adequate for changing the
+                         epoch of projection. There are
+                         considerable speed savings in using
+                         the fast routine.
+
+
+The general rule is: to obtain the default -- no change from
+the input map -- type return. You may want to change to fast
+precession-type and linear-interpolation for simple
+reprojections, especially if they are only for cosmetic
+reasons. For reprojections used in multi-frequency analysis we
+recommend fast precession for rotations and resampling, but
+use of the gaussian x sinc interpolation formula for accuracy.
+
+
+Other commands which perform reprojections are:
+
+  horizontal-flip
+  vertical-flip
+  UV-shift-map
+  stretch-map
+  shrink-map
+
+These may be more suitable as simple alternatives to the more
+sophisticated facilities available with reproject-map.
+
+*1 Statistics_of_Maps
+
+Two commands provide useful statistics on a map:
+
+Scan-Map can be used to scan a specified UV-region of the map
+for the following:
+
+
+  Maximum and Minimum and the associated pixels
+  Mean and Standard deviation
+
+
+This may be sufficient information in some cases, however the
+noise-map command can be very useful if you want a better
+determination of the noise in a map especially in crowded
+fields.
+
+Noise-map performs a proper noise analysis on a map. The map
+is divided into a number (up to 16) UV-windows. In each window
+the mean and standard deviation are found, pixels are then
+rejected if they differ by more than a specified number of
+standard deviations from the mean (this clips out point
+sources) and the mean and standard deviation recalculated.
+This process is then repeated and the final mean and standard
+deviation reported to the user. You will need to supply a map-
+catalogue-entry, a full UV-window and the number of sub-
+windows in U and V. Additionally you will be prompted for a
+gate -- this is defined so that points whose absolute value is
+more than:
+
+                     gate  x  current SD
+
+are clipped.
+
+The output from noise-map is written to the screen in the form
+of a table. The output of noise-map is written to the general
+results file -- the use of this facility is described later in
+this tutorial.
+
+
+*1 Flux_on_CLEANed_Maps
+
+If you have deconvolved images, such as those produced from
+CLEAN or MEM, it is possible to calculate the flux from
+sources, or regions of an extended source without model
+fitting. Three commands are available in the map-analysis sub-
+system:
+
+
+      add-flux
+      strip-flux
+      ring-flux
+
+
+Of these, add-flux provides a simple to use means of finding
+the flux in a specified UV-window while strip-flux can be used
+for a regular array of regions or ring-flux for integrals over
+circular or elliptical regions. The output from add-flux is
+just to the screen while that from the other two commands is
+placed in the standard results file (see Section 2.8) for
+further processing.
+
+To run add-flux just enter the map-analysis sub-system and
+type
+
+      add-flux 1, -10,10,5,-5,0.001
+
+to find the flux for the map in catalogue-entry number 1 in
+the UV-range -10,10,5,-5: only points with pixel values whose
+absolute value is greater than 0.001 will be included in the
+sum. If you have a current plot of the map in catalogue entry
+number 1 then you could use the cursor to define the UV-
+window:
+
+      add-flux 1
+      UV-range [-127,128,128,-127] : CURSOR
+      Gate [0.0] : 0.001
+
+and the cursor will appear on the screen. Use the arrow keys
+on the terminal to position the cursor at opposite corners of
+the UV-window. When you are happy with the position of each
+corner type any printing character (except 'Q' or 'q' which
+will break out of the routine). In either case the flux will
+be written to the terminal -- two numbers are printed one of
+which is simply the sum of numbers on the image above the gate
+(in an absolute sense) and the other this sum multiplied by
+the flux-normalization factor for the CLEAN beam of your map
+-- this number is present in the redtape of the map.
+
+More complicated cases can be dealt with by using strip-flux.
+Options exist to find the flux in a regular array of UV-
+windows, or you can input a set of UV-ranges either by hand or
+with the cursor. The routine has some advantages over repeated
+use of add-flux as it is possible to perform an error analysis
+and the results are written to the results file for additional
+processing. Strip-flux will prompt for the following in turn:
+
+Map-entry                the map catalogue entry of the map to
+                         analyse.
+Gate                     a gate: only pixels which satisfy
+                         | "pixel-values"| > "gate" will be
+                         included in the sum.
+Perform noise estimate   If you answer yes to this question
+                         you will be prompted for some further
+                         information to enable the routine to
+                         determine the noise in each of your
+                         regions:
+                         Size of beam -- number of pixels
+                         covered by the beam,
+                         Noise -- on the map in external
+                         units.
+Flux-normalization       will be prompted for if the value in
+                         the map redtape is unset (i.e. set to
+                         zero). This is the FLXNRM parameter
+                         in the redtape and is the 'factor for
+                         converting sum of numbers to flux'
+                         which is calculated by the restoring
+                         part of CLEAN. If this parameter is
+                         incorrectly set you can reset it in
+                         the edit-redtape sub-system.
+Number of regions        is the number of UV-regions you wish
+                         to calculate the flux in -- they must
+                         be rectangular; three possibilities
+                         exist:
+                         >  0 = input regions individually
+                         0 = regular grid
+                         -1 = existing regions
+                         If you request a positive number of
+                         regions you will be prompted in turn
+                         for each UV-window in a similar way
+                         to add-flux and they may be specified
+                         with the cursor by replying 'CURSOR'
+                         to the prompt. Choosing 0 will lead
+                         to further prompts to establish the
+                         regular grid:
+Width in U/V             width of each strip in the U and V
+                         directions,
+Number in U/V            number of strips in the U and V
+                         directions,
+Start pixel U/V          specify the bottom left-hand corner
+                         of the complete regular UV grid.
+                         The routine will fault you if there
+                         are more regions specified than it
+                         can handle (currently 100) or if the
+                         regular grid would fall off the edge
+                         of the map.
+                         The third option (-1) requests the
+                         last set of UV windows, this provides
+                         a convenient mechanism to perform an
+                         analysis on more than one map (e.g.
+                         different frequencies for the same
+                         source). The UV-window list is lost
+                         when you exit Anmap.
+
+
+The routine will now calculate the flux in each region -- the
+results will be written to the screen in the form of a simple
+table. The results are written to the general results file for
+analysis using the results-analysis sub-system. As an example, you
+can obtain a UV-overlay plot of these values in the following way:
+we assume you have run strip-flux successfully and that a
+current plot of the source is open and displayed on the
+graphics device:
+
+      results-analysis
+      UV-overlay
+
+The columns present in the results file will now be listed,
+the first four are the UV-windows, the fifth column is the
+flux, which is what we want so:
+
+      Column to plot [ ] : 5
+      Format description [(1PE12.2)] : (F10.2)
+
+We request a FORTRAN format for the numbers of F10.2.
+
+A set of rectangles will now appear on the plot -- these are
+just the UV-windows in which you have calculated the flux. In
+each rectangle a number will appear in the format you
+requested -- this is the flux in the UV-region as calculated
+by strip-flux. The size and font of the text plotted may be
+controlled using the set-style TEXT command of the map-display
+sub-system.
+
+The final command to calculate the flux on a map which will be
+described here is ring-flux which like strip-flux outputs its
+results to the standard results file. Ring-flux calculates the
+flux in elliptical annuli about a central position. You will
+have to supply the following:
+
+Map                      map-catalogue entry of the map to
+                         analyse.
+Number of annuli         the total number of annuli.
+Annulus radius           radius of each annulus in arcseconds
+                         (the default is chosen so that the
+                         annuli are approximately three pixels
+                         wide). Note that considerable errors
+                         may be introduced into the sum if the
+                         annuli are too narrow in terms of
+                         pixels -- the routine is fairly naive
+                         in deciding how much flux to allocate
+                         to each annulus. The simplest way
+                         round this problem is to make a map
+                         with greater oversampling.
+Eccentricity             of the ellipse; setting this
+                         parameter equal to unity will
+                         integrate in circular annuli.
+Position Angle           of the major axis of the ellipse
+                         measured in degrees from North
+                         through East. The default is 0.0.
+Centre                   of the ellipse -- this should be
+                         specified in UV coordinates and may
+                         be defined using the cursor in the
+                         normal way -- reply CURSOR to the
+                         prompt.
+UV-range                 this is just the UV-range of the map
+                         to use in the analysis. Only flux
+                         within both this UV-range and a given
+                         anulus will contribute to the sum.
+
+The results of the analysis are written to the standard
+results file. To produce a plot of say flux in an annulus
+against the mean radius of the annulus you can use the plot
+options of results-analysis in the following way (we assume
+you have successfully used ring-flux):
+
+      results-analysis
+      plot
+      Column for x-axis [1] : 1
+      Column for y-axis [2] : 2
+
+This uses the mean radius and flux columns
+
+      Range in x [0.0,25.0] : CR
+      Range in y [0.0,0.02] : CR
+
+the actual ranges on the data will have been displayed to help
+you
+
+      Plot as single points [yes] : y
+      Symbol for plot [1] : CR
+      Title [Ring-Flux output on July 1 1988] : ... some text ...
+
+The plot will now appear on the screen -- this may be plotted
+as an overlay to the current plot if the graphics-overlay-mode
+has been enabled in the map-display sub-system.
+
+12 Making_maps_consistent
+
+A common problem when trying to compare maps is that they do
+not have the same map centre -- this may be due either to
+different observations actually having different phase
+centres, or to some other error in pointing or software. To
+diagnose the problem the overlay-map facility in the map-
+display sub-system may prove useful (see below in the section
+on advanced plotting) and may be corrected using reproject-map
+or shift-map. The former can be used to shift the map centre
+to a new RA and DEC (you will have to change offsets in
+acrseconds to a new map centre position) or to rotate a map:
+errors in the map redtape may be corrected using edit-redtape;
+the UV-shift-map command can be used just to shift the map
+relative to the computing grid and is considerably faster than
+the reproject-map command for this simple operation.
+
+
+*1 smoothing_and_comvolutions
+
+To enhance features which vary slowly over an image (i.e. have low
+spatial frequency) it is useful to reduce the resolution of an
+image -- this is best achieved using smooth-map which performs a
+convolution with a gaussian.  If the beam (point-spread-function)
+of the image is a guassian then the output image will also have a
+beam (PSF) which is well defined.
+
+More complicated convolutions can be achieved using the
+convolve-map command.  This reads a file from disc which contains
+the convolving array -- in this way very general spatial filtering
+may be achieved.  The convolve-map command is used in the
+edge-enhancement procedure which implements the Sobel
+edge-enhancment filter.
+
+The image-FFT command creates an FFT of the image (real and
+imaginary parts).  This you can combine with any masks you like so
+as to perform filtering in the fourier plane.  Of course, you can
+use the image-FFT command in combination with the multiply-maps
+command to perform convolutions via fourier-space.
+
+*

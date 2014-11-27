@@ -1,0 +1,59 @@
+The files in this directory are used to make up the 'equation' equation
+handeling package, which includes a simple comand line equation handeling
+tool and a library of useful routines which can be used from C-programs.
+
+
+the files are:
+	README		This file
+	COPYING		Copyrigth notice
+	CHANGES		Details of the changes in this package
+	eqntool.c	main routine for the eqntool program
+	eqnbase.c	basic routines
+	eqndiff.c	differentiation
+	eqnexpand.c	expansion
+	eqnfunct.c	handeling functions
+	eqnnames.c	handels names
+	eqnpoly.c	conversion into polynomials
+	eqnrpe.c	reverse polish calculator
+	eqnsubst.c	substitution
+	lex.l		lexicial analyiser
+	yacc.y		parser
+	eqn.h		header file
+	eqntool.doc	manual page for eqntool program
+	eqn.cat3	manual page discribing the subroutines
+	eqn.cat5	manual page discribing syntax of equations
+	Makefile	a makefile
+	Makefile.eqn	makefile for stand alone
+	Makefile.livsurf makefile for Inclusion in Liverpool Surface Package
+
+To compile first edit the file Makedefs and then type
+
+	make 
+
+To install the library, eqntool program and manual pages
+
+	make install
+
+-----------------------------------------------------------------------
+
+It would be handy if you could send us your email address, that way
+I can keep track of people who have used it and let them know about
+any improvements. It would also be nice if I got some feedback,
+did you actually find it useful? what are you using it for? what
+additions would you like to see?
+
+------------------------------------------------------------------------
+
+Copyright I guess there should be some copywrite for this package,
+
+			Copyright (c) 1993
+
+	Liverpool University Department of Pure Mathematics,
+	Liverpool, L69 3BX, England.
+
+	Author Dr R. J. Morris.
+
+	e-mail rmorris@uk.ac.liv.uxb
+
+	Please see the file COPYING for full copyright notice and 
+	details of the distribution.

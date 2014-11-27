@@ -1,0 +1,20 @@
+#!/mrao/anmap/anm3d/ida
+
+     set from {} ; set to image.thin ; set gate 0.0 ; set nsmax 1
+     for {set n 0} {$n < [llength $argv]} {incr n} {
+	switch -- [lindex $argv $n] {
+	{-from}		{incr n ; set from [lindex $argv $n]}
+	{-to}		{incr n ; set to [lindex $argv $n]}
+	{-gate}		{incr n ; set gate [lindex $argv $n]}
+	{-nmax}		{incr n ; set nsmax [lindex $argv $n]}
+	}
+     }
+     set im1 [img_image read -file $from -type 1]
+     img_apply $im1 binary $gate
+     img_region thin $im1 -nsmax $nsmax -report
+     set nreg [expr round( [lindex [img_anal $im1 maxmin] 1] ) ]
+     img_image write $im1 -file $to -type 1
+     puts {}
+     puts "Found $nreg thinning levels"
+     puts {}
+     

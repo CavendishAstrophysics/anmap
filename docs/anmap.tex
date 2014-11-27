@@ -1,0 +1,135 @@
+\documentstyle[12pt]{article}
+\include{anmap_macros}
+\begin{document}
+\begin{center}
+{\large\bf Anmap --- An image and data analysis system}
+\end{center}
+
+Anmap is a system for the analysis and processing of images
+and spectral data.  Originally written for use in Radio Astronomy,
+much of its functionality is applicable to other disciplines and
+the package is being enhanced by the addition of new algorithms
+and analysis procedures of direct use in, for example, NMR
+imaging and spectroscopy.  The unique feature of Anmap is the
+emphasis placed on the analysis of data with an aim to extracting
+quantitative results for comparison with theoretical models
+and/or other experimantal data.  To achieve this Anmap provides:
+(a) A wide range of tools for analysis, fitting and modelling
+(including standard image and data processing algorithms);
+(b) A powerful environment for users to develop their own
+analysis/processing tools either by combining existing 
+algorithms and facilities with the very powerful command
+(scripting) language or by writing new routines in FORTRAN
+which integrate seemlessly with the rest of Anmap.  
+
+{\bf Features of Anmap include the following:}
+\begin{npars}
+\item A powerful interface and development environment
+which is ideally suited to both new and advanced users
+as well as developers in the Anmap Environment.
+\begin{rpars}
+\item Anmap's functionality is accessed by
+a user-friendly interface mixing both descriptive
+commands and informative prompts for parameters with an
+X-windows based graphical user interface (GUI). These modes
+of operation are available {\em simultaneously to the user}.
+\item On-line documentation and help available from the command
+line or GUI.
+\item Built in tools such as: editor; calculator; 
+clipboard; file manager; options editor.
+\item Ability to access all standard UNIX commands as if
+part of the package --- Anmap appears much like a UNIX
+shell.
+\item A sophisticated command language with a full range of
+language features: variables; arrays; lists; loops; 
+conditionals; procedures; event and background processing; 
+interprocess communication; access to data,
+header information etc.
+\item The GUI is fully programmable from the command language,
+users may create their own windows with the full functionality
+of the most powerful X-window based toolkits!
+\item Easy writing and integration of FORTRAN code to add new
+functionality, a large range of routines are provided for
+data manipulation and analysis, I/O, user interaction etc.
+Routines added in this way are indistinguishable from built-in
+Anmap functionality.
+\end{rpars}
+\newpage
+\item Analysis and processing algorithms cover both standard
+image/data processing and specialised modelling and analysis
+with error estimation where applicable.
+\begin{rpars}
+\item Full range of routines for manipulation of
+image and spectral data: arithmetic operations; Fourier
+Transforms; filtering; edge-detection; convolution, statistics; 
+integration; slices; measurements from images.
+\item Image deconvolution via the CLEAN algorithm.
+\item Image editing and modelling: pixel-based image editing;
+region and slice extraction; construction of model images and
+masks; image reprojection, rotation, flips and re-sampling.
+\item Model fitting of both spectral and image data: routines
+applicable to both Radio Astronomy and NMR.
+\item Specialised analysis routines: fractal dimensionality of
+images; cluster analysis; percolation analysis.
+\item Full range of routines for analysis of multi-frequency
+polarization Radio Astronomical data.
+\item Anmap can handle mathematical equations (for example for
+plotting functions), expressed in a natural way such as
+$sin(x) exp(-(x-x0)**2/2s)$.
+\end{rpars}
+\item Data are stored in an internal Anmap format with the
+ability to import and export data from a number of formats.
+Data within Anmap can be organised using a catalogue (simple
+data base) system.
+\begin{rpars}
+\item import/export directly from/to NMR image and spectral files, 
+FITS, raw ascii and binary data;
+\item or via external filters to/from GIF, TIFF, RLE.
+\item Handle multiple catalogues to organize work; data are stored
+in standard UNIX files within the normal directory structure.
+\item  Output images created automatically and added to the
+catalogue without need for users to continually think up
+file names (no more junk1.dat temp.dat!).
+\end{rpars}
+\item Graphics functionality combines
+excellent publication quality output with data display.
+\begin{rpars}
+\item Object-oriented graphics system with control of
+picture composition.
+\item Scientific graphs with: multiple lines each with
+individual line styles, colour and markers; automatic
+keys; full control over style of frames titles etc.;
+log-log, log-linear, linear-linear plots; automatic scaling and
+peak matching; histograms; function plotting; annotations.
+\item Image display via: grey-scale/colour images; contour
+plots; surface plots; isometric plots; vector fields;
+manipulation of colour pallets; annotations; symbol plots.
+\item Drawing system and various other graphical output
+from analysis routines can all be combined in one
+publication plot exported as a postscript file.
+\item Screen capture in a variety of formats.
+\end{rpars}
+\end{npars}
+
+Anmap is still under development and a number of important
+enhancements are planned before I consider it to be 
+ready for general use:
+\begin{apars}
+\item The visualization and graphics in general will
+be revised and improved.  Specifically the program will
+be converted to use a 3D package capable of good visualization
+such as PHIGS (or other PEX API) or OpenGL.
+\item Suport for N-dimensional data will be added and existing
+algorithms adapted where necessary.
+\item The use of some proprietry software (mainly NAG) needs
+to be revised.
+\end{apars}
+\vspace{1.5cm}
+Dr. Paul Alexander \hfill October 1993
+\newline
+Mullard Radio Astronomy Observatory,
+\newline
+Cavendish Laboratory, Cambridge, CB3 OHE.
+\end{document}
+
+

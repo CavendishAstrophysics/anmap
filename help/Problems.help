@@ -1,0 +1,143 @@
+*1 where_is_my_map
+
+Please remember when using ANMAP that the default file space assumed for
+looking for your map is your default map directory.  All maps created by
+ANMAP will be on this directory.  All other files referred to by ANMAP
+will be on your default directory at login.
+
+*1 problems_with_the_stack
+
+There are known bugs in the system which sometimes leave the map stack
+in a funny state.  This can manifest itself by, for example, a contour
+plot plotting bits of more than one map.  The corrective action to take
+is to re-initialise the stack:
+
+     catalogue-system re-init-stack
+
+*1 unused_catalogue_entries
+
+When commands abort in unusual circumstances it is possible that entries
+in the map-catalogue become unusable.  If the entry contain data then either
+a READ or WRITE flag may be set on the entry.  If there is no data in the
+entry then that entry may appear to be skipped for no good reason when
+choosing a location for an output map.  All these problems can be cured
+using the clear command:
+
+     catalogue-system clear-allocation {list-of-entries}
+
+This list os a standard command-language list.  For example to clear
+the allocation to catalogue entry 17 use:
+
+     cat-sys clear 17
+
+To clear up all the entries in your catalogue then type:
+
+     cat-sys clear 1-256
+
+although this will take some time.
+
+*1 my_catalogue_refers_to_non-existent_maps
+
+This can occur if you have deleted maps from disc without using the
+facilities of the map catalogue system.  Use the verify command in the
+map catalogue sub-system to repair your catalogue entries.
+
+     cat-sys verify,,,,
+
+*1 Primary_Beam_Correction
+
+There seems to be some problems importing maps from the NORDs 
+in terms of redtape problems --- this is one such problem fixing the
+redtape for use of primary-beam correction.
+
+The imported map often has no pointing direction and
+an incorrect telescope idenytifier in the redtape -- this causes the 
+primary beam correction stuff to "switch off".  Three new options have been
+added to Anmap's edit-redtape to correct the pointing information and also 
+the telescope identifier:
+
+   set-redtape-item     pb-pointing          set pointing direction
+                        pb-to-map-centre     set pointing = map centre
+                        telescope-identifier code for the telescope
+
+Note that the correct pb position has to be specified at the epoch of the
+observations (and not 1950.0).  The pb-to-map-centre is designed to make
+things easier if your map-centre and pointing centre coincide.  
+
+Telescope identifies are as follows:
+
+                           0 - undefined
+     (1-20)    MRAO        1 - CLFST 151 MHz
+                           2 - CLFST 38 MHz
+                           3 - VLBI 81.5 MHz
+                           4 - RYLE 5 GHz
+                           5 - RYLE 15 GHz
+                           6 - 6C 151MHz
+                           7 - old 38MHz
+                           8 - one mile
+                           9 - old 5km
+
+A complete example of correcting the redtape would look something like
+
+  edit-redtape
+  read-redtape 12
+  set-redtape-item pb-to-map-centre ; set-redtapoe-item tel-iden 1
+  write-redtape 12
+
+*1 PGPLOT_characters
+
+Special action is needed to pass PGPLOT characters from the command
+line (note that in response to a prompt for a PGPLOT text string no
+special action is required).  The reason for this is that the tcl
+command language used by Anmap, like the UNIX c-shell, treats "\" as
+a special character and therefore the "\" does not get passed correctly
+to the PGPLOT routine.  To overcome this problem you must "protect" the
+escape character "\", the best way to do this is by surrounding the
+text with curly braces or using a double backslash, e.g.
+
+The following will NOT produce a subscripted greek letter:
+   Draw> text-draw 10 10 0.0 '\ga\d1\u Limits'
+Either of the following however will work:
+   Draw> text-draw 10 10 0.0 {'\ga\d1\u Limits'}
+   Draw> text-draw 10 10 0.0 '\\ga\\d1\\u Limits'
+
+This effect is a "feature" of the interaction between the command 
+language and PGPLOT, a better fix will require using a modified version
+of one or the other (in fact it would have to be PGPLOT) which is not
+likely in the near future.
+
+*1 Special_Characters
+
+A number of characters have special meaning in Anmap and you should be
+aware of these or you may get confised by the response (or lack of it)
+from Anmap.
+
+  Backslash      \        is an escape character, or used at the end of
+                          a line a line continuation character
+  Semi-Colon     ;        separates commands
+  Braces         {}       these act like special quote characters, usually
+                          used to group commands; within braces variable
+                          substitution is turned off
+  Quotes         ""       these not only quote strings they can also be used to
+                          group command and must come in pairs, therefore
+                          a single unmatched quote on a line will lead to
+                          that line NOT being interpreted until the
+                          matching quote is supplied.
+  Brackets       []       these provide an important mechanism for command
+                          substitution and must come in pairs, a command
+                          is not considered finished if you type and
+                          openning bracket, but not a closing bracket.
+  Hash           #        this introduces a comment line
+
+All of the following will appear to the command interpreter as incomplete
+commands and will cause the interprter to wait for the closing character
+(} or " or ]) before continuing:
+
+  map-display {
+
+  map-display "
+
+  map-display [
+
+
+*

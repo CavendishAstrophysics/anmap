@@ -1,0 +1,87 @@
+
+*1 Version X0.54a
+
+Version 0.54a of Anmap has been released.  The main change is a switch
+to using version 7.4 of tcl and 4.0 of tk.  This will undoubtedly
+mean that some things in Anmap are now broken.  Please report them to
+me.  Also the problem regarding the new version of PGPLOT has been fixed
+in this release.
+
+One side effect is that the Xanmap command now produces two windows
+instead of one.  This is a necessary change, but one which greatly
+speeds up the statup time for Xanmap.
+
+PA
+
+*1 angular_flux
+
+A new command to sum a map in angular segments is available in the
+map-analysis sub-system.  See
+
+    help map-analysis angular-flux
+
+for more details.
+
+*1 Command_line_options
+
+Anmap now supports a number of command line options:
+
+       -help        = This message
+       -cd [dir]    = Specify working directory as dir [~/mrao]
+       -cwd         = Do not change to a working directory [no]
+       -swd         = Change to standard working directory [yes]
+       -X           = Startup Xanmap [yes]
+       -noX         = Startup anmap [no]
+       -winX        = Startup X anmap in own window [yes]
+       -nowinX      = Startup X anmap in current window [no]
+       -mapsize [s] = Set standard map size [256]
+       -nmaps [n]   = Set number of maps [20]
+       -buffsize [s]= Set standard buffer size [1024]
+       -nbuff [n]   = Set number of buffers [4]
+
+This enables you to start Xanmap with the anmap command as:
+
+	anmap -X
+
+If you do not want to have a separate embedded Xterm you can use:
+
+	anmap -X -nowinX
+or
+	Xanmap -nowinX
+
+By default Anmap changes directory to ~/mrao.  You can now overide this
+with the option "-cwd" or change to another directory with the options
+"-cd dir".  If you are analysing large images then you will find the
+"-mapsize" options very useful.  For example if your standard image size
+is 1024x1024, then you should probably start Anmap with:
+
+	anmap -mapsize 512
+
+It is not necessary to specify your actual map size as the amount of reserved
+storage is in fact:
+
+	nmaps * mapsize**2
+
+Additionally you may find it useful to set some options regarding working
+directory in your ~/mrao/init_anmap.tcl file.  For example to stop Anmap
+changing directory to ~/mrao then simply add the following to your init
+file:
+
+	set Anmap(init:cwd) 1
+
+Or to change to your own specified working directory add the following:
+
+	set Anmap(init:dir) directory_name
+
+
+
+*1 PGPLOT_5.0
+
+Anmap is now using PGPLOT 5.0, but is not yet making use of the new
+facilities offered in this release.  I hope this will happen in the
+near future.
+
+*1 Wishlist_and_Bugs
+*@/mrao/anmap_v7.5/etc/WISHLIST
+
+*

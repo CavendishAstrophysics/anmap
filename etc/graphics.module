@@ -1,0 +1,261 @@
+#
+# Standard basic graphics module for Anmap
+#
+
+# define global command to access the graphics system
+set global.commands(graphic-system) {main.system graphic-system}
+set global.commands(drawing-display) {main.system drawing-display}
+set global.commands(data-display) {main.system data-display}
+set global.commands(map-display) {main.system map-display}
+set global.commands(scratch-display) {main.system scratch-display}
+set global.commands(default-setup) {global.default_setup}
+proc global.default_setup { sys } {
+   switch -- $sys {
+     {map-display}     { anmap_command map-display initialise all
+                         anmap_command graphic opaque}
+     {scratch-display} { anmap_command scratch-display initialise all
+                         anmap_command graphic opaque}
+     {data-display}    { anmap_command data-display initialise all
+                         anmap_command graphic opaque}
+     {drawing-display} { anmap_command drawing-display initialise all 
+                         anmap_command graphic transparent}
+   }
+}
+
+# define graphics sub-systems
+# graphics system commands
+set sysnames(graphic-system) {graphic}
+set anmapnames(graphic) {graphic-system}
+set graphic.prompt "Graphic> "
+proc graphic.command {args} { eval anmap_command graphic-system $args }
+set graphic.commands(output-device) {}
+set graphic.commands(open-device) {}
+set graphic.commands(close-device) {}
+set graphic.commands(clear-device) {}
+set graphic.commands(next-page) {}
+set graphic.commands(segment-screen) {}
+set graphic.commands(device-size) {}
+set graphic.commands(device-select) {}
+set graphic.commands(select) {graphic.select}
+set graphic.commands(plot) {}
+set graphic.commands(refresh) {}
+set graphic.commands(initialise) {}
+set graphic.commands(default-text-style) {}
+set graphic.commands(default-line-style) {}
+set graphic.commands(view-port) {}
+set graphic.commands(transparent) {}
+set graphic.commands(opaque) {}
+set graphic.commands(depth) {}
+set graphic.commands(default-device) {}
+set graphic.commands(list-graphics) {}
+set graphic.commands(get) {}
+set graphic.commands(save) {}
+set graphic.commands(recall) {}
+set graphic.commands(copy-definition) {}
+proc graphic.select {args} {
+  eval [anmap_command graphic select $args]
+}
+
+
+# drawing-display commands
+set anmapnames(draw) {draw-display}
+set sysnames(drawing-display) {draw}
+set draw.prompt "Draw> "
+proc draw.command {args} { eval anmap_command drawing-display $args }
+set draw.commands(line-draw) {}
+set draw.commands(arc-draw) {}
+set draw.commands(circle-draw) {}
+set draw.commands(ellipse-draw) {}
+set draw.commands(box-draw) {}
+set draw.commands(erase-draw) {}
+set draw.commands(cross-draw) {}
+set draw.commands(arrow-draw) {}
+set draw.commands(text-draw) {}
+set draw.commands(set-text-style) {}
+set draw.commands(set-line-style) {}
+set draw.commands(set-fill-style) {}
+set draw.commands(set-arrow-style) {}
+set draw.commands(set-plot-options) {}
+set draw.commands(set-coordinates) {}
+set draw.commands(physical-coordinates) {}
+set draw.commands(list-objects) {}
+set draw.commands(delete-object) {}
+set draw.commands(plot) {}
+set draw.commands(initialise) {}
+set draw.commands(get) {}
+set draw.commands(update-object) {}
+set draw.commands(compound-object) {}
+
+# annotate commands
+set anmapnames(annot) {annotate}
+set sysnames(annotate) {annot}
+set annot.prompt "Annotate> "
+proc annot.command {args} { 
+   global anmap_owner
+   eval anmap_command $anmap_owner annotate $args
+}
+set annot.commands(line-draw) {}
+set annot.commands(arc-draw) {}
+set annot.commands(circle-draw) {}
+set annot.commands(ellipse-draw) {}
+set annot.commands(box-draw) {}
+set annot.commands(erase-draw) {}
+set annot.commands(cross-draw) {}
+set annot.commands(arrow-draw) {}
+set annot.commands(text-draw) {}
+set annot.commands(set-text-style) {}
+set annot.commands(set-line-style) {}
+set annot.commands(set-fill-style) {}
+set annot.commands(set-arrow-style) {}
+set annot.commands(set-plot-options) {}
+set annot.commands(list-objects) {}
+set annot.commands(delete-object) {}
+set annot.commands(plot) {}
+set annot.commands(initialise) {}
+set annot.commands(get) {}
+set annot.commands(update-object) {}
+set annot.commands(compound-object) {}
+
+# data-display commands
+set anmapnames(data) {data-display}
+set sysnames(data-display) {data}
+set data.prompt "Data-display> "
+proc data.command {args} { eval anmap_command data-display $args }
+set data.commands(set-frame-style) {}
+set data.commands(set-text-style) {}
+set data.commands(set-title-options) {}
+set data.commands(set-key-options) {}
+set data.commands(line-options) {}
+set data.commands(title) {}
+set data.commands(x-title) {}
+set data.commands(y-title) {}
+set data.commands(x-range) {}
+set data.commands(y-range) {}
+set data.commands(view-port) {}
+set data.commands(plot) {}
+set data.commands(initialise) {}
+set data.commands(annotate) {data.annotate}
+set data.commands(get) {}
+proc data.annotate { args } {
+   global anmap_sys anmap_parent anmap_owner sysnames
+   set sys $sysnames(annotate)
+   set anmap_owner data-display
+   if [llength $args] then {
+     eval interp_command $sys $args
+   } else {
+     uplevel #0 "anmap_prompt $\{$sys.prompt\}"
+     set anmap_parent $sysnames(data-display)
+     set anmap_sys $sys
+   }
+}
+
+# map-display commands
+set anmapnames(plot) {map-display}
+set sysnames(map-display) {plot}
+set plot.prompt "Map-display> "
+proc plot.command {args} { eval anmap_command map-display $args }
+set plot.commands(set-map) {}
+set plot.commands(overlay-map) {}
+set plot.commands(set-pips) {}
+set plot.commands(set-grid) {}
+set plot.commands(set-uv-range) {}
+set plot.commands(set-interpolation) {}
+set plot.commands(set-style) {}
+set plot.commands(grey-scale) {}
+set plot.commands(vector-plot) {plot.system vector-plot}
+set plot.commands(symbol-plot) {plot.system symbol-plot}
+set plot.commands(contours) {}
+set plot.commands(linear-contours) {}
+set plot.commands(logarithmic-contours) {}
+set plot.commands(reset-contour-levels) {}
+set plot.commands(clear-contour-levels) {}
+set plot.commands(plot) {}
+set plot.commands(initialise) {}
+set plot.commands(display) {}
+set plot.commands(title-plot) {}
+set plot.commands(modify-lookup-table) {}
+set plot.commands(cursor-position) {}
+set plot.commands(get) {}
+set plot.commands(surface-plot) {}
+set plot.commands(isometric-plot) {}
+set plot.commands(annotate) {plot.system annotate}
+set plot.commands(crosses-file) {}
+proc plot.system { sysname args } {
+   global anmap_sys anmap_parent anmap_owner sysnames
+   set sys $sysnames($sysname)
+   set anmap_owner map-display
+   if [llength $args] then {
+     eval interp_command $sys $args
+   } else {
+     uplevel #0 "anmap_prompt $\{$sys.prompt\}"
+     set anmap_parent $sysnames(map-display)
+     set anmap_sys $sys
+   }
+}
+set anmapnames(vectors) {vector-plot}
+set sysnames(vector-plot) vectors
+set vectors.prompt "Vectors> "
+proc vectors.command {args} { eval anmap_command map-display vector-plot $args }
+set vectors.commands(on) {}
+set vectors.commands(off) {}
+set vectors.commands(position-angle-map) {}
+set vectors.commands(intensity-map) {}
+set vectors.commands(scaled-vectors) {}
+set vectors.commands(constant-length-vectors) {}
+set vectors.commands(sampling) {}
+set vectors.commands(gate) {}
+set vectors.commands(rotation-angle) {}
+set vectors.commands(display) {}
+
+set anmapnames(symbol) {symbol-plot}
+set sysnames(symbol-plot) symbol
+set symbol.prompt "Symbol> "
+proc symbol.command {args} { eval anmap_command map-display symbol-plot $args }
+set symbol.commands(on) {}
+set symbol.commands(off) {}
+set symbol.commands(mark-blank-values) {}
+set symbol.commands(mark-max-pixels) {}
+set symbol.commands(mark-min-pixels) {}
+set symbol.commands(display) {}
+
+# scratch-display commands
+set anmapnames(scratch) {scratch-display}
+set sysnames(scratch-display) {scratch}
+set scratch.prompt "Scratch> "
+proc scratch.command {args} { eval anmap_command scratch-display $args }
+set scratch.commands(set-frame-style) {}
+set scratch.commands(set-text-style) {}
+set scratch.commands(set-line-style) {}
+set scratch.commands(title) {}
+set scratch.commands(x-title) {}
+set scratch.commands(y-title) {}
+set scratch.commands(view-port) {}
+set scratch.commands(plot) {}
+set scratch.commands(initialise) {}
+set scratch.commands(annotate) {scratch.system annotate}
+set scratch.commands(get) {}
+proc scratch.system { sysname args } {
+   global anmap_sys anmap_parent anmap_owner sysnames
+   set sys $sysnames($sysname)
+   set anmap_owner scratch-display
+   if [llength $args] then {
+     eval interp_command $sys $args
+   } else {
+     uplevel #0 "anmap_prompt $\{$sys.prompt\}"
+     set anmap_parent $sysnames(scratch-display)
+     set anmap_sys $sys
+   }
+}
+
+# initialise the graphic system
+iocmd clear-cli
+graphic output-device /xwindow
+
+# graphic device-size 12,0.7
+graphic select image 1
+graphic select scratch 1
+graphic select graph 1
+graphic select draw 1
+#if $Xanmap then {
+#  graphic open-device
+#}

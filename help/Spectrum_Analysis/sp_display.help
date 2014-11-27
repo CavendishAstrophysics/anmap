@@ -1,0 +1,117 @@
+
+Spectrum-analysis-program: Graphical display of a spectrum
+
+
+Keys:
+     title                                title for the plot
+     xtitle                               title for X-axis
+     ytitle                               title for Y-axis
+     xrange                               range in X [whole spectrum]
+     yrange                               range in Y [whole spectrum]
+     xc                                   column for X-axis  [1]
+     yc                                   column for Y-axis  [2]
+     logx                                 Plot X-data logarithmically [UNSET]
+     logy                                 Plot Y-data logarithmically [UNSET]
+     rescale           nodata             Scale plots to the first plot
+     plot_device                          plot-device specification [/xwindow]
+     device_size                          specify size and aspect ratio forthe
+                                          plot device window (in mm)
+     character_size                       size of characters (scaling of
+                                          default size). [1.5]
+     character_font                       font for characters [2]
+     symbol_size                          size of symbols to use in the plot
+                                          [1.5]
+     offset                               offset along y-axis to offset each
+                                          plot after the first plot (see also
+                                          offset1...offset12)
+     yl_off                               distance of y-axis from left-side
+                                          of frame (characters) [3]
+     multi_plot                           break plot up into i x j sub-plots
+                                          [1,1]
+     plot_size                            size for plot in view surface
+                                          specified in normalized device
+                                          coordinates. [0.15,0.85,0.15,0.85]
+     plot_frame        nodata             If set plot a frame, if not plot
+                                          a box. [UNSET]
+     plot_xaxis        nodata             If set plot x-axis
+     plot_axes         nodata             If set plot axes for y=0; x=0.
+                                          [UNSET]
+     plot_grid         nodata             If set plot a grid [UNSET]
+     plot_ticks        nodata             If set plot minor tick marks [UNSET]
+     plot_histogram    nodata             If set plot file as histogram [UNSET]
+     plot_key          nodata             Set plotting of key to ON [UNSET]
+     key_opts                             Options for key: six numbers;
+                                          xpos,ypos == position of key in frame
+                                          font == font to use for key
+                                          drop == text drop between lines
+                                          scale == scale factor for key
+                                          frame == plot frame around key (0/1)
+                                                   1 = yes
+     label_horizontal  nodata             If set plot Y-axis labels so that
+                                          the text is horizontal. [UNSET]
+     lopt1                                Options for line 1 --> 9.
+       ..2                                Each option consists of three
+       ..3                                integers in format i1,i2,i3:
+       ..4                                  i1 = line-style index [1]
+       ..5                                  i2 = line colour index [n]
+       ..6                                  i3 = mark type [0]
+       ..7                                if i3>0 then the data points are
+       ..8                                marked with marker symbols i3 and
+       ..9                                no line is drawn.
+       ..10                               If i3<0 then the data points are
+       ..11                               marked and a line is drawn.
+       ..12                               If i1<0 then the line is drawn
+                                          is a histogram; see also
+                                          plot_histogram to force all lines to
+                                          be plotted as histograms.
+     file1     nokeyok,needed             File to plot.  Up to nine files
+     file2     nokeyok                    may be specified.  The line style
+       ..3                                to use for plotting may be set using
+       ..4                                lopt1 --> lopt9.  At least one file
+       ..5                                must be specified all default to [-].
+       ...
+       ..12
+     key1                                 specify key for file1 [file1]
+      ..2                                 specify key for file2 [file2]
+      ..3                                 specify key for file3 [file3]
+      ..4                                 specify key for file4 [file4]
+      ..5                                 specify key for file5 [file5]
+      ..6                                 specify key for file6 [file6]
+      ..7                                 specify key for file7 [file7]
+      ..8                                 specify key for file8 [file8]
+      ..9                                 specify key for file9 [file9]
+      ..10
+      ..11
+      ..12
+     offset1                              offset line (n) by the specified
+         ..2                              value along the y-axis
+         ...
+         ..12
+      
+
+
+The specifies files are plotted.  If device is not set the the user will be
+prompted for a valid device name, a ? will produce a list.
+
+If the spectrum file has header items \XTITLE and \YTITLE these will
+be used for the display titles, bt may be overridden with the command
+line options.
+
+Examples:
+
+Simple plot of two files overlayed
+%     sp_display data1.dat data2.dat device /X
+
+Plot of one file with title
+%     sp_display data.dat title 'Data file' xtitle 'X axis' \
+                          ytitle 'Y axis'
+
+Use of environment variables to set standard plot default options
+%     setenv PLOT_SIZE 0.2,0.8,0.3,0.7
+%     setenv LOPT1 1,2,0
+%     setenv LOPT2 1,3,0
+%     sp_display data1.dat data2.dat data3.dat xrange 0,10 yrange -10,10 \
+                 title 'Plot of 3 data file'
+
+
+

@@ -1,0 +1,40 @@
+
+An extensive help system is available within ANMAP and is similar to the
+system help available under the operating system.  The help program is a simple
+hierarchicaly organized system.  You will be offered information on
+a number of topics, for each of these information on sub-topics will
+be offered.  To obtain the information type a valid abreviation for
+the topic (note the lower and upper-case letters are equivalent as
+are a dash ( '-' ) and underscore characters ( '_' )).  To list the
+available topics at any level simple type a '?' followed by a carriage
+return.
+
+To go up a level in the help, simply type return in response to the
+prompt. To exit help press Escape (or Escape and Return).
+
+
+*2 news
+
+Enter the news system -- this closely resembles help.  News gives
+information on the latest changes to ANMAP.
+
+*2 Examples
+
+Capitals will be used to indicate what you type -- upper and lower case
+are in fact equivalent.
+
+1) Basic use of help
+
+ help
+
+Enter the help system, some introductory text will appear followed by a
+list of options.  You will be prompted for the output device - simply
+type return to get the output to the terminal.
+
+2) Help on a specific topic (without getting the initial information)
+
+ help map-analysis,,
+
+Information and the sub-topics for the map-analysis sub-system will be
+displayed.
+

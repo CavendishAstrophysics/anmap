@@ -1,0 +1,26 @@
+
+The principal command to manipulate the catalogue is imcat:
+
+   imcat
+
+      option ?ce? ?data?
+
+In all the descriptions which follow "ce" refers to a numeric catalogue
+entry number and ceRec to an array which contains the catalogue record
+structure.
+
+This is the main command to manipulate the catalogue.  Option is one of:
+
+   o get  ce  ceRec           Read from the catalogue catalogue entry ce.
+                              ceRec returns the data structure for a record
+                              (see below).
+
+   o put ce  ceRec           Write ceRec to catalogue entry ce.
+
+   o delete ce               Delete entry ce and associated file
+
+   o remove ce               Remove entry ce from the catalogue, the
+                             map file associated with this entry (if any)
+                             is not effected.
+
+   o rename ce ?st1? ?st2?   Entry ce is renamed.  st1 is a string 

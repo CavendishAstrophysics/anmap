@@ -1,0 +1,67 @@
+# define command to switch to the catalogue sub-system
+set global.commands(catalogue-system) {main.system catalogue-system}
+
+# catalogue-system commands
+set anmapnames(catalogue) {catalogue-system}
+set sysnames(catalogue-system) {catalogue}
+set catalogue.prompt "Map-Catalogue> "
+proc catalogue.command {args} { eval anmap_command catalogue-system $args }
+
+set catalogue.commands(add-to-catalogue) {imcat_addToCat}
+set catalogue.commands(remove-from-catalogue) {imcat_remove}
+set catalogue.commands(delete-catalogue-entry) {imcat_delete}
+set catalogue.commands(rename-catalogue-entry) {imcat_rename}
+set catalogue.commands(export-permanent-map) {imcat_export}
+set catalogue.commands(examine-catalogue) {imcat_examine}
+set catalogue.commands(list-catalogue) {imcat_list}
+set catalogue.commands(load-catalogue) {imcat_loadCat}
+set catalogue.commands(delete-temporary-maps) {imcat temp-delete}
+set catalogue.commands(set-default-map) {imcat_defmap}
+set catalogue.commands(default-map-directory) {imcat_setdef}
+set catalogue.commands(re-initialise-catalogue) {imcat initialise}
+set catalogue.commands(re-initialise-stack) {imcat stack initialise}
+set catalogue.commands(display-catalogue-entry) {imcat_displayCe}
+set catalogue.commands(display-stack-entry) {imcat stack display-stack}
+set catalogue.commands(display-active-maps) {imcat stack display-maps}
+set catalogue.commands(display-sizes) {imcat stack display-sizes}
+set catalogue.commands(clear-allocation) {imcat_clear}
+set catalogue.commands(report-mode) {imcat_reportMode}
+set catalogue.commands(set-maximum-area-to-read) {imcat_maxArea}
+set catalogue.commands(verify-catalogue) {imcat verify}
+set catalogue.commands(get) {}
+
+# define global commands to access the map catalogue
+  command_create list-catalogue -global \
+         -command {imcat_list}
+  command_create add-to-catalogue -global \
+         -command {catalogue-system add-to-catalogue}
+  command_create remove-from-catalogue -global \
+         -command {imcat_remove}
+  command_create delete-catalogue-entry -global \
+         -command {imcat_delete}
+  command_create load-catalogue -global \
+         -command {imcat_loadCat}
+
+#
+# setup global data structures for the map-catalogue routines
+#
+global iclRec iclPriv
+set iclPriv(defdir) {}
+set iclPriv(maxArea) 0.1
+set iclPriv(report) 1 ; catch {iclPriv report 1}
+set iclPriv(maxce) 256
+set iclPriv(access_clear) 0
+set iclPriv(access_read) 1
+set iclPriv(access_write) 2
+set iclPriv(access_scratch) 3
+set iclPriv(access_create) 4
+set iclPriv(access_reserved) 5
+set iclPriv(page:0) { }
+set iclPriv(page:1) {T}
+set iclPriv(access:0) { }
+set iclPriv(access:1) {R}
+set iclPriv(access:2) {W}
+set iclPriv(access:3) {S}
+set iclPriv(access:4) {C}
+set iclPriv(access:5) {X}
+

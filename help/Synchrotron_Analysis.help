@@ -1,0 +1,528 @@
+
+Analysing Synchrotron Spectra
+
+The synchrotron-analysis sub-system enables you to analyse
+continuum spectra commonly encountered in Radio Astronomy.
+Specifically, images and data may be analysed assuming the
+radiation mechanism to be sycnhrotron or thermal Bremmsstrahlung
+or some combination of the two.  Simple equipartition calculations
+may also be performed.
+
+*1 equipartition-parameters
+
+Parameters: filling-factor, energy-ratio, observing-frequency,
+            low-frequency-limit, high-frequency-limit
+            spectral-index, redshift
+
+Define parameters for the equipartition calculations.  The 
+initialisation performed at startup will have defined sensible
+values for these parameters.  
+
+Specific routines calculating Beq may require additional data
+or parameters.  The above terms have the following meanings:
+
+o Filling-Factor
+
+  The default for this parameter is 1.0.
+  This filling factor allows for a non-uniformly filled emitting
+  volume.
+
+o Energy-Ratio
+
+  The Energy ratio is the ratio of energy in the non-radiating
+  to the radiating particles. Often taken to be unity, but a
+  sensible value may be zero giving true minimum energy
+  conditions. The default assumes a population of non-radiating
+  ions (ie protons).
+
+
+o Observation-Frequency
+
+  The observation frequency is the frequency at which the flux
+  density measurement was made. The units are GHz.
+
+
+o Low-Frequency-Limit
+
+  The low-frequency limit is the frequency below which there is
+  no energy lost due to synchrotron radiation. A better
+  theoretical approach is to use a minimum electron energy, but
+  traditionally the equivalent gyro-frequency is used. Either
+  are unfortunately somewhat arbitrary. It is traditional for
+  this parameter to have the value 0.01 GHz. This is perhaps the
+  largest single source of error in the entire calculation.
+
+o High-Frequency-Limit
+
+  The high-frequency limit is the frequency above which there is
+  no energy lost due to synchrotron radiation. A better
+  theoretical approach is to use a maximum electron energy, but
+  traditionally the equivalent gyro-frequency is used. Either
+  are unfortunately somewhat arbitrary. It is traditional for
+  this parameter to have the value 100 GHz. For straight spectra
+  with spectral index greater than 0.5, or for any source with
+  an aged spectrum the result is very insensitive to the value
+  used.
+
+
+o Spectral-Index
+
+  The spectral index is that appropriate to the source under
+  consideration. It is usually assumed that the spectrum is
+  straight over all frequencies. For sources showing measurable
+  spectral curvature this is clearly an approximation -- the
+  correct approach would be to perform an integral over the
+  assumed spectrum, but this is not done in general. Therefore
+  some care must be taken in the choice of spectral index to
+  use: using the high-frequency spectral index can lead to a
+  gross overestimate of the energy density and the magnetic
+  field simply because most of the energy in the spectrum
+  resides at low electron energies/frequencies. We therefore
+  recommend that you use the low-frequency spectral index, or
+  injection spectral index as this is most consistent with the
+  minimum energy calculation and most accurate in nearly all
+  cases.
+
+*1 equipartition-calculation
+
+Command: calculate and return equipartion field using a slab model
+Parameters: Line-of-sight-depth, Angular-size-1, Angular-size-2,
+            Flux
+
+The equipartition field strength is calculated using the supplied
+parameters and those setup using the equipartition command.  The
+parameters required are reasonably self-explantory, and must be
+supplied in the following units:
+
+  Line-of-sight-depth   kpc
+  Angular-sizes         arcsec
+  Flux                  mJy
+
+*1 define-synchrotron-spectrum
+
+Define the spectrum to use in subsequent analysis -- the
+current spectrum. There are currently five spectral types to
+choose from (each one an aged synchrotron spectrum):
+
+        spectral-type
+              1         aged isotropic KP
+              2         aged anisotropic KP
+              3         continuous injection isotropic KP
+              4         continuous injection anisotropic KP
+              5         aged JP
+
+where KP - Kardachev and Pacholczyk and JP - Jaffe and Perola
+(Alexander & Leahy, 1984, Mon. Not. R. astr. Soc. 225 1).
+
+If in doubt use type 5 as this is the "standard" aged
+spectrum. You will also be asked for the injection index --
+this is the index of the zero-age electron population, y:
+
+                    N(E) dE  =  N0 E-y dE
+
+Spectra are stored as parametrised Chebychev polynomials. If
+the spectrum you requested exists in the library this command
+will work instantaneously, however if the spectrum is not in
+the library it will be calculated (which will take a few
+seconds), then added to the library for future use.
+
+
+*1 output-synchrotron-spectrum
+
+Command: write out a representation of the synchrotron spectrum 
+         to the standard results file
+Parameters: Range in dimensionless-frequency
+
+The region of the currently defined synchrotron spectrum is written
+to the standard Anmap results file (usually anmap_results.dat).  The
+"resolution" of the output spectrum is 200 data points.  The format
+of the output is a standard Anmap spectral file.
+
+See also: plot-synchrotron-spectrum
+
+*1 plot-synchrotron-spectrum
+
+Parameters: Range in dimensionless-frequency
+
+Plot the currently defined spectrum as a function of
+dimensionless frequency (frequency/break-frequency). The plot
+is logarithmic in both axes. A grid is drawn to help you use
+the plot in quantitative analysis.  Theplot is drawn using graph 10
+of the data-display sub-system and you can modify the plot using
+the standard data-display commands.   This command will write a
+new version of the current synchrotron spectrum to the standard
+results file.
+
+*1 B-spiral
+
+Parameters: Catalogue-entry, uv-range, scale-height,
+            mark-with-cursor
+Cursor-Options:   C=mark-Core
+                  D=mark-Diameter
+                  R=Repeat-first-point
+                  Q=quit marking and continue analysis
+
+Calculate the B-field for a spiral galaxy using the map of the
+object. You will be prompted for the catalogue entry of the
+map and a UV-range to analyse. It will help considerably if
+you have used map-display to display the map on an interactive
+graphics device and then left the plot open so that you can
+specify things using the cursor. You will be asked to define
+the lowest contour level and extent of the galaxy using the
+cursor and various options are available which are displayed
+to you. The results of the calculation should be saved to a
+file using the save-B-field command.
+
+
+*1 make-alpha-X-table
+
+Command: Make a lookup-table to convert from spectral-index to
+         break frequency
+Parameters: lower-frequency, upper-frequency, lower-X, upper-X,
+            plot-device
+
+A lookup table is produced relating spectral index between the
+two defined frequencies and dimensionless break frequency, X.
+The table is written to the standard anmap results file (usually
+anmap_results.dat).
+
+*1 alpha-map
+
+Parameters: number-of-maps repeat( map-i, error-i, gate-i)
+
+Make a spectral index map fitting all supplied maps to a single
+power-law spectrum. The output and an error map are written to the 
+two lowest unused map catalogue entries. The user must supply noise 
+estimates for both maps; these are used to:
+
+(i)  make the error map
+(ii) to gate the construction of the spectral index map
+
+The output will only be produced if for more than two maps
+
+  abs(map-i) >= gate-i x error-i
+
+The spectral index, a, is defined in the sense:
+
+              log(map-i) = -a  log(freq-i)
+
+where map-i and freq-i are the intensity and frequency of a given
+map.  The frequency to use for each map is extracted from the
+header of the map which must therefore be correct for this routine
+to function.
+
+*1 alpha-to-age-map
+
+Command: construct a map of synchrotron age from a map of spectral
+         index.
+Parameters: map-entry, lower-frequency, upper-frequency, B
+
+Construct a map of age given a map of spectral index (two-point).
+The user must supply the frequencies for which the spectral-index map
+were calculated and also the (constant) value for the magnetic-field
+strength to use.
+
+*1 break-to-age-map
+
+Command: construct a map of synchrotron age from a map of break
+         frequency.
+Parameters: map-entry, B
+
+Construct a map of age given a map of break frequency -- see
+break-frequency-map command.
+The user must supply the  (constant) value for the magnetic-field
+strength to use.
+
+*1 fit-synchrotron-spectrum
+
+Command: fit data with a synchrotron-type spectral function
+Parameters: fit_type, [alpha0], number_points,
+             { frequency, flux, [error] }  repeated for number_points
+
+The supplied data are fitted with the required function (see fit_types);
+if a fit-type involving a chi-squared minimization is requested then you
+should supply error estimates for all data.  At least as many data points
+as variables in the current fit type must be supplied.
+
+The results of the fit are printed out and the supplied data are
+copied to the anmap data file; a constructed spectrum is placed in the
+anmap results file -- these may be displayed using the log-fit-graph
+or linear-fit-graph procedures.  An error estimate of the mis-fit
+between data and model is also returned -- it represents the square-root 
+of the least-squares deviation between the two quantities unless one of 
+the following special values is returned:
+
+  -1   insufficient data for the requested fit or error in input data
+       has been detected.
+  3000 the minimization has found only a very poor minimum
+  2000 the minimization has found only a poor minimum
+  1000 the minimization has found only a relatively poor minimum
+
+*1 fit-maps
+
+Command: fit map-data with a synchrotron-type spectral function
+Parameters: fit_type, [alpha0], number_maps,
+             { catalogue-entry, error, gate }  repeated for number_maps
+
+The supplied maps are fitted with the required function (see fit_types);
+each pixel of the set of maps is fitted with the required spectrum
+provided sufficient data points are above the threshhold of
+   pixel-value >= gate*error
+for the appropriate map.
+
+The results of the fit are returned as maps, one map for each of the
+variables to be solved for (see the fit_types information) and also an
+error map.  The error map contains the square-root of the least-squares
+deviation between data and model at a pixel except for the following
+special results:
+
+  -1   insufficient data for the requested fit or error in input data
+       has been detected.
+  3000 the minimization has found only a very poor minimum
+  2000 the minimization has found only a poor minimum
+  1000 the minimization has found only a relatively poor minimum
+
+*1 plot-fitted-spectrum
+
+Command: display the anmap_data_file and anma_results_file overlayed
+         using logarithmic coordinates.
+
+The data are displayed as symbols and the results as a continuous line
+(the fitted spectrum).  After using the fit-synchrotron-spectrum command
+this command can be sued to display the results of the fit.
+
+Greater control of the plot can be obtained using the data-display 
+sub-system -- this is simply a procedure calling the data-dsiplay
+sub-system.
+
+The region of the screen used for the plot is determined by the current
+values of the current graph object view-port set in the graphic-system.
+
+
+*1 fit_types
+
+The following functional forms of fit types are currently supported.  The
+SoS forms minimize the sum-of-squares deviation between the data and
+the model spectrum, while the Chi2 forms minimize Cgi-squared and make
+a proper allowance for error on the data.  Sf(x,S) is the current
+synchrotron function regarded as a function of the break
+frequency x and a scaling factor S which scales the function to fit the
+supplied data and is the synchrotron flux at 1GHz.
+
+ 11        power-law of the form:  S * x**(-alpha)    minimizing SoS
+ 110                   "                "             minimizing Chi2
+ variables:   S, alpha
+
+
+ 12        power-law with thermal component 
+                      S x**(-alpha) + T x**(-0.1)     minimizing SoS
+ 120                   "                              minimizing Chi2 
+ variables:   S, T, alpha
+
+
+ 13        power-law with thermal component; alpha0 given 
+                      S x**(-alpha0) + T x**(-0.1)    minimizing SoS
+ 130                   "                              minimizing Chi2 
+ variables:   S, T
+ constants:   alpha0
+
+ 14        power-law with thermal component; alpha constrained
+                      S x**(-alpha0+a) + T x**(-0.1)  minimizing SoS
+ 140                   "                              minimizing Chi2 
+ variables:   S, T, a
+ constants:   alpha0
+
+ 20           Sf(x,S)                                 minimizing SoS
+ 200             "                                    minimizing Chi2
+ variables:   S, x
+
+
+ 21           Sf(x,S) + T x**(-0.1)                   minimizing SoS
+ 210                 "                                minimizing Chi2
+ variables:   S, T, x
+
+
+ 22           Sf(x0,S) + T x**(-0.1)                  minimizing SoS
+ 220                 "                                minimizing Chi2
+ variables:   S, T
+ constants:   x0
+ comment:     fixed break frequency, x0
+
+
+ 31           as 21 except break >= max_frequency for
+                      flat spectra                    minimizing SoS
+ 310                   "                              minimizing Chi2
+ variables:   S, T, x
+
+
+ 32          as 21 except use power-laws for flat spectra
+                                                      minimizing SoS
+ 320                   "                              minimizing Chi2
+ variables:   S, T, x
+
+
+ 33           as 21 except use power-laws for flat spectra
+                      and break >= max_frequency for
+                      flat, but steepening spectrum   minimizing SoS
+ 330                   "                              minimizing Chi2
+ variables:   S, T, x
+
+
+*1 fit-map-spectrum
+
+Command: interactively fit and display a spectrum to selected points
+         in a stack of maps.
+Parameters: number-of-maps, model-type
+            repeat(map-i, frequency-i [noise-i])
+
+A stack of maps is supplied representing data at a range of 
+frequencies.  One of these maps must have previously been displayed
+using map-display as either a grey-scale or contour plot.  Once
+the maps have been entered the input cursor will appear and you
+should select an image point to fit.  The current synchrotron
+spectrum and supplied fitting type is used to fit the data.  If the
+type requests a Chi-Squared fit then noises for all maps must also
+be supplied.  The data and fitted spectrum are displayed using
+data-display graph 10 in the upper right corner of the graphics window.
+The command will loop for input until you request no more input by
+clicking on the right-mouse button or typing any character except an
+"A" in response to the cursor input request.
+
+*1 programmer_commands
+
+A number of commands are provided to help in writing scripts/X-window
+controls for the synchrotron analysis sub-system.  The following are
+calculation commands which return their results in the standard tcl
+manner:
+
+   synch_enquire       return the parameters (type/injection index) or
+                       the current synchrotron spectrum
+                       Parameters:    NONE
+   synch_alpha2break   convert a supplied spectral index to a break
+                       frequency (GHz).
+                       Parameters:    spectral-index
+   synch_break2age     convert a break frequency to age in units of
+                       10^7 yrs.
+                       Parameters:    break-frequency(GHz) B-field(nT)
+
+For example the following could be used to calculate a spectral age for
+a spectral index 0.75 and a B-field of 0.95nT
+
+   synchrotron-analysis
+     define-synchrotron-spectrum 5 2.0
+     make-alpha-X-table 1.4 5.0
+     set age [synch_break2age [synch_alpha2break 0.75] 0.95]
+   exit
+
+Additionally the output of standard user commands may be redirected
+using the normal tcl mechanism for latter processing.  The commands
+returning their data via the routine call in this way are:
+
+   equipartition-calculation
+   fit-synchrotron-spectrum
+   B-spiral
+
+For example to "catch" the output of the synchrotron fitting one
+would invoke the command in the following way:
+
+   set results [anmap_command synchrotron-analysis fit-synchrotron-spectrum]
+
+Then the four fitted parameters are returned in  a list called results.  In
+fact the normal fit-synchrotron-spectrum command used by end users is
+implemented using the following procedure:
+
+  proc fit_synchrotron_spectrum { args } {
+    set vals [eval anmap_command synchrotron-analysis \
+                   fit-synchrotron-spectrum $args]
+    puts "Synchrotron-flux (mJy) = [lindex $vals 0]"
+    puts "Fit(2)                 = [lindex $vals 1]"
+    puts "Fit(3)                 = [lindex $vals 2]"
+    puts "Error in fit (mis-fit) = [lindex $vals 3]"
+  }
+
+*1 X-windows-Interface
+
+An X-windows interface is available to help in the analysis of Synchrotron
+spectral data.  To start up the window you must be running Xanmap; you may
+either select "Synchrotron Analysis" from the Analysis Menu or use the
+command:
+
+  X-synchrotron-analysis
+
+to startup the following window:
+%%
+   label $blt_htext(widget).b1 \
+         -bitmap @/mrao/anmap_v7.5/help/bitmaps/Xsynch.xpm \
+         -borderwidth 3 -relief sunken
+   set bw $blt_htext(widget)
+   $blt_htext(widget) append $blt_htext(widget).b1
+   $blt_htext(widget) configurechild $bw.b1 \
+                      -fill x -padx 2 -pady 6 -justify center
+%%
+
+The upper region of the window shows a scrolling list of maps and associated
+values.  To enter a new map to the list enter the parameters in the entry
+boxs below the list and choose the "Add to list" option from the "Option..."
+menu.  For example to add map 10 to the list one might enter:
+%%
+   set ll b2 ; set nn 1
+   label $blt_htext(widget).$ll \
+         -bitmap @/mrao/anmap_v7.5/help/bitmaps/Xsynch$nn.xpm \
+         -borderwidth 3 -relief sunken
+   set bw $blt_htext(widget)
+   $blt_htext(widget) append $blt_htext(widget).$ll
+   $blt_htext(widget) configurechild $bw.$ll \
+                      -fill x -padx 2 -pady 6 -justify center
+%%
+
+and the entry in the list of maps will look like:
+%%
+   set ll b3 ; set nn 2
+   label $blt_htext(widget).$ll \
+         -bitmap @/mrao/anmap_v7.5/help/bitmaps/Xsynch$nn.xpm \
+         -borderwidth 3 -relief sunken
+   set bw $blt_htext(widget)
+   $blt_htext(widget) append $blt_htext(widget).$ll
+   $blt_htext(widget) configurechild $bw.$ll \
+                      -fill x -padx 2 -pady 6 -justify center
+%%
+
+Other options in the Options... menu allow you to remove a map from the
+list and also display it.
+
+Below the list window is an area where parameters for displaying the
+image (UV-range to display and intensity range) may be entered.  Clicking
+on "Display" will display the currently selected map as a grey scale 
+image.
+
+The third area allows you to select a synchrotron model spectrum by
+clicking on the "Type" menu with appropriate injection index (gamma)
+entered into the entry box to the lwer right.  Clicking on "Spectrum"
+will construct the spectrum which can then be plotted using the "Plot"
+command in the menu bar at the top of the Synchrotron Analysis window
+itself.  Finally the lower area is used to specify the fitting model
+by clicking on "Fit typoe" you can select the type of fitting to be
+performed while any constraint reuired by the fitting model can be entered
+in the "Constraint:" entry window to the right (see the help entry on
+fitting types for more details).  The CheckButton labelled "Chi^2 fit"
+determined whether a pure sum of squares fit ("Chi^2 fit" off) or 
+a Chi-Squared fit ("Chi^2 fit" on, corresponding to fitting types > 100)
+is performed.
+
+At the top of the screen is a menu/command bar with the main operations
+you can perform on the list of maps you have selected:
+
+   o  Dismiss      Dismiss the Synchrotron Analysis window
+   o  Plot         Plot the current synchrotron spectrum
+   o  Fit Point    Select a single image point using the cursor
+                   and do a fit using  the current spectrum and fit
+                   type for that point in the stack of maps.  The results
+                   are written to the standard Anmap screen and a plot
+                   of data and fit at that point is drawn.
+                   (c.f. fit-map-spectrum command).
+   o  Fit Maps     Fit the stack of maps using the current spectrum and fit
+                   type.  An output map for each fitted parameter will
+                   be produced and reported to the standard Anmap screen.
+                   (c.f. fit-maps command).
+
+

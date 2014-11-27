@@ -1,0 +1,14 @@
+#!/mrao/anmap/anm3d/ida
+
+     set imx [img_image read -file [lindex $argv 0] -type 1]
+     set imy [img_image read -file [lindex $argv 1] -type 1]
+     set imz [img_image read -file [lindex $argv 2] -type 1]
+     set im $imx
+
+     img_apply $imx *= $imx     
+     img_apply $imy *= $imy     
+     img_apply $imz *= $imz     
+
+     img_apply $im += $imy += $imz sqrt
+
+     img_image write $im -file [lindex $argv 3] -type 1

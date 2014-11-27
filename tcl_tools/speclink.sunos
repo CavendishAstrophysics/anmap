@@ -1,0 +1,1 @@
+echo -L/mrao/lib -L%ANMAP%/lib -lspec -lutil -lcmd -lio -lch

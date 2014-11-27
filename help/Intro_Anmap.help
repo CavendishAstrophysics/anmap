@@ -1,0 +1,291 @@
+
+Basic information to introduce you to ANMAP.
+
+*1 Preface
+
+Anmap is short for ANalysis-MAP and is the name given to the
+image and data reduction software package on the SUN cluster and
+Norsk Data NORD computers at the Mullard Radio Astronomy Observatory.
+ 
+Help provides extensive information on how to use the package.  Commands
+exist to do a variety of things to images and spectral-type data. 
+Commands are grouped into sub-systems and in general you will need to
+change to a particular sub-system in order to access the available
+commands.  A few commands are avalailable in all subsystems, such
+as help, news and commands provided directly by the command language.
+You will need to enter a sub-level of ANMAP in order to perform any serious
+work. See the help entry on sub-systems for more detail.
+
+Anmap uses the concept of a catalogue of maps.  The catalogue is maintained
+separately from the filing system of your computer and provides a simple
+way of organising your work.
+
+*1 Sub-systems
+
+Sub-systems are entered by typing the name of the sub-system -- having
+done this you will have a new list of commands specific to the sub-system
+you have entered. The sub-systems currently available are
+
+graphic-system          --     control graphic output
+map-display             --     to display maps as contours etc.
+map-analysis            --     to analyse and manipulate maps
+clean-system            --     run CLEAN on your map
+edit-redtape            --     editing a map redtapes
+edit-image              --     interactive editing of images
+synchrotron-analysis    --     analysing synchrotron spectra
+scratch-display         --     control display of scratch images
+data-display            --     display 1D data
+drawing-display         --     a drawing subsystem to annotate plots
+spectrum-analysis       --     analyse spectral-type files
+catalogue-system        --     monitoring the catalogue
+
+
+
+*1 command_syntax
+
+Commands fall into a number of categories within Anmap, but
+the most important category are those commands which provide direct 
+access to Anmap's analysis facilities.  These commands have descriptive
+names and the commands available in a given sub-system can be listed
+by typing a "?" character.
+
+Each descriptive command consists of a number of parts each 
+separated by a dash '-'. Upper and lower-case characters are not
+distinguished in commands. The command interpreter matches 
+each part of the command separately, you only need to type as 
+much of the command as is necessary to make it unambiguous. 
+The simplest way to see how this works is via an example. The 
+command list-catalogue lists the contents of the map-catalogue 
+(see below). To use this command the user may type any one of 
+the following abbreviations:
+
+       li-cat
+       list-c
+       l-c
+
+however, the simple
+
+       list
+
+is not sufficient as there is also a command list (this is in
+fact a command which is part of the command language itself, see
+later).
+
+If the abreviation you supply is not sufficient, then you will be
+told it is ambiguous
+
+*** Ambiguous command
+
+The data for a particular command is given after the command: you
+may type on the same line as the command the responses to the prompts
+which would normally follow after specifying the command name.
+If more than one data item or response is given on the command
+line than they may be separated by commas ',' or spaces. If
+you do not know what data a particular command is expecting
+then the program will give an informative prompt.
+
+
+
+Examples:
+
+       delete-catalogue-entry 6
+
+delete-catalogue takes an argument which is the catalogue entry
+of the map you want to delete and requests for confirmation before
+deleting the map from the catalogue.
+
+       scan-map 1,,,,,
+
+Scan-map takes a map-catalogue entry and a UV-range -- in this
+example the default of the complete map is used.
+
+
+
+When you are prompted for some input the default to the
+command is shown in square brackets '[', ']'. Round brackets
+are used to show possible responses. The default may be
+obtained by pressing CR.
+
+
+
+Examples:
+
+       File-name [~/images/*.map] :    CR
+
+
+In this example a default directory and file type are
+indicated -- if you do not supply these the defaults are used.
+
+       Projection (equatorial,sky,tangent) [sky] :    equat
+
+The user is prompted for the projection of the output map in
+the reproject command, the valid replies are either
+equatorial, sky or tangent and the default (obtained on
+pressing carriage return) is sky, in this example the user has
+chosen equatorial.
+
+In addition to the commands which act directly on data there are
+also a wide range of commands which form the command language, called
+tcl.  These commands cannot be "minimally-matched" (to avoid
+as much as possible you typing them in error), but must be typed
+exactly.  The command language will not be described in detail 
+here, but it is extremely powerful and provides a programming
+laanguage in its own right including the ability to create and
+modify windows in the X-window version of Anmap.
+
+*1 Accessing_UNIX_commands
+
+To access a standard unix command all you have to do is to type
+it!! In this sense Anmap looks just like a normal UNIX shell and
+you can start programs etc. in the same way as you would do it
+under UNIX itself.  As an example we can list the files in the
+current directory using "ls" or "ls *.dat" to list all data files.
+In fact any UNIX command which does not match an Anmap/tcl command
+may be types in response to any prompt expecting an Anmap/tcl
+command.  The most common UNIX commands you will want to use are:
+
+  ls, pwd, cd, rm, mv, more
+
+All work as expected!
+
+As a second  example, to launch an editor to edit a text file you 
+could just type at the Anmap> (or any other sub-system) prompt:
+
+Anmap>  editor my_file.text &
+
+or
+
+Anmap> emacs my_file.text &
+
+to use the editor "editor" or "emacs" to edit the file. 
+
+*1 Prompts_and_help
+
+Each sub-system has its own prompts:
+
+ Sub-System             Prompt              --  Description
+------------------------------------------------------------------------
+
+ BASIC-SYSTEM           Anmap>              --  The basic ANMAP system
+
+ MAP-ANALYSIS           Map-Analysis>       --  Analysing maps
+
+ MAP-DISPLAY            Map-Display>        --  Contouring and grey-scales
+
+ DATA-DISPLAY           Data-Display>       --  Display 1D data
+
+ SCRATCH-DISPLAY        Scratch>            --  Control scratch plots
+
+ DRAWING-DISPLAY        Drawing>            --  Drawing system
+
+ SPECTRUM-ANALYSIS      Spec-analysis>      --  Analysing spectral files
+
+ GRAPHIC-SYSTEM         Graphic>            --  Control of Anmap graphics
+
+ CLEAN                  Clean>              --  CLEANing maps
+
+ EDIT-REDTAPE           Edit-Redtape>       --  Redtape correction
+
+ EDIT-IMAGE             Edit-Image>         --  Image/map editing
+
+ SYNCHROTRON-ANALYSIS   Synchrotron>        --  Analysing synchrotron spectra
+
+ CATALOGUE-SYSTEM       Map-Catalogue>      --  Map-Catalogue commands
+
+
+You start off in the basic-system - to return to it from any
+other sub-system just type exit or quit -- these commands
+typed in response to the Anmap> prompt will leave Anmap and
+return to the operating system. To switch to a different
+sub-system simply give the name of the sub-system as a command
+and you will notice that the prompt will change.
+
+[ If you are running X_anmap then exiting Anmap will cause the main
+Anmap window to be deleted together with the graphics (PGPLOT)
+window.  Other windows (such as the TV window) will need to be
+removed explicitly.  You may also choose to exit Anmap by chooseing
+the Exit-Anmap menu item from the Anmap menu available under
+X-windows. ]
+
+At any time you can list the available commands by typing a
+'?' which  will list all the commands available in the
+current sub-system while typing for example '? examine' will
+list all commands matching this string. For example in the
+basic-system the following will tell you about edit-redtape,
+edit-file and edit-image:
+
+     ? edit-
+
+You may obtain considerably more information by using help;
+a menu of items help knows about will be displayed. To obtain 
+information on a particular topic, for example the map-catalogue, 
+simply type the name of the entry of interest. Let us suppose you 
+type map-cat (note that minimal matching applies). On the screen
+will be displayed a few lines of introduction to the map
+catalogue and then there will appear a new menu of things help
+knows about in connection with the map-catalogue; as we will
+presume you are new to Anmap, type intro and the information
+listed under the Introduction will be typed. On completion of
+this information you will still be at the level of help
+information on the map catalogue -- to re-display the menu
+type:
+
+       ? CR
+
+or to return to the basic menu of what help knows about simply
+type CR. To return to the Anmap> prompt keep pressing CR until
+the prompt re-appears on your screen.
+
+
+
+*1 breaking_out_of_commands
+
+You may interrupt the program at any prompt by pressing ^Y (Control-Y).
+This should return you to the current sub-system prompt. Note that 
+this will happen immediately in response to a prompt, but there 
+may be a considerable delay if some work is being done on an 
+image as the effect is carefully controlled so that you do not 
+lose any data.
+
+*1 Anmap Command-line options
+
+Anmap supports a number of command line options:
+
+       -help        = This message
+       -cd [dir]    = Specify working directory as dir [~/mrao]
+       -cwd         = Do not change to a working directory [no]
+       -swd         = Change to standard working directory [yes]
+       -X           = Startup Xanmap [yes]
+       -noX         = Startup anmap [no]
+       -winX        = Startup X anmap in own window [yes]
+       -nowinX      = Startup X anmap in current window [no]
+       -mapsize [s] = Set standard map size [256]
+       -nmaps [n]   = Set number of maps [20]
+       -buffsize [s]= Set standard buffer size [1024]
+       -nbuff [n]   = Set number of buffers [4]
+
+This enables you to start Xanmap with the anmap command as:
+
+	anmap -X
+
+If you do not want to have a separate embedded Xterm you can use:
+
+	anmap -X -nowinX
+or
+	Xanmap -nowinX
+
+By default Anmap changes directory to ~/mrao.  You can now overide this
+with the option "-cwd" or change to another directory with the options
+"-cd dir".  If you are analysing large images then you will find the
+"-mapsize" options very useful.  For example if your standard image size
+is 1024x1024, then you should probably start Anmap with:
+
+	anmap -mapsize 512
+
+It is not necessary to specify your actual map size as the amount of reserved
+storage is in fact:
+
+	nmaps * mapsize**2
+
+
+*

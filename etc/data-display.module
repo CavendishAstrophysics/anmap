@@ -1,0 +1,25 @@
+#
+# Module: data-display
+#
+#
+# define additional commands for the data-display sub-system
+data-display
+  command_create graph-linear-linear \
+                 -command {graph_display -type linlin} -local
+  command_create graph-linear-log \
+                 -command {graph_display -type linlog} -local
+  command_create graph-log-linear \
+                 -command {graph_display -type loglin} -local
+  command_create graph-log-log \
+                 -command {graph_display -type loglog} -local
+exit
+
+# global aliases for graphics utilities
+  command_create postscript-dump -global -command postscript_dump
+  command_create postscript-view -global -command postscript_view
+  command_create postscript-save -global -command postscript_save
+  command_create postscript-plot -global \
+         -command "if [file exists $Anmap_UserDir/anmap.ps] then {\
+                   exec lpr -Phplaser $Anmap_UserDir/anmap.ps}"
+  command_create refresh-all -global -command refresh_all
+

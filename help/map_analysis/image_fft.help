@@ -1,0 +1,24 @@
+
+Command: image-fft
+Parameters: fft-type, input-images
+
+Image-fft is a map-analysis command to perform an FFT of input images.
+Real, imaginary amplitude and phase images are handled.  Each component
+(real, imaginary, amplitude, phase) is stored as separate image in the
+map catalogue.  The following options arew available to select the
+type of FFT:
+
+    forward-real-imaginary        FFT from 1 image to REAL/IMAG
+    inverse-real-imaginary        FFT from REAL/IMAG to REAL/IMAG
+    forward-amplitude-phase       FFT from 1 image to AMPLITUDE/PHASE
+    inverse-amplitude-phase       FFT from A/PHI to 1 A/PHI
+    real-imaginary-forward        FFT forward REAL/IMAG to REAL/IMAG
+    real-imaginary-inverse        FFT backward REAL/IMAG to REAL/IMAG
+    amplitude-phase-forward       FFT forward A/PHI to A/PHI
+    amplitude-phase-inverse       FFT backward A/PHI to A/PHI
+
+All phase images should be in degrees.  The forward/inverse options
+are important as the take care of the positioning of the data on the
+transformed space.
+
+*

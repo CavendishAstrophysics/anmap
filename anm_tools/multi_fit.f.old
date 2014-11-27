@@ -1,0 +1,365 @@
+C MULTI-FIT: Program to fit a function to a series of images
+C ---------
+C
+C Multi add takes as input a file name and reads from the redtape a
+C list of maps in the standard map catalogue to add together.
+C Output is to the map specified in the call to the routine.
+C-
+
+       include '../include/anmap_sys_pars.inc'
+       include '/mrao/include/iolib_constants.inc'
+       include '/mrao/include/chrlib_functions.inc'
+
+C Local variables
+C ---------------
+C  data records
+       integer            max_out, max_maps, max_size
+       parameter         (max_out = 2)
+*       parameter         (max_maps = 30)
+       parameter         (max_maps = 15)
+*       parameter         (max_size = 512)
+       parameter         (max_size = 256)
+       real*4             in_rec(max_size,max_maps),
+     *                    out_rec(max_out,max_size)
+       real*4             out_image(max_size*max_size,max_out)
+C  redtape buffer
+       real*4             redtape_buffer(1024)
+C  record containing list of maps; this will be a record in the extra
+C  redtape slot of a standard format map.  The first 16 bytes of the
+C  record are therefore reserved words.
+       integer            map_list(128)
+C    number of maps in list
+       integer            nmaps
+       equivalence       (map_list(5), nmaps)
+C    start record for maps in list
+       integer            start
+       equivalence       (map_list(6), start)
+C    length of each record in list
+       integer            len_record
+       equivalence       (map_list(7), len_record)
+C    type of model fit required
+       integer            model
+       equivalence       (map_list(8),model)
+C    number of constants
+       integer            nc
+       equivalence       (map_list(9), nc)
+C    constants
+       real*4             c_data(5)
+       equivalence       (map_list(10), c_data(1))
+C    number of output maps
+       integer            num_out
+       equivalence       (map_list(15), num_out)
+C    list of output maps
+       integer            map_out(max_out)
+C  map mini redtape
+       integer            minirt(10)
+C  define entry for each map
+       integer            map_record(4)
+       integer            map_entry
+       equivalence       (map_record(1), map_entry)
+       integer            map_directory
+       equivalence       (map_record(2), map_directory)
+       real*4             map_xval
+       equivalence       (map_record(3), map_xval)
+       real*4             map_gate
+       equivalence       (map_record(4), map_gate)
+C  arrays of information for each map
+       integer            iunit(max_maps)
+       real*4             xvals(max_maps)
+       real*4             gates(max_maps)
+       real*4             blank(max_maps)
+       integer            redtape(512,max_maps)
+C  "single-valued" variables
+       character*(iolen_file)
+     *                    out_file, filename
+       integer            uv_range(4), data_type, usize,
+     *                    iu, iv, i, n, nn, jj, iout
+       real*4             zmnx(2,max_out),
+     *                    x_data(max_maps), y_data(max_maps)
+       integer            izmnx(4,max_out)
+C  character variables
+       character          source*80, program*20
+C  status word
+       integer            status
+C  report information
+       integer            irep, ifrac
+
+C initialise
+       status = 0
+       call io_setexc(.true.,status)
+       call io_initio
+       call io_setesc(.true.)
+       call cmd_init(status)
+       call mapcat_open(status)
+       call io_enqout(irep)
+       call io_wrout( '  ' )
+       call io_wrout( 'MULTIFIT: starting' )
+       call io_wrout( ' ' )
+
+C read output map from command line, open and read redtape
+       call io_getfil('Output-File-1 : ',' ',out_file,status)
+       call opemap(iout,out_file,'WRITE',0,status)
+       call rdredt(iout,0,status)
+       call enredt(uv_range,data_type,status)
+       call enxrec('MULTIFIT',map_list,status)
+       call dpredt(redtape_buffer,status)
+       close (iout)
+       if (status.ne.0) goto 999
+
+C loop, open input maps
+       do n=1,nmaps
+         do i=1,len_record
+           map_record(i) = map_list(i + start-1 + (n-1)*len_record )
+         end do
+         call mapcat_enqrt(map_entry,filename,minirt,status)
+         call opemap(iunit(n),filename,'READ',0,status)
+         call rdredt(iunit(n),0,status)
+         call ennull(blank(n),status)
+         call dpredt(redtape(1,n),status)
+         if (status.ne.0) goto 999
+         xvals(n) = map_xval
+         gates(n) = map_gate
+       end do
+       do n=1,num_out
+         map_out(n) = map_list( 15 + n)
+       end do
+       if (status.ne.0) goto 999
+
+C do the addition
+       do n=1,max_out
+         zmnx(1,n) = -1.0E+30
+         zmnx(2,n) =  1.0E+30
+       end do
+       usize = uv_range(2) - uv_range(1) + 1
+       jj = 0
+       ifrac = max(1,(uv_range(3)-uv_range(4))/10)
+       do iv = uv_range(3),uv_range(4),-1
+         if ( mod(iv,ifrac).eq.0) then
+           write(irep,'(A,I4)' ) ' MULTIFIT: reached map-row = ',iv
+         endif
+         do n=1,nmaps
+           call ldredt(redtape(1,n),status)
+           call rdrow(iunit(n),iv,in_rec(1,n),status)
+         end do
+         do iu = 1,usize
+           nn = 0
+           do n=1,nmaps
+             if ( in_rec(iu,n).ne.blank(n) .and.
+     *            abs(in_rec(iu,n)).gt.gates(n) ) then
+               nn = nn + 1
+               x_data(nn) = xvals(n)
+               y_data(nn) = in_rec(iu,n)
+             end if
+           end do
+           if (nn.ge.num_out) then
+             call find_mfit( nn, x_data, y_data, nc, c_data, model,
+     *                       out_rec(1,iu), status )
+           else
+             do n=1,num_out
+               out_rec(n,iu) = blank(1)
+             end do
+           end if
+         end do
+         do n = 1,num_out
+           do iu = 1,usize
+              if (out_rec(n,iu).gt.zmnx(1,n)) then
+                zmnx(1,n) = out_rec(n,iu)
+                izmnx(1,n) = uv_range(1) + iu - 1
+                izmnx(2,n) = iv
+              end if
+              if (out_rec(n,iu).lt.zmnx(2,n)) then
+                zmnx(2,n) = out_rec(n,iu)
+                izmnx(3,n) = uv_range(1) + iu - 1
+                izmnx(4,n) = iv
+              end if
+           end do
+         end do
+         call ldredt(redtape_buffer,status)
+         if (status.ne.0) goto 999
+         do iu=1,usize
+           jj = jj + 1
+           do n=1,num_out
+             out_image(jj,n) = out_rec(n,iu)
+           end do
+         end do
+       end do
+
+C Update the TEXT of the redtape and map catalogue entries
+       do n=1,num_out
+         call mapcat_enqrt(map_out(n),out_file,minirt,status)
+         call opemap(iout,out_file,'WRITE',0,status)
+         call rdredt(iout,0,status)
+         program = ' '
+         call mapcat_enqsr(map_out(n),source,program,status)
+         write(program,'(A,I1)') 'MLTFIT-',n
+         call adredt('created',program,status)
+         call mapcat_setsr(map_out(n),source,program,status)
+         call stnull(blank(1),status)
+         call stscal(zmnx(1,n),izmnx(1,n),status)
+         call wrredt(iout,0,status)
+         call wrmap(iout,out_image(1,n),status)
+         close (iout)
+C .. clear allocation to map
+         call mapcat_acc(map_out(n),'CLEAR',status)
+         call mapcat_enqrt(map_out(n),out_file,minirt,status)
+       end do
+
+C close all maps
+999    continue
+
+C close input maps
+       do n=1,nmaps
+         close (iunit(n))
+       end do
+
+C close map catalogue
+       call mapcat_close(status)
+
+C enable escape character
+       call io_setesc( .false. )
+
+C check STATUS value and report completion to the output device
+       call cmd_err(status,'MULTI-FIT','Failed ')
+       if (status.eq.0) then
+         call io_enqout(iout)
+         write(iout,'(1X,A,6I3)')
+     *   'MULTIFIT: output-maps = ',(map_out(n), n=1,num_out)
+       else
+         call io_enqout(iout)
+         write(iout,'(1X,A,6I3)')
+     *   '***MULTIFIT: Failed to construct maps ',
+     *   (map_out(n), n=1,num_out)
+       end if
+
+       call io_wrout('MULTIFIT: completed')
+
+       end
+C
+C
+*+ find_mfit
+
+       subroutine find_mfit( nn, xd, yd, nc, cd, model, res, status )
+C      --------------------------------------------------------------
+C
+C Perform the fitting
+C
+C Given:
+C  number of data points
+       integer    nn
+C  input "x" and "y" data
+       real*4     xd(*), yd(*)
+C  number of user-specified constants
+       integer    nc
+C  user-supplied constants
+       real*4     cd(*)
+C  type of fitting model to use
+       integer    model
+C Returned:
+C  results of the fit
+       real*4     res(*)
+C Updated:
+C  return code
+       integer    status
+C
+C Perform one of number of different fitting models:
+C
+C model   Fit-decription
+C -------------------------------------------------------------------
+C   1     y = res(1) exp( -x/res(2) )
+C   2     y = res(1) [ 1 - exp( -x/res(2) ) ]
+C   3     y = res(1) exp( -res(2) [cd(1) x**2 - cd(2) x**3] )
+C   4     y = res(1) + res(2) x
+C   5     y = res(1) + res(2) [ cd(1)x + cd(2)x**2 + cd(3)x**3 ]
+C -------------------------------------------------------------------
+C
+C The fit is performed using a least-squares minimization using the
+C NAG routine E04FDF.
+C
+C P.Alexander MRAO, 06/04/92
+*-
+
+C local variables
+       integer     len_work, len_iwork
+       parameter  (len_work=1000, len_iwork=100)
+       real*8      xx(5), fsumsq, work(len_work)
+       integer     iwork(len_iwork), nvar, istat
+
+C counters etc.
+       integer     n
+
+C data passed in common to LSFUN1
+       real*8      x(50), y(50), c(10)
+       integer     itype, ndata, nconst
+       common /local_fitr8/ x, y, c
+       common /local_fiti4/ itype, ndata, nconst
+
+       if (status.ne.0) return
+
+C set itype
+       if (model.le.0) then
+         itype = 1
+       else if (model.gt.5) then
+         itype = 3
+       else
+         itype = model
+       end if
+C copy data
+       ndata = nn
+       nconst = nc
+       do n=1,nn
+         x(n) = xd(n)
+         y(n) = yd(n)
+       end do
+       do n=1,nc
+         c(n) = cd(n)
+       end do
+
+C call minimization routine
+       nvar = 2
+       istat = 1
+       xx(1) = yd(1)
+       xx(2) = xd(2) - xd(1)
+       call e04fdf( ndata, nvar, xx, fsumsq,
+     *              iwork, len_iwork, work, len_work, istat )
+       do n=1,nvar
+         res(n) = xx(n)
+       end do
+       res(1) = res(1)
+
+       end
+C
+C
+       subroutine lsfun1( m, n, xx, f )
+       integer    n, m, i
+       real*8     xx(n), f(m)
+C data passed in common to LSFUN1
+       real*8      x(50), y(50), c(10)
+       integer     itype, ndata, nconst
+       common /local_fitr8/ x, y, c
+       common /local_fiti4/ itype, ndata, nconst
+
+       if (itype.eq.1) then
+         do i = 1,ndata
+           f(i) = xx(1)*exp(-x(i)/xx(2)) - y(i)
+         end do
+       elseif (itype.eq.2) then
+         do i = 1,ndata
+           f(i) = xx(1)*(1.0D+0 - exp(-x(i)/xx(2))) - y(i)
+         end do
+       elseif (itype.eq.3) then
+         do i = 1,ndata
+           f(i) = xx(1)*exp(-xx(2)*(c(1)*(x(i)**2)-c(2)*(x(i)**3) ))
+     *            - y(i)
+         end do
+       elseif (itype.eq.4) then
+         do i = 1,ndata
+           f(i) = xx(1) + xx(2)*x(i) - y(i)
+         end do
+       elseif (itype.eq.5) then
+         do i = 1,ndata
+           f(i) = xx(1) +
+     *            xx(2)*(c(1)*x(i) + c(2)*(x(i)**2) + c(3)*(x(i)**3))
+     *            - y(i)
+         end do
+       endif
+       end

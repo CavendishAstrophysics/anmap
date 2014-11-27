@@ -1,0 +1,685 @@
+*1 Introduction
+
+This section describes basic use of the map-catalogue system.
+A wide variety of commands exist to manipulate the catalogue,
+but in general you need only a very few commands the most
+important being:
+
+    add-to-catalogue
+    remove-from-catalogue
+    list-catalogue
+    load-catalogue
+
+These commands are available within the map-catalogue sub-system, and
+as global commands. 
+
+To compile a catalogue of all the maps on your default map
+directory you should type:
+
+      add-to-catalogue ~/images/*
+
+All maps matching the supplied pattern will then be added to your
+catalogue.  The catalogue will then be available between invocations
+of Anmap and is effectively shared by two or more simulataneous Anmap
+sessions although this latter practice is not recommended.
+
+The command list-catalogue will produce a listing on the
+terminal of all the maps in your catalogue. Each map is
+uniquely identified by its catalogue number, however you can
+also refer to a map in your catalogue by name. For example the
+output from list-catalogue may look something like the
+following:
+
+*p
+
+  1     NGC4045-F1P4-MAP         FITSREAD      128 x 128
+  2     NGC4045-F1P4-MAP         REPROJ        128 x 128    T
+  3     NGC4045-F1P4-MAP         SHRINK         30 x  30    T
+  4     NGC1002-F1P4-MAP         MAPPER        128 x 128
+  5     NGC1002-F1P4-BEAM        MAPPER        256 x 256
+  6     NGC1002-F1P4-CLN         CLEAN         128 x 128    T
+  7     NGC1002-F1P4-RESI        CLEAN         128 x 128    T
+  8     NGC500-F1P4-MAP          FITSREAD      128 x 128
+  9     NGC500-F1P4-BEAM         FITSREAD      256 x 256
+ 10     NGC500-F1P4-CLN          CLEAN         128 x 128   W
+ 11     NGC500-F1P4-RESI         CLEAN         128 x 128   W
+
+The first column is the catalogue entry number; the second is
+the map (usually source) name -- note the last element is the
+map type; the third column is the last program used to operate
+on a map; the fourth column is the map size and finally the
+access state.
+
+To refer to a particular catalogue entry you may do so by
+number, catalogue name or disc file name. For example suppose
+you want to contour map number 3. In map-display in Anmap you
+can set the map using any either of the following
+
+     set-map  3
+     set-map  ngc4045-f1p4-map-shrink
+     set-map ~/images/ngc4045-f1p4.map
+
+note how the program name is used to distinguish maps with the
+same source name. Of course NGC4045-F14P4-MAP would be
+ambiguous. You may use the normal abbreviation rules for the
+map name. The third example assumes the associated disc file
+for the map is in the directory maps-user:paul-a. The rules on
+how your response to a prompt for a map-entry are interpreted
+are as follows:
+
+(i)  If the user types an integer which is a valid catalogue
+     entry number then it is assumed that this is the
+     intention. If the catalogue entry does not in fact
+     contain an entry for a valid map available for read/write
+     then an error is generated.
+
+(ii) If the user's response is not a valid catalogue entry and
+     does not begin with a file-system specific character then a
+     check is made to see if the response is a valid
+     abreviation of a catalogue entry name (the concatenation
+     of the souce name and program name separated by a dash).
+     If a match is found then this is taken to be the
+     catalogue entry. If no match is found then the response
+     is interpreted as a disc file name and processing is as
+     in (iii). If the response matches more than one catalogue
+     entry then this is taken as an error.
+
+(iii)If no match is found to the user's response or the
+     respnse contains an explicit file-system character
+     then the response is interpreted as a file name.
+     If one or more disc files are found matching the user's
+     response then a prompt is given requesting confirmation
+     that the named file should be used. If the response to
+     this last prompt is affirmative then the file is added to
+     the catalogue and that catalogue entry used. If more than
+     one disc file is found and selected by the user then all
+     files are added to the catalogue, and the last file to be
+     added taken as the required catalogue entry. If the file
+     name matches that of a file already in the catalogue then
+     the map is not added to the catalogue a second time, but
+     rather the user is informed that the specified map is in
+     the catalogue and that catalogue entry is used.
+
+When a new map is created (for example after SHRINKing) a new
+entry will appear in the catalogue with the same source name
+but updated program name -- it is therefore easy to keep track
+of data processing. The 'T' to the right hand side of
+catalogue entry 3 indicates that this is a Temporary map. This
+simply means that the map does not have a proper disc file
+name, but rather an anonymous name. For most purposes this
+need not concern you as you can access the map in Anmap in the
+way just described, however if for some reason you want to use
+the map outside the new MRAO software or allow other users
+access, or want to make a more permanent map entry on disc or
+magnetic tape, then you should use the export-permanent-map
+command in catalogue-system (in fact this just renames the
+disc file).
+
+The 'W' access state indicates the map has been opened for
+WRITE -- in our example by an offline CLEAN process, when
+complete the W will change to a 'T'. Similarly the 'R' indicates
+the map is open for READ.  A 'C' indicates the map has been created
+for use by another program, the redtape of the map may have been
+setup correctly (and you may be able to access it), but no useful
+data is on the map. These maps (which are being accessed
+by other programs) are not available for you to use.
+
+The remove-from-catalogue command enables you to remove a
+catalogue entry -- it does not delete the corresponding disc
+file. It is not possible to remove a temporary map, in this
+case use export-permanent-map or the delete-catalogue-entry
+command.
+
+The delete-catalogue-entry command removes the entry from the
+catalogue and deletes the associated disc file thereby
+releasing disc space.
+
+The catalogue-system provides many more commands to manipulate the
+catalogue.  For example the command report-mode on sets a flag which
+means that at the end of any command which creates a new catalogue
+entry a message appears on your terminal telling you where the new map
+is to be found. For example to turn reporting on:
+
+    catalogue-system report-mode on
+
+You may have more than one catalogue and use the catalogues to
+organise your work.  The command load-catalogue can be used to load an
+existing catalogue or create a new catalogue.  The default catalogue
+is simply called "default" (in fact it exists in you ~/mrao directory
+as default.mctg).  To load a new catalogue simply invoke the
+load-catalogue command with the name the new catalogue:
+
+    load-catalogue  new-catalogue-name
+
+and the new catalogue will be created and become the default.  To load
+an existing catalogue give the name of the catalogue, for example to
+reload the default catalogue you should type:
+
+    load-catalogue  default
+
+*1 getting_started
+
+Anmap uses the concept of a map-catalogue, similar to the map
+catalogue used by AIPS. You have to add maps to the map
+catalogue before you can use them in Anmap: maps created
+within Anmap will be added automatically to the catalogue and
+indeed they are usually not available outside it unless you
+take some specific action.
+
+A wide variety of commands exists to manipulate the catalogue,
+but in general you need only a very few:
+
+  add-to-catalogue                add maps to the catalogue
+  remove-from-catalogue           remove maps from the
+                                  catalogue
+  list-catalogue                  list (a part of) the catalogue
+  export-permanent-map            save temporary maps
+  delete-catalogue-entry          delete maps from disc
+  load-catalogue                  load a new catalogue
+
+These commands are available in the catalogue-system, sub-
+system but because they are used so frequently they have also
+been defined as procedures so that they behave in the same way
+as basic-commands.
+
+To add a map NGC4410.map and its beam NGC4410.beam to your
+catalogue you use the add-to-catalogue command:
+
+      add-to-catalogue NGC4410.*
+
+and you will be prompted to confirm each map matching the name
+you type -- the map catalogue commands recognize all the
+standard file types for maps and images such as map, imap,
+beam, qmap, umap, cln etc. You will also be told which
+catalogue-entry the map has been added to -- in our example
+they will be added to catalogue-entries 1 and 2 as these are
+the first maps to be added to you map catalogue. The catalogue
+entry number provides a convenient short hand way of referring
+to a map, although in Anmap you may also refer to maps by
+name: the two maps may therefore be referred to as maps 1 or 2
+or NGC4410-MAP-MAPPER or NGC4410-BEAM-MAPPER. Note how the
+file type is referred to as another part of the name and the
+MAPPER part is derived from the program name which created the
+images -- in this case the mapper. 
+
+To compile a catalogue of all the maps on your default map
+directory simply type
+
+      add-to-catalogue ~/images/*
+
+and this will add all maps matching the specified pattern to
+your catalogue. 
+
+The catalogue, once created, is permanent and is in fact held as a normal file on disc (the default catalogue is just the file ~/mrao/default.mctg).
+
+The command list-catalogue will produce a listing on the terminal of
+all the maps in your catalogue. Each map is uniquely identified by its
+catalogue number, however you can also refer to a map in your
+catalogue by name.
+
+When commands run which produce maps they create what are
+termed "temporary maps" -- they are identified by a 'T' in the
+last column of output from the list-catalogue command. These
+maps are temporary in the sense that they do not have memorable disc
+file names -- they will however still be there tomorrow! You may
+treat temporary maps in the same way as normal maps, but if
+you wish to use them in a program which does not use the 
+map-catalogue, or you wish to archive them to tape or write a FITS
+tape, then you must change them to be permanent maps. The
+command export-permanent-map can be used to change a temporary
+map to a permanent map.
+
+One word of warning -- permanent maps are only as permanent
+as the disc on which they are stored -- it is very important for
+you to backup any important data.  Furthermore the amount of disc
+space we have, although generous, is always in demand and is
+shared between all users.  Please manage your disc-space use
+with other users in mind and remove any old files -- periodic
+purges of the data discs will also be carried out.
+
+The commands remove-from-catalogue and delete-catalogue-entry
+can be used to keep your catalogue tidy. The former can be
+used to remove permanent map files from the catalogue, but
+leaving the permanent map intact on disc. The delete-
+catalogue-entry command also removes a map from the catalogue,
+but also deletes the associated disc file -- use this command
+with care as mistakes cannot be rectified.
+
+The catalogue-system sub-system contains a number of commands
+which you may well find useful once you have become familiar
+with the basic concepts of the map catalogue.
+
+Anmap has facilities for handling a wide variety of non-
+standard formats for data; the commands input-map and output-
+map in the map-analysis sub-system can be used to read and
+write non-standard format data. Both ASCII and binary formats
+are supported. The data are read into standard map format with
+a map redtape with sufficient information for Anmap commands
+to be used; the edit-redtape sub-system can be used to make
+corrections and additions to the retape of the map as
+required.
+
+*1 temporary_maps
+
+Information on TEMPORARY maps
+
+New maps created by Anmap are written to disc and an entry
+made in the catalogue. Temporary catalogue entries are
+identified by an access state of T. These are permanent files
+and remain after exit from Anmap (or any other program) and
+after logging off. You may wish to give them more permanent
+names however and for this purpose you can use the export-
+permanent-map command. The delete-catalogue-entry command can
+also be used on temporary maps to remove their catalogue entry
+and the disc file.
+
+*1 specifying_maps
+
+All routines accessing map data will prompt for a map catalogue entry.
+You have a great deal of flexibility in how you respond to this 
+request.
+
+The rules for specifying a catalogue entry are as follows:
+
+-- If a number in the acceptable range of map-catalogue entries
+   is typed this is presumed to be a MAP CATALOGUE ENTRY
+   (i.e. if you happen to hace a map 123649-900806.map the
+   response 1 or 12 or 123 will be assumed to refer to catalogue
+   entries 1,12, or 123 BUT 1236 will be taken to indicate a
+   NAME).
+
+-- If the response is not a map catalogue entry it is presumed
+   you have typed a NAME.  If the name contains one of the following
+   characters -- "/", "~", "." it is presumed to be a disc file,
+   if not a check for a match with the NAME of a catalogue entry
+   is made were the catalogue entry has the format:
+   -->   SOURCE-TYPE-PROGRAM
+   as indicated by the output from list-catalogue or examine-catalogue.
+   If an ambiguous match is found this is faulted.
+
+-- If the NAME is a file name or no match to a catalogue entry
+   is found then a search of file names matching this NAME is
+   made in a way identical to that done by using add-to-catalgue.
+   If a match is found then you will be asked to confirm the name,
+   if you reply YES it will be added to the catalogue (if it
+   is already in the catalogue you will be informed of this but
+   this is NOT an error).  The last map you reply YES to will be
+   the one selected. This addition to the catalogue is permanent.
+
+-- If at the end of this search no entry is found then an error
+   will be generated.
+
+The shortest method to refer to a map is by number (catalogue entry),
+but either source name or file name are also interpreted.
+
+
+*1 examine-catalogue
+
+Parameters: pattern
+
+This command examines and lists the contents of the map catalogue
+according to the supplied pattern.  Matching of the pattern against
+the names of catalogue entries follows normal minimal-matching rules
+with each element matched separately.
+
+For example the following will list all catalogue entries
+beginning NGC:
+
+    catalogue-system examine-catalogue NGC*
+
+The output will have the following structure:
+
+  11     NGC4045-F1P4-MAP         FITSREAD      128 x 128
+  12     NGC4045-F1P4-MAP         REPROJ        128 x 128   T
+  13     NGC4045-F1P4-MAP         SHRINK         30 x  30   T
+  14     NGC1002-F1P4-MAP         MAPPER        128 x 128
+  15     NGC1002-F1P4-BEAM        MAPPER        256 x 256
+  16     NGC1002-F1P4-CLN         CLEAN         128 x 128   T
+  20     NGC1002-F1P4-RESI        CLEAN         128 x 128   T
+  21     NGC500-F1P4-MAP          FITSREAD      128 x 128
+  22     NGC500-F1P4-BEAM         FITSREAD      256 x 256
+  30     NGC500-F1P4-CLN          CLEAN         128 x 128   W
+  31     NGC500-F1P4-RESI         CLEAN         128 x 128   W
+
+
+Notes:
+Column   Meaning
+  1      The catalogue entry number.
+  2      The source name, taken from the disc file name and type. 
+         The last element is the map type. This is the NAME of the 
+         catalogued map.
+  3      The PROGRAM name is the last program or routine used to 
+         create the data.  It forms an intrinsic part of the full 
+         name forthe catalogue entry which is:
+            SOURCE-PROGRAM
+  4      The size of the map.
+  5      The access state:
+           T    --    Temporary map, this will have an anonymous 
+                      disc name.
+           V    --    Map stored on a VOLUME (e.g. Magnetic Tape)
+           R    --    Opened for READ
+           W    --    Opened for WRITE
+           C    --    Map CREATED (and perhaps open), but no data
+                      present
+
+
+
+*1 list-catalogue
+
+Parameters: low-catalogue-limit, high-catalogue-limit
+
+This command lists the contents of the catalogue to the terminal.
+
+The output will have the following structure:
+
+  1     NGC4045-F1P4-MAP         FITSREAD      128 x 128
+  2     NGC4045-F1P4-MAP         REPROJ        128 x 128   T
+  3     NGC4045-F1P4-MAP         SHRINK         30 x  30   T
+  4     NGC1002-F1P4-MAP         MAPPER        128 x 128
+  5     NGC1002-F1P4-BEAM        MAPPER        256 x 256
+  6     NGC1002-F1P4-CLN         CLEAN         128 x 128   T
+  7     NGC1002-F1P4-RESI        CLEAN         128 x 128   T
+  8     NGC500-F1P4-MAP          FITSREAD      128 x 128
+  9     NGC500-F1P4-BEAM         FITSREAD      256 x 256
+ 10     NGC500-F1P4-CLN          CLEAN         128 x 128   W
+ 11     NGC500-F1P4-RESI         CLEAN         128 x 128   W
+
+
+Notes:
+Column   Meaning
+  1      The catalogue entry number.
+  2      The source name, taken from the disc file name and type. 
+         The lastelement is the map type. This is the NAME of the 
+         catalogued map.
+  3      The PROGRAM name is the last program or routine used to create
+         the data.  It forms an intrinsic part of the full name for
+         the catalogue entry which is:
+            SOURCE-PROGRAM
+  4      The size of the map.
+  5      The access state:
+           T    --    Temporary map, this will have an anonymous 
+                      disc name.
+           V    --    Map stored on a VOLUME (e.g. Magnetic Tape)
+           R    --    Opened for READ
+           W    --    Opened for WRITE
+           C    --    Map CREATED (and perhaps open) but no data 
+                      present
+
+
+To refer to a particular catalogue entry you may do so by number of
+name.  For example suppose you want to contour map number 3.  In
+map-display in ANMAP you can set the map using any either of the 
+following:
+
+  set-map  3
+  set-map  ngc4045-f1p4-map-shrink
+
+note how the program name is used to distinguish maps with the same
+source name.  Of course ngc4045-f14p4-map would be ambiguous.  You may
+use the normal abreviation rules for the map name.
+
+*1 add-to-catalogue
+
+Parameters: file-pattern
+
+Add maps to your catalogue.  You will be requested for a file
+description.  By default your default maps directory will be assumed.
+All maps matching the file desription you supply will be added to the
+catalogue using the lowest unused entries.  You will be prompted to
+confirm each entry into the catalogue.  Minimal matching of course
+applies.  Only files with recognized map types will be matched.  The
+recognized map types for disc files are as follows:
+
+    map,  imap, qmap, umap
+    cln,  icln, qcln, ucln
+    beam, bset, resi, ccmp
+    mI,   pol,  chi
+
+
+
+When a map is added to the catalogue you are told its catalogue entry
+number -- you may latter refer to this map either by name or this 
+number. If the map is already in the catalogue it is not added again 
+you are instead informed of its existing catalogue entry.  It is NOT 
+an error to try to add a map file already in the catalogue.
+
+Maps can be added to the catalogue whenever you get a prompt for
+a catalogue entry, simply give a map file name in response -- see
+the help entry on specifying maps for more information.
+
+*1 remove-from-catalogue
+
+Parameters: catalogue-entry
+
+Remove the specified map catalogue entry from the catalogue.
+You may refer to the catalogue entry by name or catalogue
+number. This command simply removes the entry in the
+catalogue, it does not delete the disc file. It is not
+possible to remove entries to temporary maps as these do not
+have proper disc file names. You should use export-permanent-
+map followed by remove-catalogue-entry for such maps or
+delete-catalogue-entry if you do not wish to retain the data.
+
+
+*1 export-permanent-map
+
+Parameters: catalogue-entry, permanent-file-name
+
+A map created with Anmap is created as a temporary map and
+given an anonymous name on disc. To give the file a more
+permanent (and normal) file name use this command. You will be
+prompted for the catalogue entry and the new file name. Note
+that it is not possible to specify a directory to the name --
+the map already resides on your default maps directory.
+
+You should use this command if you want to keep the map
+(semi)-permanently or to allow other users access to it.
+
+*1 delete-catalogue-entry
+
+Parameters: catalogue-entry
+
+This command removes a map from the catalogue and deletes the
+associated disc file. You should not use the delete-file
+command to delete a map which has a catalogue entry as this
+will lead to a misleading state of affairs. It is possible to
+delete temporary maps with this command.
+
+You will be prompted before the disc file is deleted (this is
+true also for the anonymous files associated with temporary
+maps). It is possible to turn this prompting off, use the
+advanced mode command prompt-state.
+
+
+*1 rename-catalogue-entry
+
+Parameters: catalogue-entry, new-name
+
+You may change the source part of the catalogue entry name
+with this command. This does not change the name of any
+associated disc file, simply the name by which it is known in
+the catalogue system. This may be useful to rename maps
+created by Anmap etc, where the source name is taken (in
+general) from the input catalogue entry and is therefore left
+unchanged.
+
+
+*1 set-default-map
+
+Parameters: default-map
+
+Set the value of the default map. This will be displayed as
+the default in future prompts for a map or map-catalogue
+entry.
+
+
+*1 delete-temporary-maps
+
+Delete all temporary maps.
+
+This command enables you to delete all temporary maps in your
+catalogue.  its action is identical to repeated use of the
+delete-catalogue-entry command applied to temporary maps.  By default
+you will be prompted for each temporary map to delete, however you can
+turn this prompting off by using the advanced-mode command
+prompt-state off.
+
+*1 report-mode
+
+Parameters: on/off
+
+Turn report mode on or off. When the report state is enabled
+the program will tell you when it creates a new map and where
+this is located, when it is turned off this information is
+suppressed but of course you can find out by using the list-
+catalogue command.
+
+*1 load-catalogue
+
+Parameters:  catalogue-name
+
+You may have more than one catalogue and use the catalogues to
+organise your work.  The command load-catalogue can be used to load an
+existing catalogue or create a new catalogue.  The default catalogue
+is simply called "default" (in fact it exists in you ~/mrao directory
+as default.mctg).  To load a new catalogue simply invoke the
+load-catalogue command with the name the new catalogue:
+
+    load-catalogue  new-catalogue-name
+
+and the new catalogue will be created and become the default.  To load
+an existing catalogue give the name of the catalogue, for example to
+reload the default catalogue you should type:
+
+    load-catalogue  default
+
+You may also use normal UNIX tools to manipulate catalogue files.
+Anmap catalogue files should normally end in the extension .mctg
+although if you specify a fully formed file name to the load-catalogue
+command then this will be taken as a full file name of a map catalogue.
+To rename or delete a catalogue file simply use the normal UNIX
+mv and rm commands on a catalogue file which is not currently
+loaded --- not however that this may well leave temporary maps
+around on disc which have no corresponding catalogue entry, this
+is a very inconvenient situation to find yourself in!!
+
+One other file exists in you ~/mrao directory --- this is the
+file ~/mrao/map-catalogue.mctg.  This file is in fact a link to
+the current map-catalogue file and should not be modified in
+any way.
+
+*1 default-map-directory
+
+Parameters: directory-name
+
+Change the default map directory from the system default. This
+has the effect that all temporary maps are written to this
+file space. It is therefore essential that:
+
+(1)  You are the only user of this space otherwise data
+     integrity cannot be guaranteed (in fact it won't work).
+
+(2)  You have create access to the file space.
+
+The most useful file space to redirect things to therefore is
+your normal default file space as opposed to your map space.
+
+
+*1 re-initialise-catalogue
+
+Scrap all the catalogue entries. This command will leave
+temporary maps on disc without any catalogue entry. To list
+paged maps use the normal file system commands -- temporary
+maps have the file type PMAP and are to be found on the
+normal maps directory.
+
+If you wish to scrap completely all temporary maps in your
+catalogue and re-initialise it the following command procedure
+is recommended:
+
+      catalogue-system
+          delete-temporary-maps
+          re-initialise-catalogue
+          re-initialise-stack
+      exit
+
+
+*1 re-initialise-stack
+
+This command re-initialises the stack which is used to hold
+map data. The main effect is that all subsequent map accesses
+will have to read their data from disc. If for any reason
+there is a fear of an update anomaly or the internal store
+being corrupted this command may be useful. This command
+should not be needed (or used) by most users.
+
+*1 display-catalogue-entry
+
+Display the full entry for the catalogue-entry including the
+map status word. The entry must be referred by number. Do not
+   _
+use this command unless you are aware of the meaning of the
+output (which is only of any interest to programmers), normal
+users may found the output confusing and worrying! This
+command is for expert use only.
+
+
+*1 display-stack-entry
+
+Display the full entry for the stack-entry including the
+stack_status word. This command is for expert use only.
+
+*1 display-sizes
+
+Display sizes of arrays and buffers.  Only of interest to 
+system managers.
+
+*1 display-active-maps
+
+Display information on active maps and buffers -- the information is
+only of use in the event of a problem with the map-catalogue/stack system.
+
+*1 clear-allocation
+
+This command clears any allocation (READ or WRITE) for a
+catalogue entry (referred by number). This command may be
+useful when a catalogue entry appears unusable: for example an
+R (read) or W (write) state are associated with the entry; a
+catalogue entry may not contain any data, but the program
+skips using it when choosing output map catalogue entries.
+Problems of the above kind can be caused by batch jobs
+crashing, bugs in the program, or perhaps Anmap or SINTRAN
+crashed during a procedure.
+
+
+
+*1 verify-catalogue
+
+After the deletion of disc files it is possible for you map
+catalogue to have update anomalies whereby files it thinks
+exists on disc no longer do so. The verify-catalogue command
+verifies the entries in you catalogue and removes such update
+anomalies.
+
+
+*1 set-maximum-area-read
+
+Parameters: fractional-map-area
+
+Certain commands do not read the whole map data (e.g. scan-map), but only
+the region required by the user.  In order to improve efficiency if the
+requested region exceeds a certain fraction of the total map size then
+the complete map is read (this is done since experience shows future
+accesses to other regions of the same map are likely).  The maximum
+FRACTIONAL-MAP-AREA that can read before the whole map is read can be
+set by this command.  The default is 0.5.  Most users will not wish to
+modify this value, but experience may indicate a more suitable value
+to use and may be defined in the system initialisation file.  Users
+are welcome to experiment however as no adverse effects can be caused
+except a possible degredation (or improvement!!) in performance.
+
+
+*1 Programming and editing commands
+*@$ANMHELP/programming/imcatTcl.help
+
+*

@@ -1,0 +1,46 @@
+
+Spectrum-analysis-program: Print selected columns from a spectrum file.
+
+
+Keys:
+   xc                           X-column in data [1]
+   cols                         list of columns to scale [ALL]
+   xrange                       range of data in X-column to print
+   title                        title for output printing
+   format                       format to use on output [(1X,6(1PE12.3))]
+   infile      nokeyok          input file name [-]
+
+All columns listed in cols (including the X-column) are printed on the
+standard output. You may select a range of data to print by specifying the
+range on the X-column (specified by the keyword xc).  An optional
+title may be added to the print with the keyword title.
+
+The keyword "format" is a fortran-specific printing format.  No checking
+is applied to this string so the syntax must be correct for a format
+statement (enclosed in parantheses).  The default is
+
+    (1X,6(1PE12.3))
+
+which also indicates the format expected.
+
+Examples:
+
+Print all the columns in the data file to the output
+%     sp_print in.dat
+
+Print all columns with an title set and send the output to a file (out.list)
+%     sp_print in.dat title "Example print" > out.list
+
+Print selected columns in the file in.dat and specify a format given the
+known range of data
+%     sp_print in.dat cols 1,3,4  format (8X,F14.2,1PE14.4,F14.2)
+
+Print selected columns with a title and send the output immediately to the
+line printer using a UNIX pipe.
+%     sp_print in.dat cols 1,2 title "Printed version" | lpr
+
+Print only ths rows for which the data in column three lie between
+0 and 100.0 and include only selected columns
+%     sp_print in.dat xc 3 xrange 0,100 title "Example print" cols 1,3,5
+
+

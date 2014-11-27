@@ -1,0 +1,56 @@
+#!%WISHXB% -f
+
+source /mrao/anmap_v7.5/tcl_lib/file.tcl
+read_spectrum $env(HOME)/mrao/anmap_results.dat 1 2 X Y
+if [file exists ~/.wishrc] then {source ~/.wishrc}
+. configure -background grey
+option add *graph.xTitle "X Axis Label"
+option add *graph.yTitle "Y Axis Label"
+option add *graph.title "XY Graph"
+global graph
+set graph .graph
+
+frame .fill
+frame .top
+pack append .top \
+  [button .top.dismiss -text "Dismiss" -width 10 -command {destroy . ; exit}] \
+  {left frame w} \
+  [button .top.tops -text "Options" -width 10 \
+   -command "exec [list /mrao/anmap_v7.5/bin/graph_config [winfo name .] $graph &]"] \
+  {left frame w} \
+  [button .top.ps -text "Postscript" -width 10 \
+   -command {.graph postscript xy.ps -pagewidth 6.5i -pageheight 9i -landscape true}] \
+  {left frame w}
+
+
+blt_graph $graph -background grey -plotbackground white
+
+
+$graph element create "Anmap Results" -xdata $X -ydata $Y -linewidth 1 
+$graph legend configure -background grey
+
+# $graph crosshairs set on
+
+pack append . .fill {expand fill}
+pack append .fill \
+	.top { top fillx }  \
+	.graph {top} 
+	
+wm min . 0 0
+
+bind $graph <B1-ButtonRelease> { %W crosshairs toggle }
+	
+proc TurnOnHairs { graph } {
+    bind $graph <Any-Motion> {%W crosshairs configure -position @%x,%y}
+}
+proc TurnOffHairs { graph } {
+    bind $graph <Any-Motion> {%W crosshairs configure -position @%x,%y}
+}
+
+bind $graph <Enter> { TurnOnHairs %W }
+bind $graph <Leave> { TurnOffHairs %W }
+
+
+
+
+

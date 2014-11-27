@@ -1,0 +1,20 @@
+#
+# Initialisation file for IDA
+# 
+#
+global Ida
+set Ida(src) /mrao/anmap/anm3d
+set Ida(ndtsrc) /soft/tcl/ndt4
+lappend auto_path $Ida(ndtsrc)/lib $Ida(src)/tcllib
+
+set iclRec(file) {}
+set iclRec(program) {}
+set iclRec(source) {}
+
+imgPriv hash init
+# interp_create "Ida> " $Ida(src)/tcllib
+
+proc pgplot_init { } {
+   pg paper 10.0 1.0
+   pg stream open 1 /xwindow
+}

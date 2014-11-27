@@ -1,0 +1,121 @@
+
+Command:    set-style options for map-display
+Parameters: option
+Options:    title frame contours grid symbol vectors annotations scale-bar
+            reset
+
+This command enables a wide variety of "style" parameters for the map-display
+sub-system to be set.  The "reset" options resets all options to their
+default values.
+
+*1 title
+
+Set options for titles, sub-options:
+
+   on              turn plotting of title on
+   off             turn plotting of title off
+   text-style      set text-style for title (font, size, colour, width)
+
+See also the title-plot and initialise title commands.
+
+*1 frame
+
+Set options for the frame surrounding grey-scales/contour plots.
+Sub-options:
+
+   on              enable the plotting of the frame
+   off             turn off the plotting of the frame
+   text-style      set text style for markings on the frame
+                    (font size colour width)
+   line-style      set line-style for the frame itself
+                    (style width colour)
+   space           define an amount of space to leave around the frame
+                   as a fraction of the view-port.  You may get greater
+                   control of the size of the frame using the view-port
+                   setting for the current image graphic (see help on
+                   the graphic-systsem sub-system).
+   pip-size        set the pip size for the frame
+   pip-x-offset    set the offset of the labels from the right-hand edge
+                   of the frame.
+   pip-y-offset    set the offset of the labels from the bottom of the
+                   frame
+
+See also: set-pips set-grid "set-style grid"
+
+*1 contours
+
+Set options for contours.  Sub-options:
+
+   line-style  [style]     set the line-style for style "style" (style,
+                           width, colour).
+   positive-style [style]  set the default style for positive contours
+   negative-style [style]  set the default style for negative contours
+   zero-style [style]      set the default style for zero contours
+
+"style" is an integer representing one of the five styles of contours.
+
+*1 grid
+
+Set options for grid.  Sub-options:
+
+   line-style      set the line-style for grid lines (style, width, colour).
+
+
+*1 symbol
+
+Set options for symbol-text.  Sub-options:
+
+   text-style      set the text-style for symbols (font, size, colourm width).
+
+
+*1 vectors
+
+Set options for vectors.  Sub-options:
+
+   line-style      set the line-style for vectors (style, width, colour).
+
+
+*1 annotations
+
+Set options for annotations.  Sub-options:
+
+  date-on        add date
+  date-off       do not add date
+  label-on       add information
+  label-off      do not add information
+  text-style     annotation text style (font, size, colour, width)
+  text-drop      drop between lines (i.e. distance between successive
+                 lines of text on multi-line text output).
+  title-on       add title
+  title-off      do not add title
+  all-on         add everything
+  all-off        do not add anything
+
+The annotations controlled by this set-style option are those plotted using
+the plot text option.  For general annotations see the help entry on
+annotate.
+
+See also: title-plot initialise title, set-style title
+
+*1 scale-bar
+
+Set options for the display of a scale-bar on grey-scales. Sub-options:
+
+   on            turn on the display of the scale-bar
+   off           turn off the display of the scale-bar
+   width         set the width of the scale-bar as a fraction
+                 of the frame size
+   text-off      turn off adding an annotation to the scale bar
+   text-on       turn on adding an annotation to the scale bar
+
+*1 reset
+
+This option resets all style parameters to their default values (see also
+initialise options).
+
+*1 information_attributes
+
+The following attributes may be set using the above style commands:
+*@$ANMHELP/Attributes.help
+
+*

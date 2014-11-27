@@ -1,0 +1,746 @@
+
+The MAP-DISPLAY sub-system allows for very sophisticated image display using
+a variety of devices including an X-window image display on any X-window
+terminal/workstation. 
+
+*1 Introduction
+*@$ANMHELP/Intro_Map_Display.help
+
+*1 set-map
+
+Command: set the catalogue entry for display/plotting
+Parameters: map-catalogue-entry
+
+The map to be displayed/plotted is specified with this command.
+In addition to specifying a map to display the current environment
+is re-initialised so that a new plot will be produced; this is
+usually equivalent to "initialise plot" and will lead the standard
+options unaltered. If you want to overlay a map onto the current plot,
+use the overlay-map command.
+
+*2 example
+
+The following sequence will plot catalogue entry 1 then catalogue entry
+2 in the current map-display window.
+
+  set-map 1
+  grey on ,,,,,,
+  plot all
+  set-map 2
+  grey on
+  plot all
+
+*1 set-uv-range
+
+Command: set the UV-range of the current map to display
+Parameters: UV-range
+
+Specify the UV-range to display.  If you give this command
+before any plot command then the specified UV-region will fill
+the frame of the plot and the frame will be scaled so that
+the U and V scales of the plot are equal.  After a plot command
+the set-uv-range command will restrict the range of data plotted,
+but the frame will be scaled to the UV-range which was in effect
+at the time of the first "plot" command.
+
+
+*1 set-pips
+
+Command: control plotting of RA/DEC and/or UV pips
+Parameters: radec-pip-on-off, [pip-interval], UV-pip-on-off
+
+Turn pips on/off and for the RA/DEC pips select the interval at
+which to display the pips.
+
+See also: set-style frame
+
+
+*1 set-grid
+
+Command: control plotting of RA/DEC and UV grids
+Parameters: radec-grid, [grid-ra,grid-dec], uv-grid, [grid-u,grid-v]
+
+Control plotting of RA/DEC and UV grids. If you specify on to either
+you must also supply the interval for the grid:
+
+minutes-of-time,minutes-of-arc   --    for RA/DEC grid
+pixels-u,pixels-v                --    for UV grid
+
+The default (obtained by typeing a 0) will plot approximately five
+grid lines on the plot. To obtain, for example, a grid of the actual
+pixel positions set radec-grid=off, uv-grid=on and grid-u=grid-v=1.
+
+*1 set-interpolation
+
+Parameters: on/off
+
+Control which routine is used for contouring -- by setting
+interpolation on the map will be interpolated to mid-points
+prior to plotting. This option can only be used if the region
+of the map to be plotted is smaller than 256x256 pixels.
+
+*1 Information_contours
+
+Information: on contour levels and styles
+
+Anmap supports contours in five concurrent styles; the line-style actually
+associated with each style is set using the "set-style contours line-style"
+command.  The styles are labelled numerically from 1 to 5.
+
+Three defaults are set up for positive, negative and zero contours -- the
+positive contours are by default style 1, negative style 2 and zero style
+3; style 1 is initialised to solid foreground, style 2 to dashed foreground
+and style 3 to dotted foreground.
+
+Three commands are available to set contour levels:
+   contours style [list]                   specify a list of contours
+                                           for style "style"
+   linear-contours start increment end     specify a range of linear contours
+                                           using the default positive,
+                                           negative and zero styles.
+   logarithmic-contours start factor end   specify a range of logarithmic
+                                           contours using the default positive,
+                                           negative and zero styles.
+
+The styles actually associated with positive negative and zero default
+styles can be set using the set-style contours command with the options
+positive, negative and zero.  For example the following sets up some
+line contours of style 1 and style 3:
+   linear-contours 0.001,.001,.01
+   set-style contours positive 3
+   linear-contours .011,.001,.02
+   plot contours
+
+To plot contours use the "plot all" or "plot contours" commands; once
+plotted each level is marked as plotted and will not be re-plotted, to force
+the re-plotting of contour levels use the reset-contour-levels command.  To
+clear the lists of contours use the clear-contour-levels command.  Both
+the reset-... and clear-... take a parameter specifying either the particular
+style upon which to act or ALL to specify resetting/clearing all the styles.
+
+Contour levels are associated also with one of the main and overlay-maps, to
+specify contours for these two maps then the appropraite map must be current;
+to make the main and ovserlay maps current use the overlay-map command.
+
+See also: contours, linear-contours, logarithmic-contours,
+          reset-contour-levels, clear-contours-levels,
+          plot, overlay-map, grey-scale
+
+*1 linear-contours
+
+Command: setup linear contours
+Parameters: start-contour, interval, end-contour
+
+Specify linear contour levels as follows:
+
+
+          level(n) = start-contour + (n-1) x interval
+
+
+up to the "end-contour". Negative contours are added to the
+list of contours of style 2, positive contours to the list of
+style 1. To plot the contours on an existing frame use the
+plot contours command.
+
+If the set of contours you specify includes the zero-contour
+(or one numerically very close) you will be prompted and asked
+if you want to include it on the plot.
+
+The default for the end-contour is the maximum on the map in
+the specified UV-range: a map must be specified before you can
+define linear contours for this reason (in fact an allowance
+for the peak height increasing slightly when the data are
+interpolated is made if you are using the interpolation option
+-- the default).
+
+*1 contours
+
+Command: specify contours
+Parameters: style [contour-list]
+
+Specify one or more contours of the specified style; the style is
+selectec via specifying an integer in the range 1 - 5.  Contours
+can be entered until you signify the end of the list by providing
+a null entry (either an extra Carriage return or two or more commas).
+
+Example:
+
+Enter contours of style 2 (usually used for negative contours)
+
+   contours 2, .001, .002, .004, .008, .012, .016, .02,,,
+
+*1 logarithmic-contours
+
+Command: set logarithmic contours
+Parameters: start-contour, factor, end-contour
+
+Specify logarithmic contour levels as follows:
+
+        level(n) = +/-  abs(start-contour x (factor(n-1)))
+
+up to the "end-contour". Both positive and negative contours
+are specified with negative contours added to the
+list of contours of style 2 and positive contours to the list
+of style 1. To plot contours on an existing frame use the plot
+contours command.
+
+The default for the end-contour is the maximum on the map in
+the specified UV-range: for this reason a map must be specified
+before you can define linear contours (see note under
+linear-contours).
+
+
+*1 reset-contour-levels
+
+Command: reset the "plotted" flag for contours
+Parameters: option [style]
+
+Reset the specified contour level list; This does not effect
+the plot on the screen, but resets the contour lists so that
+the lists have the same contour levels specified, but the
+flag indicating they are "plotted" is removed; this enable the
+contours to be "applied" to a new plot, but plot refresh will
+not reproduce the current plot.  You can either specify "all"
+or a particular style of contour.
+
+*1 clear-contour-levels
+
+Command: clear the "plotted" flag for contours
+Parameters: option [style]
+
+Clear the specified lists of contours.  This does not effect
+the plot on the screen, but all contour lists are cleared.
+You can either specify "all" or a particular style of contour.
+
+*1 grey-scale
+
+Command: grey-scale or false colour display of current map
+Parameters: on/off, low-level, high-level
+
+Turn grey-scaling/false-colour on or off and define the map values
+to be mapped into the low level and the high level. On the TV device
+the low-level will be black and the high level white whereas
+on a hard-copy device the reverse scaling is used. The grey-
+scale will be added to the same frame as the pips, grid,
+contours and labelling with a go-plot command. The lookup-
+table between pixel values and intensity levels is linear by
+default. For the TV device the command modify-lookup-table can
+be used to change the look-up table; linear, logarithmic,
+colour power-law and inverse lookup-tables are supported.
+
+
+The default for grey-scale is off.
+
+*2 Examples
+
+To plot a grey-scale with a labelled frame on the TV device.
+
+      set-map 1
+      set-uv-range 20,,,,
+      grey-scale on, 0.0, 0.01
+      set-style scale-bar on
+      plot all
+
+the scaling is from 0.0 to 0.01.
+
+To plot a grey-scale with contours overlayed:
+
+      set-map 1
+      set-uv-range -10 10 10 -10
+      grey-scale on, 0.0, 0.01
+      logarithmic-contours .001, 2, .032
+      plot all
+
+To plot a grey-scale of one-map (2) superimposed on contours
+of another (1) -- e.g. grey-scale of spectral index map on
+I-map contours:
+
+      set-map 2
+      set-uv-range -10 10 10 -10
+      grey-scale on 0.4, 1.5
+      go
+      overlay-map 1
+      overlay-map 1
+      grey-scale off
+      log-contours .001, 2, .032
+      plot contours
+
+Note that the grey-scale is plotted before the contours --
+this is necessary on certain devices, specifically Xwindows, the
+LEXIDATA and the Laser-Printer, since the action of plotting
+the grey-scale is to overwrite everything currently on the
+screen. The order of the plot type commands is therefore
+important in determining the final appearance of your plot,
+commands defining the grey -scale and contour levels may be
+given in any order -- of course the go-plot command gets the
+order of plotting correct.
+
+*2 lookup_table
+
+The lookup table controls the way in which grey scales are represented
+on the output device; each "grey-level" is mapped into a colour
+representation -- this way of representing data is called false colour.
+Anmap under UNIX does provide some support for true colour images which
+use colour and intensity to encode information.  This is provdided in the
+"true-colour" sub-system; the range of manipulations possible on true
+colour images is however more considerably limited than the full range
+of operations available for intensity images.
+
+To change the lookup table for the main Anmap display you can use the
+modify-lookup-table command.
+
+*2 modify-lookup-table
+*@$ANMHELP/Modify-lookup-table.help
+
+*1 title-plot
+
+Command: add a title to the plot
+Parameters: title
+
+Add a title to the plot, plotted using the plot text command.
+
+See also: annotations
+
+*1 crosses-file
+
+Command: set options for displaying crosses
+Parameters: option
+Options: on, off, file, size, extended
+
+Crosses can be added to the plot using this command.  The crosses must
+be specified in a file which has the following format:
+
+A number of lines each one representing a cross with the following entry
+per cross:
+
+    RA             DEC            label
+
+e.g.
+    01 03 45.6     34 56 29.5     Source: 3C405
+
+with RA and DEC refering to the cross position at the stanbdard epoch of
+the coordinate system and label a label for the cross.  Labels must be 
+specified for each cross, however if the first character of a label is the
+"%" character then no label is actually plotted.
+
+Options:
+
+   on        --    turn plotting of crosses on
+   off       --    turn plotting of crosses off
+   file      --    file name of the crosses file
+   size      --    size in UV of the cross to be drawn
+   extended  --    select extended mode to display multiple symbols
+
+All the crosses listed in the crosses file will then be drawn with
+their respective labels.  The crosses will be drawn after a plot all
+or plot crosses command.  If the extended option is selected the crosses
+file must contain additional information consisting of the symbol to
+plot and the size of the symbol relatove to the default (1/40th of the
+frame size).  The format therefore looks like:
+
+    RA             DEC            Symbol    Size    label
+
+e.g.
+    01 03 45.6     34 56 29.5     18         1.3      Source: 3C405
+
+to plot a ``cross'' using symbol number 18 a filled star.
+
+*2 symbol-codes
+*@$ANMHELP/Symbols.help
+
+*1 set-style
+
+*@$ANMHELP/Set_style.help
+
+*1 initialise
+
+Command:    initialise the map-display sub-system
+Parameters: option
+Options:    all plot options setup annotations title
+
+Initialise various aspects of the map-display sub-system.  The options
+have the following meaning:
+
+      all            initialise everything equivalent to all of the
+                     other options
+      plot           initialse flags for plotting; this sets the state
+                     of the sub-system to one in which nothing has been
+                     plotted (useful after re-setting a map).
+      options        reset options and styles to their default values
+      setup          initialise the setup of maps and overlay maps etc.
+      annotations    initialise annotations and the annotation sub-system
+      title          initialise the title of the plot; reset the title.
+
+*1 vector-plot
+
+*@$ANMHELP/Vector_display.help
+
+*1 symbol-plot
+
+*@$ANMHELP/Symbol_display.help
+
+*1 overlay-map
+
+Command: define an overlay map
+Parameters: option
+Options: set off on current-main current-overlay
+
+The overlay-map command is used to control the display of two maps
+for comparison purposes, the main and overlay maps.  Other options
+also allow maps apart from the main map to be displayed, specifically
+the vector and symbol options, but the overlay map option enables a
+second map to be contours or grey-scaled.  All map-display commands
+act on the current-map, the two options current-main and current-overlay
+can be used to select the current map.   If an overlay map is selected
+then a plot all command will plot everything for both the main and
+overlay maps; this can be suppressed by selecting overlay-map off.
+
+The overlay-map command itself takes one of a number of options:
+
+   set                set the catalogue-entry for the overlay map, this
+                      automatically turns the overlay-map option on and
+                      makes the overlay map the dfault map.
+   on / off           turn the overlay map option on/off; you can toggle the
+                      overlay map action with these commands without
+                      re-defining the overlay map itself
+   current-main       make the main map current -- useful to enable you
+                      to go back and add contour levels etc.
+   current-overlay    make the overlay map current.
+
+It is strongly suggested that you use the main map for grey-scales
+and the overlay map for contours if this is the combination you wish to
+have -- you may of course have both using contours.  This requirement
+is needed so that "plot all" and "plot refresh" commands work properly
+since the main map is plotted first.
+
+*2 example
+
+Do a grey scale of a spectral index map with intensity contours
+overlayed:
+  set-map alpha-map
+  grey on 0.5,1.5
+  overlay-map set intensity-map
+  linear-contours .001,.001,.01
+  plot all
+
+In the previous example you decide you want to alter the grey-scale
+of the main map, you can then type
+  overlay-map current-main
+  grey-scale on 0.45,1.25
+  plot refresh
+
+Or you would like just a grey-scale of the spectral index map
+  overlay-map off
+  plot refresh
+
+*2 more_hints
+
+The overlay-map restricts you to using just two maps on the same display;
+in fact you can achieve very complex plots by just using "set-map" and
+careful plot options, however you will have to give multiple commands
+to refresh the plot rather than the single plot refresh command needed if
+you make use of the overlay-map option.
+
+*1 display
+
+This command enables various attribute settings to be
+displayed. A number of sub-options are available:
+
+*2 levels
+
+The currently defined contour levels are listed on the text
+screen.
+
+*2 all
+
+Display all information concerning options. This is equivalent
+to the commands:
+
+                   display options
+                   display vectors
+                   display symbols
+                   display levels
+
+*2 options
+
+Display options and maximum/minimum values for the current map
+in the specified UV-range. Option settings and the settings of
+the text and mark fonts/sizes etc. are written to the text
+screen.
+
+*2 vectors
+
+Display information on the current options defining the vector
+plot.
+
+*2 symbols
+
+Display information on the current options defining the symbol
+plot.
+
+This command enables various attribute settings to be displayed.
+A number of sub-options are available:
+
+
+*1 plot
+
+Command: give a variety of plotting commands
+Parameters: option
+Options:    all refresh frame grey contours text crosses vectors symbols
+            annotations
+
+Issue a "plot" command to plot various parts of the display - to plot
+everything use the plot all command and to rfresh the plot use the
+plot refresh command.  Each option controls one aspect of the plot
+except for the "all" and "refresh" options -- the "all" option will
+plot all outstanding information while the "plot refresh" command
+will refresh the current plot (applying any changes of style).
+Plot followed by an option which is not "alL" or "refresh" will force
+that aspect of the plot to be plotted.  For example suppose one does the
+following:
+
+   grey-scale on 0.0,0.005
+   plot grey
+
+The command "plot all" would then add a frame and text to the plot, but
+would not replot the grey-scale, however a plot refresh would replot
+the greyscale, but nothing more.  Consider this slightly different
+example:
+
+   plot frame
+   grey scale on 0,0.05
+
+Now a plot grey would plot the grey-scle on top of the frame,
+obscuring part of it, you could then re-plot the frame with a
+plot frame command; however a plot all command would just plot the
+greyscale (and not replot the frame) and a plot refresh would just
+replot the frame and not the grey scale.
+
+An important use for plot refresh is to redraw the existing plot
+either in a different frame or to a new device.
+
+Options available are:
+
+*2 frame
+
+The frame is plotted. The frame is either an RA/DEC astrometric frame
+and/or a UV frame.  The frame may also have a grid (see set-grid).  The
+style of the frame is controlled using the set-style frame command
+and also the set-pips command to control the sorts of markings on
+the frame.
+
+*2 contours
+
+The currently defined contours will be added to the plot.  Only those
+contours not already marked as plotted will be plotted, but this can
+be changes using the reset-contour-levels command.
+
+
+*2 grey
+
+The currently defined grey scale is plotted.  On almost all device the
+greyscale is effectively opaque and therefore needs to be the first
+thing drawn on the plot if, for example, contours and frame are to
+be displayed properly.
+
+A call to set-grey-scale will need to have been made to turn grey-scaling
+on and to have defined the range.
+
+*2 vectors
+
+The options defining the vector plot must have already been defined
+using the vector-plot sub-system.  Vectors will then be added to the
+current plot, it is therefore possible to overlay vectors on contour
+or grey-scale plots.
+
+*2 symbols
+
+The options defining the symbol plot are setup using the symbol-plot
+sub-system and should already have been defined before this command is
+used.  Symbols will be added to an existing plot or a new frame etc.
+will be drawn and symbols plotted.
+
+*2 text
+
+The text (title, date/history, contour-levels) will be plotted. Exactly
+what is plotted can be controlled with the set-style annotations command.
+The list of contours is a list containing just the contours plotted to
+date -- the timing in the use of this command is therfore important.
+
+*2 crosses
+
+Crosses from a crosses file will be drawn -- you need to have defined
+necessary options for the crosses using the crosses-file command.
+
+*2 all
+
+Plot all plots everything which is outstanding -- it is similar, bt
+not strictly identical to the sequence of commands:
+
+  plot grey
+  plot frame
+  plot contours
+  plot text
+  plot vectors
+  plot symbol
+  plot annotations
+
+The difference occurs if one or more of the above commands have been
+given out of order.
+
+*2 refresh
+
+The plot refresh command will attempt to reproduce as closely as possible
+the current plot, however since the refreshing is done in a strict
+order (the same as for the plot all command) some differences may be
+apparent (see the option "alL" for more details).
+
+*1 surface-plot
+
+Command: plot a surface representation of the map array
+Parameters: catalogue-entry,bias,offset,range
+
+A surface representation of the current map is plotted in the graphics
+overlay window or using the full plot device if graphics overlay is not
+active.  Only that region of the current map specified by the SET-UV-RANGE
+command is plotted.  The plot is represented as a succession of hidden-
+line histograms.  Bias represents the offset (in map values) between
+successive slices of the map where there is one slice for each row.
+Offset is an offset in pixels to sepcify between successive rows.
+Range specifies the range to plot from X_low to X_high and then
+Y_low to Y_high.
+
+The surface plot is drawn into the current scratch-plot definition and
+you can control the view-port, line-style etc. for the surface plot
+using the scratch-display sub-system.
+
+*1 isometric-plot
+
+Command: plot an isometric (joined surface mat) of the map array
+Parameters: catalogue-entry,viewing-angle (degrees)
+
+An isometric plot of the specified map is made with a viewing angle
+as specified -- an angle of 0 degrees views the map-data edge-on and
+90.0 degrees views the map data directly from above.  This graphic
+is a scratch graphic and the view-port and line colours may be controlled
+with the scratch graphics subs-system.
+
+
+*1 using_the_cursor
+*@$ANMHELP/Using_the_cursor.help
+
+*1 modify-lookup-table
+*@$ANMHELP/Modify-lookup-table.help
+
+*1 cursor-position
+
+If you have a map drawn on the terminal (and have not used
+end-plot since it was drawn), then you can find the UV, RA/DEC
+and pixel value at any time by using this command. The cursor
+will appear on the screen and you simply position it at the
+point of interest and type any printing character (a-z, A-Z,
+1-0) except 'Q' or 'q' and the information for that location
+on the map will be printed on the terminal. If you are using
+an X-windows interface then simply mark the position by positioning
+the cursor and pressing the left mouse button.
+
+*1 get
+
+Return information from the plot as a command-language (tcl) global
+variable.  The variable names in which the results are returned are
+listed below.
+
+Parameters: option
+
+Option is one of:
+MAP-POSITION      --    prompt user for a map position, a possible
+                        response is CURSOR. Returns:
+                        *   u,  v
+UV-RANGE          --    prompt user for a map UV-range, a possible
+                        reponse is CURSOR.
+                        Additional parameters: map-entry
+                        Returns:
+                        *   uv_range
+CURRENT-MAP       --    current map in plot frame
+                        returns
+                        *   current_map
+GRAPHIC-POSITION  --    cursor position on the graphics device
+MAP-READ          --    read standard map parameters
+                        Returns:
+                        *   u, v, uv_pos, uv_value,
+                        *   ra, dec, 
+                        *   map_u, map_v, map_pos, map_value, map_pbvalue
+                        *   gr_char, gr_x, gr_y
+GRAPHIC-POSITION  --    see GRAPHIC-READ
+GRAPHIC-READ      --    read standard graphic parameters
+                        Returns: 
+                        *   gr_x gr_y gr_char
+RADEC-FROM-UV     --    converts UV to RA/DEC for the current map.
+                        Returns:
+                        *   ra, dec
+UV-FROM-RADEC     --    converts RA/DEC for the current map to UV.
+                        Returns:
+                        *   u, v, map_u, map_v, uv_pos, map_pos
+
+For X-window based PGPLOT utilities the charcater returned by the
+mouse buttons are:
+
+   Left-Button     A
+   Centre-Button   D
+   Right-Button    X
+
+
+The main point of this command is to enable sophisticated command
+procedures to be constructed which interact with the plot device.
+
+The global parameters returned have the following meanings:
+
+  u v          U and V position on the map as the nearest pixel
+  uv_pos       simply $u,$v
+  map_u map_v  the u/v position but as a decimal location
+  map_pos      simply $map_u,$map_v
+  gr_x gr_y    the position in normalized device graphic coordinates
+  gr_char      the character typed or button press returned.
+  uv_value     the map value at uv_pos
+  map_value    the map value at map_pos, found by interpolation
+  map_pbvalue  the map_value as map_pos corrected for PB effects
+  ra dec       RA and DEC
+
+The following illustrate the use of these parameters:
+
+# Command sequence to read 10 UV-ranges
+map-display get current-map
+for {set n 1} {$n <= 10} {incr n} {
+  map-display get uv-range $current_map
+  set uv(n) $uv_range
+}
+
+*1 annotate
+*@$ANMHELP/Annotate.help
+
+*1 graphic_attributes
+*@$ANMHELP/Attributes.help
+
+*1 graphic_control
+
+The Map-Display sub-system uses the object-oriented graphic system within
+Anmap and overall control of the display is done with the graphic-system.
+Map-display uses graphics of type image and when Anmap is first started
+a graphic of type image and index 1 is created and initialised.  The most
+useful things to control for map displays using the graphic system are:
+
+  1) the view-port
+  2) the transparency of the plot (especially for contour plots, but
+     note that grey scales are always opaque!)
+  3) the output device, device size and segmentation of the screen.
+
+and of course the use of multiple graphics of type image to hold many
+image definitions.
+
+*2 graphic-system
+*@$ANMHELP/Graphic_sys.help
+*
+
+
+
+

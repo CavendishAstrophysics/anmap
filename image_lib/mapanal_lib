@@ -1,0 +1,46 @@
+#! Makefile for the Anmap map-analysis sub-system
+
+FFLAGC=-u 
+FCOMPL=f77
+
+.f.o:
+	$(FCOMPL) -c $(FFLAGC) $<
+
+INCLUDE_FILES=\
+	/mrao/anmap/include/anmap_sys_pars.inc
+
+OBJECT_FILES=\
+	do_add_flux.o           do_mapprint.o           do_shift.o \
+	do_add_maps.o           do_mapscl.o             do_shrink.o \
+	do_alpha_map.o          do_mask_map.o           do_stretch.o \
+	do_chi_map.o            do_mi_map.o             do_strip_flux.o \
+	do_chr_chblnk.o         do_multiply_maps.o      do_vflip.o \
+	do_conv_pos.o           do_noise_map.o          do_zapmap.o \
+	do_convolve.o           do_omtpbc.o		do_binary_map.o \
+	do_divide_maps.o        do_pb_map.o             map_anal_smooth.o \
+	do_exp_map.o            do_pbcorr.o             map_stretch.o \
+	do_gate_map.o           do_perc_map.o           mapanal_sys.o \
+	do_hflip.o              do_predict.o            multi_add_sys.o \
+	do_loc_max.o            do_reproject.o          multi_fit_sys.o \
+	do_log_map.o            do_ring_flux.o		do_get.o \
+	do_makei.o              do_scan_map.o		do_expand.o \
+	extract_slice.o		do_rotate.o
+
+# system dependencies
+sunos : libmapanal.a
+	ranlib ../lib/libmapanal.a
+
+solaris : libmapanal.a
+
+
+# Dependencies for building the object library
+libmapanal.a : $(OBJECT_FILES) $(INCLUDE_FILES)
+	ar ru ../lib/libmapanal.a $(OBJECT_FILES)
+
+# Target for cleaning up the source directory
+clean :
+	rm -f $(OBJECT_FILES)
+
+
+
+

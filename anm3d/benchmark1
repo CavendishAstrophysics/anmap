@@ -1,0 +1,14 @@
+#!/mrao/anmap/anm3d/ida
+
+  set repeat 1
+  for {set n 0} {$n < [llength $argv]} {incr n} {
+     switch -- [lindex $argv $n] {
+	{-repeat}	{incr n; set repeat [lindex $argv $n]}
+     }
+  }
+  set im [img_image read -file /mrao/anmap/anm3d/test.dat -type 1]
+  puts "BANCHMARK1: image read"
+  for {set n 0} {$n < $repeat} {incr n} {
+     img_apply $im scale 0.1 scale 10.0 offset 5.0 offset -5.0 log exp
+     puts "BANCHMARK1: repeat $n"
+  }

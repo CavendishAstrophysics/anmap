@@ -1,0 +1,25 @@
+Spectrum-analysis-program: Scale a spectrum with optional zero-level 
+
+The scaling is performed according to the rule:
+
+      SPEC(outfile) = ( SPEC(infile) - zero ) * scale
+
+Keys:
+   xc                           X-column in data [1]
+   cols                         list of columns to scale [ALL]
+   scale                        scale factor to apply [1.0]
+   zero                         zero-level to use [0.0]
+   title                        title for outfile
+   comment                      user comment for outfile
+   infile      nokeyok          input file name [-]
+   outfile     nokeyok          output file name [-]
+
+All columns are scaled which are included in the cols list.
+
+Examples:
+
+Removal of a zero level of 1.45
+%    sp_scale in.dat out.dat zero 1.45 comment 'Zero error corrected'
+
+
+

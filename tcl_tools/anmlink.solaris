@@ -1,0 +1,3 @@
+echo -L%ANMAP%/lib -L/mrao/lib -L/usr/local/lib -L/usr/openwin/lib  \
+	-lAnmap -lclean -lra -lspec -limg -lgr -licl \
+	-lfits -lmap -lcmd -lutil -lio -lch -lpg -lcpgplot -lpgplot -lnag -lX11

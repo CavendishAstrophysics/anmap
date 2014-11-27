@@ -1,0 +1,312 @@
+
+Annotate -- a sub-system to annotate plots.
+
+*1 Introduction
+
+The annotate system can be used to add simple annotation-like drawing elements
+to other plots or to produce more complex line-based graphics.  In addition
+to a number of basic drawing commands there is also the provision for a
+more complicated compound-object.
+
+The following commands define graphical objects (the system is highly
+object oriented):
+
+  line circle ellipe arc box erase cross arrow text compound-object
+
+while the following commands change the attributes of these objects:
+
+  set-text-style set-line-style set-fill-style set-arrow-style
+  update-object
+
+The objects may either be plotted after a plot command (the default
+action) or plotted immediately they are defined (using the set-plot-options
+command).  Furthermore the coordinates for each object may be specified by
+entering the coordinates in response to prompts or by using the cursor
+to position objects (this is again controlled with the set-plot-options
+command).  The coordinates used can either be physical device coordinates
+(the default) which have the advantage of preserving the correct aspect
+ratio of objects plotted among different devices, or user-defined coordinates
+(see the command set-coordinates and physical-coordinates).  A few commands
+exist to manipulate objects:
+
+  plot object, delete-object, list-object, update-object
+
+Finally the get command is provided to help in constructing command procedures
+which interact with the graphics device.
+
+The map-display, scratch-display and data-display sub-systems all have
+annotate sub-systems of their own.
+
+The coordinates used in all plotting are the corrdinates of the calling
+sub-system.
+
+*1 line
+
+Command: define a line-type graphic object
+Parameters: line-start line-end
+
+A line object is defined using the current line style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.  A multiple-element line can be drawn
+using many line objects or using the compound-object definition.  If the
+input mode is set to cursor-input simply mark each end of the line using
+the cursor.
+
+*1 arc
+
+Command: define an arc-type graphic object
+Parameters: arc-start arc-end arc-midpoint
+
+[NOT IMPLEMENTED YET]
+
+An arc object is defined using the current line style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.
+
+*1 ellipse
+
+Command: define an ellipse-type graphic object
+Parameters: centre, semi-major, semi-minor, position-angle
+
+An ellipse object is defined using the current line style and fill mode
+and is plotted after a plot command or will be plotted immediately if
+the set-plot-options auto-plot command has been given.   The default
+orientation for the ellipse is to have the major axis along the "x-axis",
+the position angle is then the angle the major axis makes with the x-axis
+measured in a positive (counter-clockwise) sense.  If the input mode is
+set to cursor-input then mark the centre end of the major and end of the
+minor axes.
+
+If a filled ellipse is drawn then the colour of the filling is the same
+as the outline colour.
+
+*1 circle
+
+Command: define a circle-type graphic object
+Parameters: centre radius
+
+A circle object is defined using the current line style and fill mode
+and is plotted after a plot command or will be plotted immediately if
+the set-plot-options auto-plot command has been given. If the input
+mode is set to cursor input the mark the centre of the circle and
+one point on the circumference.  If a filled circle is drawn then the
+colour of the filling is the same as the outline colour.
+
+*1 erase
+
+Command: define an erase-type graphic object
+Parameters: box-corner-1, box-corner-2
+
+An erase object is defined and is "plotted" after a plot command or
+will be plotted immediately if the set-plot-options auto-plot command
+has been given.  You should specify (or mark in cursor-input mode) opposite
+corners of the box you wish to erase -- only "box-shaped" erase regions
+are currently supported.
+
+*1 text
+
+Command: define a text-type graphic object
+Parameters: position, position-angle, 'text string'
+
+A text object is defined using the current text style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.  If the input mode is from the command line
+then you will be asked to specify the position for the bottom left point
+of the text and a position-angle for the text (measured in the positive sense,
+couter-clockwise, from the x-axis); if however you are in cursor-input mode
+then you mark the position of the text only -- in both input modes you will
+supply the text from the command line and if the text contains spaces the
+text should be quoted.
+
+*1 box
+
+Command: define a box-type graphic object
+Parameters: box-corner-1, box-corner-2
+
+A box object is defined using the current line style and fill mode and is
+plotted after a plot command or will be plotted immediately if the
+set-plot-options auto-plot command has been given. You should specify
+(or mark in cursor-input mode) opposite corners of the box; the box can be
+drawn in outline or filled if fill mode is set appropriately, in either case
+the fill colour is the same as the outline colour.
+
+*1 cross
+
+Command: define a cross-type graphic object
+Parameters: cross-centre arm-length
+
+A cross object is defined using the current line style and is plotted
+after a plot command or will be plotted immediately if the set-plot-options
+auto-plot command has been given.   If the input mode is cursor-mode then
+you mark the centre of the cross and the end of one arm.
+
+At present crosses can only be drawn with their arms aligned with the
+x and y axes.
+
+
+*1 arrow
+
+Command: define an arrow-type graphic object
+Parameters: arrow-start arrow-end
+
+An arrow object is defined using the current line and arrow styles and
+is plotted after a plot command or will be plotted immediately if the
+set-plot-options auto-plot command has been given.  The form of the
+arrow head is controlled with the set-arrow-style command.
+
+*1 set-text-style
+
+Command: set the text-style for subsequent objects
+Parameters: font, size, colour, width
+
+Set the style for subsequent text -- this style can be used to update
+the style of existing objects using the update-object command.
+
+*2 attributes
+*@$ANMHELP/Attributes.help
+
+*1 set-line-style
+
+Command: set the line-style for subsequent objects
+Parameters: style, width, colour
+
+Set the style for subsequent line drawing -- this style can be used to update
+the style of existing objects using the update-object command.
+
+*2 attributes
+*@$ANMHELP/Attributes.help
+
+*1 set-fill-style
+
+Command: set the fill-style for subsequent objects
+Parameters: fill-mode
+
+Set the style for subsequent filled drawings -- this style can be used
+to update the style of existing objects using the update-object command.
+The fill style can be either:
+   1 = filled
+   2 = emty (outline only).
+
+The fill colour is the same as the colour selected for the outline which
+is the colour of the current line style.
+
+*1 set-arrow-style
+
+Command: set the arrow-style for subsequent objects
+Parameters: angle-of-head, head-length, arrow-fill
+
+Set the style for subsequent arrows -- this style can be used
+to update the style of existing objects using the update-object command.
+The angle of the head is the half-angle between the shaft of the arrow
+and the lines forming the arrow head itself; the head length is measured
+in proportion to the length of the arrow and the arrow-fill mode
+(either 1 filled or 2 outline) controls how the arrow head itself is
+drawn.
+
+*1 coordinates
+
+The coordinate system used in annotations is the same as the coordinate
+system in use in the map-display, scratch-display or data-display
+sub-system calling the annotate sub-system; this facilitates aligning the
+annotations with respect to the plots.
+
+*1 list-objects
+
+Command: list all defined graphic objects
+
+A brief listing of all defined objects in the current annotate object is sent
+to the screen.  The object status is 1 if the object is defined, but not
+plotted and -1 if the object is defined and plotted.
+
+*1 delete-object
+
+Command: delete an object from the current annotate object
+Parameters: object-number
+
+The specified object can be deleted; note that this command does not
+effect the plot until a plot refresh command is given.
+
+*1 plot
+
+Command: plot object(s) for the current annotation
+Parameters: option
+Options: all object refresh
+
+The plot command does the actual work of plotting defined objects (but see
+also the set-plot-options auto-plot command).
+
+  plot all       plot all defined, but not plotted objects
+  plot object n  plot object n only
+  plot refresh   re-draw the plot, plotting only those objects already drawn,
+                 this command can be used to plot the current drawing into
+                 a new view-port or onto a new device.
+
+*1 initialise
+
+Command: initialise aspects of the annotation
+Parameters: option
+Options: all plot options drawing
+
+This command can be used to initialise aspects of the annotation:
+
+  initialise plot     initialise all objects so that they appear to be
+                      "not plotted"
+  initialise options  initialise options such a line, text fill and arrow
+                      styles
+  initialise drawing  initialise the list of objects (effectively delete all
+                      objects in the annotation).
+  initialise all      the combination of all of the above.
+
+*1 update-object
+
+Command: update the style of a given object
+Parameters: object-number | all
+
+Update the style of the specified object or "all" objects to the current
+style -- this applies the current line, text, arrow, and fill styles to the
+specified objects.  The effects of this command will not be appraent until
+the next plot refresh command.
+
+*1 set-plot-options
+
+Command: set options for how the plot is updated
+Parameters: option
+Options: auto-plot, deferred, cursor-input, command-input
+
+Set various options to control how the plot gets updated:
+
+  set-plot-options auto-plot      set the plot into auto-plot state so that
+                                  objects are plotted as soon as they are
+                                  defined.
+  set-plot-options deffered       set the plot into deffered state so that
+                                  objects are not plotted until an explicit
+                                  plot command.
+  set-plot-options cursor-input   set the input mode to cursor input --
+                                  coordinates are entered using the cursor
+  set-plot-options command-input  set the input mode to command-line input
+                                  -- coordinates are entered from the
+                                  command line.
+
+*1 get
+
+Command: return information for the current annotation
+Parameters: option
+Options: cursor-input, coordinates, max-objects, object-type, object-status
+
+Information for the current annotation is returned in command-language
+parameters of the form "%option-name".  The options have the following
+meaning:
+
+  cursor-input       cursor input from device
+  coordinates        current coordinates
+  max-objects        maximum number of objects
+  object-type        object type for object
+  object-status      object status for object
+
+
+*1 compound-object
+*@$ANMHELP/Compound_Object.help
+
+
+*
+

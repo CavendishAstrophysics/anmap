@@ -1,0 +1,19 @@
+#
+# Tcl script to install applications
+#
+set sys [lindex $argv 0]
+set ANMAP [lindex $argv 1]
+for {set n 2} {$n < [llength $argv]} {incr n} {
+  set file [lindex $argv $n]
+  puts "Installing $file"
+  if [file exists $file.$sys] then {
+     set fid [open $file.$sys r]
+     set text [read $fid]
+     close $fid
+     regsub -all {%ANMAP%} $text $ANMAP t1
+     set fid [open ../bin/$file w]
+     puts -nonewline $fid $t1
+     close $fid
+     exec chmod a+x ../bin/$file
+  }
+}

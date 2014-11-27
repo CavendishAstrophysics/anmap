@@ -1,0 +1,34 @@
+
+Spectrum-analysis-program: Display statistics about a spectrum file and data
+
+Keys:
+
+     infile       nokeyok             input spectrum file [-]
+     col                              column for determination
+     option                           option for statistics output
+
+
+By itself the command sp_statistics produces statistics for all columns
+in the spectral data file.  If col and option are set then output will
+be one item (unformatted) for the specified column.  All output is to
+the standard output.  The key option may be one of:
+    SUM     sum of values in column
+    DEL     increment between column values (only sensible for X-axis)
+    MAX     maximum value in column
+    MIN     minimum value in column
+    AVG     average of column values
+
+The use of col and option acan be used to set values into C-shell variables
+or environment variables.
+
+Examples:
+
+Formmated output of statistics
+%     sp_statistics   data.dat
+
+Set the shell variable xdel to the spacing between x data points
+%     set xdel = `sp_statistics data.dat option del col 1`
+note the use of the back-quote characters to force the execution of the
+command.
+
+

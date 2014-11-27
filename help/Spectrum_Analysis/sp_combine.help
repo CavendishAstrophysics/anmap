@@ -1,0 +1,62 @@
+Spectrum-analysis-program: combination of two spectra according to option
+
+
+    SPEC(outfile) = (SPEC(infile1)-zero1)*scale1 +
+                      (SPEC(infile2)-zero2)*scale2
+
+Keys:
+
+   xc                           X-column in data [1]
+   cols                         list of columns to combine
+   zero1                        zero-level infile1 [0.0]
+   scale1                       scale factor infile1 [1.0]
+   zero2                        zero-level infile2 [0.0]
+   scale2                       scale factor infile2 [1.0]
+   title                        title for outfile
+   option                       option for combination [add]
+   comment                      user comment for outfile
+   infile1     nokeyok,needed   input file name number 1
+   infile2     nokeyok,needed   input file name number 2
+   outfile     nokeyok          output file name [-]
+
+The input spectra are combined according to the specified rule. The
+spectra should have the same sampling.  The X-column (XC default=1)
+is not combined but copied from SPEC(infile).  COLS can be used
+to list the columns to combine, un-listed columns are copied
+from SPEC(infile1).
+
+The option may be one of:
+
+option add ::
+    SPEC(outfile) = (SPEC(infile1)-zero1)*scale1 +
+                      (SPEC(infile2)-zero2)*scale2
+
+option divide ::
+   SPEC(outfile) = SPEC(infile1)*scale1 /
+                      SPEC(infile2)*scale2
+
+   (if SPEC(infile2) == 0.0 then SPEC(outfile) = 0.0)
+
+option multiply ::
+   SPEC(outfile) = (SPEC(infile1)-zero1)*scale1 *
+                      (SPEC(infile2)-zero2)*scale2
+
+option visibility ::
+   SPEC(outfile) = (SPEC(infile1)-SPEC(infile2)) /
+                       (SPEC(infile1)+SPEC(infile2))
+
+option alpha ::
+   SPEC(outfile) = log(SPEC(infile1)/SPEC(infile2)) /
+                   log(scale2/scale1)
+
+Examples:
+
+Addition with zero levels unset
+%    sp_combine in1.dat in2.dat out.dat scale1=1.0 scale2=0.5
+
+Set column three of a multi-column file to zeros.
+%    cp in1.dat temp.dat
+%    sp_combine in1.dat temp.dat scale1=1 scale2=-1.0 cols=3
+%    rm temp.dat
+
+

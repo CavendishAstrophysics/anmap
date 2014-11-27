@@ -1,0 +1,30 @@
+#
+#
+#  Module Anmap --- define toplevel anmap commands
+#
+set global.commands(redtape-display) {redtape_display}
+set global.commands(tv-load) {}
+set global.commands(read-data-file) {in_data}
+set global.commands(write-data-file) {out_data}
+
+set main.info(exit) {}
+set main.info(news) {}
+set main.info(help) {}
+set main.info(redtape) {}
+set main.info(tv-load) {}
+set main.info(read-data-file) {}
+set main.info(write-data-file) {}
+set main.info(graphic-system) {}
+set main.info(catalogue-system) {}
+set main.info(edit-redtape) {}
+set main.info(edit-image) {}
+set main.info(drawing-display) {}
+set main.info(data-display) {}
+set main.info(map-display) {}
+set main.info(scratch-display) {}
+set main.info(news) {}
+set main.info(help) {}
+set main.info(redtape) {}
+set main.info(tv-load) {}
+set main.info(read-data-file) {}
+set main.info(write-data-file) {}

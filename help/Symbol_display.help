@@ -1,0 +1,71 @@
+
+Symbol-plot Sub-system
+
+Symbol plot is a facility for marking certain pixels on an
+image with a specified symbol. It is possible to specify the
+following:
+
+                   Blank pixels
+                   Pixels below a gate
+                   Pixels above a gate
+
+Use the sub-system symbol-plot to setup the options then use
+go-plot or plot symbol as appropriate to add symbols to your
+plot.
+
+The display command in symbol-plot can be used to see what
+options are currently active. Command available in the symbol-
+plot sub-system are described below. A symbol option also
+exists for the display command at the main map-display sub-
+system level.
+
+*1 on
+
+This command must be given if the symbol plot option is to be
+enabled.
+
+*1 off
+
+This command can be used to suppress the plotting of symbols.
+
+*1 display
+
+This command can be used to display the options currently
+setup for the symbol-plot option. If symbol-plot is active
+(enabled) then the go-plot command will add symbols to the
+plot.
+
+*1 help
+
+Help information on the symbol-plot sub-system is made
+available.
+
+*1 mark-blank-pixels
+
+Parameters: on/off, character
+
+Turn the marking of blank pixel values on/off and select a
+symbol to mark them with. The currently available symbols for
+this and the other options are:
+
+                         + - * o . x
+
+*1 mark-max-pixels
+
+Parameters: on/off, gate-high, character
+
+Turn the marking of maximum pixel values on/off, specify a
+gate value and select a symbol to mark them with. All pixels
+above the specified gate will be marked with the chosen
+symbol.
+
+*1 mark-min-pixels
+
+Parameters: on/off, gate-low, character
+
+Turn the marking of minimum pixel values on/off, specify a
+gate value and select a symbol to mark them with. All pixels
+below the specified gate will be marked with the chosen
+symbol.
+
+*

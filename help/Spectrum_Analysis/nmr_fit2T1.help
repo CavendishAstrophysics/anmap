@@ -1,0 +1,17 @@
+Spectrum-analysis-program: Fit two T1's to a single data file:
+
+    M(t) = A(1-exp(-t/T11)) + B(1-exp(-t/T12))
+
+Column 1 is assumed to time (t) and column 2 the magnetization (M).
+
+Invocation:
+
+    nmr_fit2T1
+
+Keys
+
+ file         nokeyok,needed
+ fit                          fit_output.dat
+
+
+

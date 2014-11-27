@@ -1,0 +1,84 @@
+EEEEQQQQNNNN((((5555))))		LLLLiiiivvvv    UUUUnnnniiii    PPPPuuuurrrreeee    MMMMaaaatttthhhhssss    SSSSiiiinnnngggg    GGGGrrrroooouuuupppp		EEEEQQQQNNNN((((5555))))
+
+NNNNAAAAMMMMEEEE
+	EQN - Format for equation
+
+SSSSYYYYNNNNTTTTAAAAXXXX    OOOOFFFF    EEEEQQQQUUUUAAAATTTTIIIIOOOONNNNSSSS
+	Equations are made up of variable names, numbers and the
+	standard operations (+ - * / ^ =) as well as bracketing with
+	'(' and ')'. The '*' for multiplication is optional and the
+	product of two variables can be indicated by 'x y' but note
+	that if the space was omitted here then it would be treated
+	like the single variable 'xy'. The equation must contain one
+	'=' and be terminated by a ';'.
+
+	The names of variables must start with a letter but and can
+	contain numbers and the underscore '_'. Case is significant.
+	Comments are allowed and start with a '#' and continue to the
+	end of the line. Newline are not significant and are treated
+	like white space.
+
+	Function definitions are of the form 'f(x,y,...)'. If the function
+	'fun' is not defined then 'fun(x)' is interpreted as 'fun * x'.
+
+	For example the following defines an ellipse
+
+		(x/a1)^2 + (y/a2)^2 + (z/a3)^2 = 0;
+
+	For compatibility ':=' and '=' are treated identically and
+	'**' is interpreted as '^'. To specify ranges square brackets
+	can be used, eg '[-1,1]' specifies the range from -1 to 1,
+	not all routines understand ranges.
+
+        The following functions are included in the standard list,
+        cos(x),sin(x),tan(x), acos(x),asin(x),atan(x), sec(x),cosec(x),cot(x),
+        cosh(x),sinh(x),tanh(x), acosh(x),asinh(x),atanh(x),
+        sqrt(x),exp(x),pow(x,n),ln(x), abs(x), sgn(x), max(x,y), min(x,y)
+        if(x,y,z) and the constant Pi. Most functions correspond to the
+        the function with the same name in the maths library math(3).
+        The function sgn(x) returns -1 if x < 0; 0 if x = 0 and +1 if x > 0.
+	The function if(x,y,z) returns y if x >= 0 z otherwise.
+        A single operator diff(eqn,x) is also defined which gives the
+        derivative of eqn with respect to x, x must be a name.
+
+FFFFOOOORRRRMMMMAAAALLLL    SSSSYYYYNNNNTTTTAAAAXXXX
+	<EQUATION>    ::= <EXPR>====<EXPR>;;;;
+			| <EXPR>::::====<EXPR>;;;;
+
+	<EXPR>	      ::= ((((<EXPR>))))
+			| <EXPR><OP><EXPR>
+			| <EXPR><EXPR>
+			| <NUMBER>
+			| <NAME>
+			| <INTERVAL>
+			| <FUNCTION>
+
+	<OP>	      ::= ++++
+			| ----
+			| ****
+			| ////
+			| ^^^^
+
+	<INTERVAL>    ::= [[[[<EXPR>,,,,<EXPR>]]]]
+
+	<FUNCTION>    ::= <NAME>((((<EXPR>,,,,<EXPR>,,,,...))))
+
+	<COMMENTS>    ::= ####<any characters>\\\\nnnn    
+
+	<NAME>	      ::= <letter followed by any number of
+				letters, number or underscores>
+
+SSSSEEEEEEEE    AAAALLLLSSSSOOOO
+	eqn(3), eqntool(1)
+
+BBBBUUUUGGGGSSSS
+	If you do find an equation which is parsed incorrectly
+	please let us know. To check the interpretation use the eqntool(1)
+	program. Adding brackets can always be used to force correct
+	interpretation.
+
+AAAAUUUUTTTTHHHHOOOORRRR
+	Richard Morris 16/3/93
+	Liverpool University, Department of Pure Mathematics,
+	P.O. Box 147, Liverpool L69 3BX
+	email - rmorris@liverpool.ac.uk

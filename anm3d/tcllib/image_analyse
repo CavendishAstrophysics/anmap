@@ -1,0 +1,19 @@
+#!/mrao/anmap/anm3d/ida
+
+     set from image.thin ; set to image.anal
+     for {set n 0} {$n < [llength $argv]} {incr n} {
+	switch -- [lindex $argv $n] {
+	{-from}		{incr n ; set from [lindex $argv $n]}
+	{-to}		{incr n ; set to [lindex $argv $n]}
+	}
+     }
+     set im1 [img_image read -file $from -type 1]
+     set i1 1
+     set i2 [expr round( [lindex [img_anal $im1 maxmin] 1] ) ]
+     img_region classify $im1 0.5 ${i2}.5 1.0
+     set fid [open $to w]
+     for {set i $i1} {$i <= $i2} {incr i} {
+	set res [img_region enqshape $im1 $i]
+	puts $fid "set resin($i) \{$res\}"
+     }
+     close $fid

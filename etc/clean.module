@@ -1,0 +1,39 @@
+#
+# Module: clean
+#
+# define command to switch to the clean sub-system
+set global.commands(clean-system) {main.system clean-system}
+
+# define basic commands for the clean sub-system
+set anmapnames(clean) {clean-analysis}
+set sysnames(clean-system) {clean}
+set clean.prompt "Clean> "
+proc clean.command {args} { eval anmap_command clean-system $args }
+set clean.commands(set-map) {}
+set clean.commands(reset-defaults) {}
+set clean.commands(set-clean-window) {}
+set clean.commands(set-beam-window) {}
+set clean.commands(set-search-windows) {}
+set clean.commands(set-fraction) {}
+set clean.commands(set-flux-limit) {}
+set clean.commands(set-iteration-limit) {}
+set clean.commands(set-clean-beam) {}
+set clean.commands(set-position-angle) {}
+set clean.commands(prussian-hat) {}
+set clean.commands(stop-at-zero) {}
+set clean.commands(not-box) {}
+set clean.commands(truncated-beam) {}
+set clean.commands(make) {}
+set clean.commands(go-clean) {}
+set clean.commands(display-options) {}
+set clean.commands(clear-clean-run) {}
+set clean.commands(sorting-clean) {}
+set clean.commands(make)     { clean_launch }
+set clean.commands(go-clean) { clean_launch }
+
+# procedure to implement launching of clean
+proc clean_launch { args } {
+   global Clean Anmap
+   anmap_command clean-system go-clean
+   exec $Anmap(src)/bin/clean_prog $Clean(resid)
+}

@@ -1,0 +1,129 @@
+#!%WISH% -f
+#
+# Application to run a "picture-show" interactive program
+#
+proc pshow_clickon { w pos } {
+  $w.list select from [ $w.list nearest $pos]
+  set element [$w.list nearest $pos]
+  update
+  pshow_clear
+  pshow_display $element  
+}
+
+proc pshow_display { element } {
+  global pshow_file pshow_element
+  set pshow_element $element
+  .list.list select from $element
+  update
+  exec xwud -geometry +0+0 -in $pshow_file($element) &
+}
+
+proc pshow_exit { } {
+  pshow_clear
+  destroy . ; exit
+}
+
+proc pshow_previous { } {
+  global num_elements pshow_element
+  incr pshow_element -1
+  if "$pshow_element  == -1" then {
+    set pshow_element [expr "$num_elements -1"]
+  }
+  pshow_clear
+  pshow_display $pshow_element
+}
+
+proc pshow_next { } {
+  global num_elements pshow_element
+  incr pshow_element 
+  if "$pshow_element  == $num_elements" then {set pshow_element 0}
+  pshow_clear
+  pshow_display $pshow_element
+}
+proc pshow_clear { } {
+  catch {set process [exec ps -ux | grep xwud | grep -v grep]}
+  catch {set pid [lindex $process 1]}
+  catch {exec kill -9 $pid}
+}
+
+proc pshow_start { } {
+# create a list of files to display
+global pshow_file pshow_list num_elements pshow_elements
+set PictDir /data1/pa/pshow
+cd $PictDir
+set num_elements 0
+foreach element [glob $PictDir/*.xwd] {
+  set name [file rootname [file tail $element]]
+  set pshow_file($num_elements) $element
+  set val $name
+  regsub -all {_} $name { } val
+  set pshow_list($num_elements) $val
+  incr num_elements
+}
+
+# create the controlling widgets
+
+# .. list widget with a list of all files to display
+  set w .list
+  frame $w -borderwidth 1
+  pack append $w \
+    [scrollbar $w.scrolly -relief sunken -width 3m \
+                     -foreground Grey -activeforeground Grey \
+                     -command "$w.list yview"] {right filly} \
+    [scrollbar $w.scrollx -relief sunken -orient horizontal -width 3m\
+                     -foreground Grey -activeforeground Grey \
+                     -command "$w.list xview"] {bottom fillx} \
+    [listbox $w.list -yscroll "$w.scrolly set" \
+                     -xscroll "$w.scrollx set" -relief sunken\
+                     -geometry 20x10] {top expand fillx} 
+
+  bind $w.list <1> "pshow_clickon $w %y"
+  foreach element [array names pshow_list] {
+    $w.list insert end $pshow_list($element)
+  }
+
+# command widget
+  set w .command 
+  frame $w -borderwidth 1
+  pack append $w \
+    [button $w.exit -text "Exit" -width 10 -command pshow_exit] \
+    {top pady 5 padx 40} \
+    [button $w.clear -text "Clear" -width 10 -command pshow_clear] \
+    {top pady 5 padx 40} \
+    [button $w.next -text "Next" -width 10 -command pshow_next] \
+    {top pady 5 padx 40} \
+    [button $w.previous -text "Previous" -width 10 -command pshow_previous] \
+    {top pady 5 padx 40}
+
+# instructions
+message .instructions -relief flat -text "Select an image to display by:\n \
+ (a) Clicking on the name in the window;\n \
+ (b) Choosing Next or Previous options.\n \n \
+Clear removes the current picture \n \
+Exit leaves the program" \
+  -width 6000
+
+pack append . .instructions {top fillx} \
+              .list {left filly} .command {left filly}
+wm title . "Picture Show"
+wm iconname . "Picture Show"
+wm geometry . -0-0
+
+set pshow_element 0 
+pshow_display $pshow_element
+
+}
+
+set dir /mraos/data/pa/pshow 
+for {set n 0} {$n < [llength $argv]} {incr n} {
+  set name [lindex $argv $n]
+  case $name in {
+    {-dir}     {incr n ; set dir [lindex $argv $n]}
+    {default}  {set dir [lindex $argv $n]}
+  }
+}
+
+pshow_start
+
+
+

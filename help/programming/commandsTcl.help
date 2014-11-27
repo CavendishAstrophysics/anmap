@@ -1,0 +1,353 @@
+*1 Introduction
+
+Commands in Anmap fall into one of a number of categories:
+
+  o  Commands used by ordinary users.  These are user--friendly commands
+     offering prompting and minimal matching to access them; these commands
+     are organised into sub-systems.
+
+  o  Commands used by programmers and script writers.  These are Tcl
+     commands.  They may be provided to access the basic Anmap system
+     or to access data processing / graphics tools.  You also have
+     access to all the built in tcl commands.  These commands are not
+     minimally matched and in general you are not prompted for any
+     parameters.
+  o  External programs also appear as commands.  They provide the user
+     with the normal facilities of a Shell or appear as additional
+     commands which extend the functionality of Anmap.
+
+Eventually the aim is that all user-interaction code is written in Tcl
+and only computational code is written in a compiled language.  All operations
+would be available via tcl-type commands and/or external modules.  However,
+Anmap began life as an F77 monolith and this transition is far from complete.
+As far as end users are concerned they will have to be familiar with both
+types of commands, user-friendly prompting commands and those which require
+all information on the command line.  Eventually ....
+
+*1 command_create
+
+To create a new minimally-match Anmap command you create the command
+using the command_create tcl procedure.  (Note it is possible to
+create commands directly by providing information in the appropriate
+Anmap global structures --- see the way modules are created for more
+details).
+
+Synopsis:
+
+  command_create  
+                  name                   new command name 
+                  -command {string}      command associated with name
+                  -global                if set the command is created
+                                         as a global command
+                  -local                 if set the command is created
+                                         local to the current sub-system
+                                         (this is the default)
+                  -system  sys_name      is set this forces the command
+                                         to be created in the sys_name
+                                         sub-system
+
+For example suppose we want to create a global command to list the files
+in the current directory which is called "list-files", the following
+call command_create will achieve this
+
+  command_create list-files -command {exec ls -l} -global
+
+This is now a fully minimally-matched Anmap command and therefore
+all unambiguous abreviations for this command will work:
+
+  listr-files   li-fi   list-fil    etc...
+
+Note the explicit use of the tcl built-in command exec, although not
+strictly necessary if ls is not a minimal match for an Anmap command
+at the current or global sub-system levels it serves two purposes:
+
+  o   the exec avoids any possible minimal matching problems in future
+  o   it makes it clear that "ls" is an external program.
+
+
+A second example illustrates how to create a command applicable only to the
+map-display sub-system.  Let us assume we have a procedure show_map which
+displays a map with a particular set of options, then the following will
+create a minimally matched command in the map-display sub-system.
+
+map-display
+  command_create show-map -command show_map -local
+exit
+
+This could usefully be entered into your ~/mrao/init_anmap.tcl file to
+define the command "permanently", or alternatively create a new "module".
+
+(Note it is possible to create commands directly by providing information in
+the appropriate Anmap global structures --- see the way modules are created for
+more details).
+
+
+*1 anmap_system
+
+There are two commands available to call external programs, the built-in
+command exec or the Anmap command anmap_system.
+
+The built-in command exec is useful if you want to catch the output of
+the command.  For example to process the output of the "ls" command you
+can write
+
+  set output [exec ls]
+
+and output will now contain the file listing.  In programming jargon, the
+standard input, output and error of the ls command have been connected to
+Anmap.  However if you want to run a command which may prompt the user and
+display its output directly to the screen (just like a normal built in
+Anmap porocessing command) then you must ensure that the standard IO for
+the program are connected to the terminal or Xterm.  The anmap_system command
+allows you to do this and is therefore the normal way of starting up
+processes from anmap which should behave to the user exactly like built
+in command.
+
+Synopsis:
+
+  anmap_system
+               {command string}       A single string which is run as a
+                                      sub-process.
+
+For example to execute ls -l using anmap_system, one would use
+
+  anmap_system {ls -l}
+
+A more important example concerns the use of Anmap sub-programs.  For
+example the program galaxy_read reads the output of a star-forming galaxy
+simulation into Anmap as an image, to run the program so that it behaves as
+a normal Anmap command one could type the following:
+
+  anmap_system galaxy_read
+
+and the user will be prompted for input.  To supply data to galaxy_read on
+the command line we would use:
+
+  anmap_system {galaxy_read input_file.dat ...}
+
+In fact this is not usually necessary as the Anmap command interpreter
+will attempt to execute any command you type as a system command if that
+command does not match a built in command-language command or minimally 
+match a normal Anmap command.  Therefore to define a minimally matched
+command for galaxy_read all one needs to do is:
+
+  command_create galaxy-read -command galaxy_read -global
+
+N.B.  This is to be preferred to the alternative:
+  command_create galaxy-read -command {anmap_system galaxy_read} -global
+The former method correctly processes arguments typed on the command
+line and is the recommended method, if you have to explicitly use anmap_system
+to setup commands in this way you should write a procedure which gathers
+any arguments typed and passes them correctly to anmap_system.
+
+
+*1 iocmd
+
+The iocmd command provides tcl/tk facilities to handle prompts in a way
+identical to iolib routines from f77 code --- this enables you to write
+tcl/tk procedures which behave exactly like other Anmap commands offering
+user friendly type-checked prompts.
+
+Synopsis:
+         option     This specifies the option for the command:
+                    geti .......... prompt for integer
+                    getni ......... prompt for multiple integers
+                    getr .......... prompt for real
+                    getnr ......... prompt for multiple reals
+                    getd .......... prompt for double precision
+                    getnd ......... prompt for multiple double precisions
+                    get-word ...... prompt for quoted word
+                    get-string .... prompt for string
+                    get-options ... prompt for options
+                    onoff ......... prompt for on/off
+                    yesno ......... prompt for yes/no
+                    debug  ........ set debug level in code
+                    set-cli ....... set interactive command line
+                    clear-cli ..... clear the interactive command line
+                    enquire-cli ... enquire the interactive command line
+
+         [data]     If the option is a "get" option you should supply the
+                    prompt and default string in single quotes "'". For
+                    set cli all remianing arguments are used to setup the
+                    command line, while debug requires a debug level (this
+                    option is not applicable to normal users).
+
+A few examples will illustrate the use of this command, for more details
+you can also consult the f77 library information for the equivalent iolib
+routines.
+
+To prompt for an integer:
+
+  set i [iocmd geti 'Number-of-pixls : ' '1']
+
+To prompt for 3 integers:
+
+  set il [iocmd geti 'Give 3 integer values : ' '1,2,3' 3]
+
+and il now contains a list of three integers.
+
+Procedure to setup the current command line and then prompt for a series
+of input 10 integers
+
+  proc get_data { args }
+    global n
+    iocmd set-cli $args
+    for {set i 1} {$i <=10} {incr i} {
+      set n($i) [iocmd geti 'Enter index-$i : ' '$i']
+    }
+  }
+
+Prompt for an on/off response
+
+  if [iocmd onoff 'Turn contouring on/off ? ' 'off'] then {
+    # do code on on command
+  } else {
+    # do code on off command
+  }
+
+Prompt for a single word
+
+  set file [iocmd get-word 'File-name : ' '~/.cshrc']
+
+Prompt for a string which is everything else on the command line or
+everything typed at the input prompt
+
+  set text [iocmd get-string 'Title : ' ' ']
+
+Prompt for one of a number of options then decode the option
+
+  set opt [iocmd get-option 'Style (?=list) : ' 'solid' 3 \
+                            'solid ..... solid line' \
+                            'dash ...... dashed line' \
+                            'none ...... no line plotted']
+  switch $opt {
+     {solid}    { }
+     {dash}     { }
+     {none}     { }
+  }
+
+*1 The_Command-line
+
+A common problem is to want to use a procedure to prompt for some
+information and then let a command or program with built in prompting
+finish the job.  The resulting command should appear as a standard Anmap
+command.  The solution to this problem is best illustrated by a simple
+example -- we let the comments explain what is going on here:
+
+#
+# procedure to read galaxy files.  The program galaxy_read is designed to
+# read the output of a simulation run into Anmap as an image.  The program
+# reads a file name as its first argument.  In general the files are
+# stored in a standard directory location, we therefore want to prompt the
+# user for a file, use the input information to construct a full path to
+# the file and then pass any other information typed by the user to the
+# program which will prompt if required for more information
+#
+proc galaxy_read { args } {
+
+# setup the standard command line to contain all arguments to the procedure
+  iocmd set-cli $args
+
+# extract the first item from the command line as the file name or prompt
+  set file [iocmd get-word 'Galaxy-file : ' ' ']
+
+# use file to setup a full path to pass to galaxy read
+  set dir [string range $file 0 11]
+  set f /home/jps18/model/data/$dir/$file
+
+# check to see i0f the user has typed anything else on the command line,
+# if so pass it to galaxy_read
+  if {[llength $args] > 1} then {
+    set ll [lrange $args 1 [expr "[llength $args]-1"]]
+    anmap_system "galaxy_read $f $ll"
+  } else {
+    anmap_system "galaxy_read $f"
+  }
+}
+
+All we need to do now is define a new minimally matched global command:
+
+  command_create galaxy-read -command galaxy_read -global
+
+Now any of the following will work as expected --- the new command looks
+exactly like a built-in anmap command:
+
+  galaxy-read 
+  gal-read gal040594_003.dp01 
+  g-r gal040594_003.dp01 256 0.6,,,,,,
+
+*1 module
+
+The module command is used to manipulate the module system of Anmap.  A
+module is simply a definition of a set of commands which enhance Anmap is
+some way.  There is a single command to manipulate modules:
+
+   module
+
+          option ?module_name?
+
+
+Options is one of:
+
+  o   load   module_name         load the specified module.
+  o   list                       list all available modules
+  o   loaded                     list loaded modules
+
+A modules is just an Anmap (Tcl) command file which defines new commands
+and sets up an environment.  Module files are identified by the extension
+".module".  System modules are provided to create the main sub-systems of
+Anmap and this is achieved in many cases by direct manipulation of the
+data structures defining manimmal matched commands in Anmap.
+
+An example of a module file is extracted below.
+
+   #
+   # Module: Radio Astronomical Specific Tools
+   #
+   # Setup Synchrotron Analysis sub-system:
+   # define command to switch to the synchrotron sub-system
+   set global.commands(synchrotron-analysis) {main.system synchrotron-analysis}
+   set anmapnames(synch) {synchrotron-analysis}
+   set sysnames(synchrotron-analysis) {synch}
+   set synch.prompt "Synchrotron> "
+   proc synch.command {args} { eval anmap_command synchrotron-analysis $args }
+
+   # define basic commands for the synchrotron sub-system
+   set synch.commands(equipartition-calculation) {equipartition_calculation}
+   set synch.commands(B-spiral) {synch_B_spiral}
+   set synch.commands(X-synchrotron-analysis) {Xsynch}
+
+   # add aliases to procedure-based commands
+   command_create fit-map-spectrum -command fit_map_spectrum -system synch
+
+   #
+   # Define additional map-analysis commands 
+   #
+   set anal.commands(chi-map) {ra_dispatch chi-map}
+   set anal.commands(mi-map) {ra_dispatch mi-map}
+
+The actual module also creates procedures to implement many of the new
+facilities loaded by this module.  Note how a new Anmap sub-system is
+created --- this requires the following global arrays to be defined:
+
+   anmapnames   sysnames
+
+Together with a prompt to associate with the sub-system and a default
+command to run when no command is specified:
+
+   set synch.prompt "Synchrotron> "
+   proc synch.command {args} { eval anmap_command synchrotron-analysis $args }
+
+Finally new commands are created, not with the command_create command, but
+by defining them directly --- each sub-system has a global array called
+
+   subSystem.commands
+
+Note how we create a command in the global sub-system to change to the 
+new synchrotron sub-system:
+
+   set global.commands(synchrotron-analysis) {main.system synchrotron-analysis}
+
+here main.system is a built in Anmap command to change to a new sub-system.
+
+*

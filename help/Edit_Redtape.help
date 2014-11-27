@@ -1,0 +1,253 @@
+
+Edit-Redtape Sub-system
+
+Warning   It is easy to seriously damage your map with this
+          utility. As many checks as possible are incorporated
+          to stop you, but these facilities have to be present
+          to enable you to correct pathological cases.
+
+
+*1 Introduction
+
+Edit-Redtape is a redtape editor which can be used to modify
+the redtape of a map, either adding extra information or
+correcting existing information. It is also possible to copy
+the redtape from one map to another.
+
+The map redtape is the header information stored with your
+image -- it defines such things as the scaling from the units
+your map is stored in to the units of the quantity you have
+measured, the coordinate system, and data type. In addition
+there is some history and textual information which will be
+useful in just identifying the image.
+
+For maps made using the standard Cambridge software additional
+information may be present such as the map-making redtape used
+to define how the map was made, and information specific to
+such things as beam-sets in an appropriate case.
+
+Certain routines such as CLEAN add important information to
+the redtape, while all routines will update the history and
+maximum/minimum entries.
+
+The full definition of the redtape of the map is stored in the
+file:
+
+                 /mrao/include/maplib_redtape.inc
+
+Users intending to modify the redtape should be very careful,
+as the items defining the map size are crucial to the analysis
+routines' ability to read and write the data correctly -- if
+you suspect problems in these cases you should seek expert
+help.
+
+The editor works on the current redtape; on entering edit-
+redtape you should make the redtape of a particular map
+current by using the read-redtape command. For example:
+
+      read-redtape 1
+
+will read the redtape for catalogue entry number 1. To look at
+the redtape use the display-redtape command or the dump
+command to list every value present in the redtape header.
+
+      display-redtape
+
+will print a formatted output to the screen.
+
+To modify redtape entries use the set-redtape-item command, to
+see what you can change type a "?" in response to the Set-
+option : prompt. Things you can change are listed in the help
+entry on set-redtape-item.
+
+When you are happy with your new redtape use the write-redtape
+command to save it to a map in the catalogue, for example to
+catalogue entry number 1, then just type:
+
+      write-redtape 1
+
+there may be a short pause while the image is accessed.
+
+*1 read-redtape
+
+Parameters: catalogue-entry
+
+The redtape for the specified catalogue entry is made current
+and you may now edit it. Display-redtape will type this
+redtape to the screen at any time and show the currently
+modified form. The redtape for the map from which you copy the
+redtape will not be affected at this stage.
+
+
+*1 write-redtape
+
+Parameters: catalogue-entry
+
+The current redtape is written to the specified map. This
+command will overwrite the redtape presently associated with
+that map.
+
+To modify the redtape for, for example map number 4, the
+following is required:
+
+      edit-redtape
+      read-redtape 4
+          .
+          .
+      (combination of set/display commands)
+          .
+          .
+          .
+          .
+      write-redtape 4
+
+You may find it useful for the map you modify to be a copy of
+an existing map -- use copy-catalogue-entry in the map-
+catalogue sub-system.
+
+
+*1 display-redtape
+
+The current redtape is typed in a formatted form. Any
+modifications to the current redtape are shown by this
+command.
+
+
+*1 dump-redtape
+
+The current redtape is dumped to the terminal (written in an
+unformatted form).
+
+
+*1 set-redtape-item
+
+Parameters: option, option value
+
+The specified redtape entry is modified. Only the current
+redtape is altered; you will need to use write-redtape to
+obtain a permanent result. The options currently available to
+you are:
+
+ map-centre            projection            source-name
+ reference-date        observation-date      flux-normalization
+ clean-beam            frequency             polarization
+ name-data-type        unit-data-type        created
+ history               title                 owner
+ user                  UV-range              sampling
+ pb-pointing           pb-to-map-centre      telescope-identifier
+
+Press return to the prompt if you do not wish to alter the
+parameter. A "?" will supply the list of current options:
+
+      set-redtape-item ?
+
+or
+
+      set-redtape-item
+      Redtape-item : ?
+
+and you will be prompted again. Please request other options
+if you find there are items in the redtape you want to modify
+which are not covered by this list. For more details of the
+items in the redtape please see the file:
+
+                 /mrao/include/maplib_redtape.inc
+
+which is the definition file for the map redtape.
+
+
+*1 Common_Problems
+
+Some problems are continually re-occurring.
+
+a) Incorrect Polarization information
+
+This redtape entry is often incorrectly filled in, especially
+for maps brought in using FITS or for images from telescopes
+where this quantity is not defined.
+
+b) Name of the units
+
+This is really just for display purposes, but is often
+incorrectly filled in, again especially for FITS images.
+
+c) Flux-Normalization
+
+There are some known problems with Anmap at present and
+certain routines, such as reproject, do not correctly
+calculate the flux-normalization parameter (initially set by
+CLEAN) if the sampling of the map is changed.
+
+d) Source-name
+
+This item is often not set especially when importing data
+
+e) Projection
+
+For some commands in the map-analysis sub-system the projection
+needs to be set correctly (this is especially true of the
+reproject-map command).  Coordinate systems in astronomy
+define a number of projection types (there is ambiguity as to
+how to project a 2D spherical surface onto a 2D plane surface).
+For data imported from non-astronomical sources choose Tangent-plane
+or Sky-coordinates as the coordinate system -- these make pixels
+of equal size in the U and V (X,Y) directions.
+
+*1 list-extra-redtape
+
+Command: list information and descriptors for any extra redtape
+
+The number of pages, style and a list of any descriptors of ectra redtape
+present in the map redtape are displayed on the terminal.  Not all maps
+have extra redtape and in those cases the number of pages and style of
+ectra redtape will both be zero.
+
+*1 clear-extra-redtape
+
+Command: clear all extra-rectape entries
+
+All entries in the extra redtape are cleared -- the number of pages and
+style of the extra redtape are not changed.  This command can be used
+to suppress a "broken" extra redtape.  It is not possible to alter entries
+in an extra redtape record (keyed by a DESCRIPTOR) as the meaning of all
+entries in the record depends on the context (i.e. program writing/reading)
+the extra redtape.
+
+*1 redtape
+
+Information: on the map redtape
+
+The map redtape is the header information stored with your image -- it
+defines such things as the scaling from the units your map is stored in
+to the units of the quantity you have measured, the coordinate system,
+and data type. In addition there is some history and textual information
+which will be useful in just identifying hte image.
+
+For maps made using the standard Cambridge software additional information
+may be present such as the map-making redtape used to define how the map
+was made, and information specific to such things as beam-sets in an
+appropriate case.
+
+Certain routines add important information to the redtape -- such as CLEAN,
+while all routines will update the history and maximum/minimum entries.
+
+The full definition of the redtape of the map is stored in the file:
+
+                 /mrao/include/maplib_redtape.inc
+
+Users intending to modify the redtape should be very careful, the items
+defining the map size are crucial to the analysis routines' abaility to
+read and write the data correclty -- if you suspect problems in these
+cases you should seek expert help.
+
+Maps may also have one or more pages of EXTRA-REDTAPE.  This redtape is
+used to hold information to drive certain programs, for example CLEAN.
+Each record in the extra redtape (4 records per page) is given a
+DESCRIPTOR which should be unique -- for example CLEAN has descriptors
+CLEAN-01 (and CLEAN-02 in some cases).  The entries in each record are
+interpreted according to context by the programs and routines reading
+and writing the extra redtape.  It is not possible to display the
+actual entries from a record in the extra redtape using EDIT-REDTAPE
+or the DISPLAY-REDTAPE or EXAMINE-MAPS facilities.
+
+*

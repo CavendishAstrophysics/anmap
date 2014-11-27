@@ -1,0 +1,51 @@
+Anmap has a history mechnism with command recall and command-line
+editing very similar to the facilities available with the tcsh or
+bash shells.  You can move through the history list using the up and
+down arrows, and the left and right arrows can be used to edit the 
+current command line.  Other useful options are:
+   ^U    to delete to whole line
+   ^A    to move to the beginning of the line
+   ^E    to move to the end of the line
+here the ^ symbol refers to a control sequence -- hold down the control
+key and press the specified character.  There are also escape sequences,
+press the ESCAPE key followed by the specified character.  The following
+is a full list of key bindings, upper and lower-case are equivalent and
+a sequence such as esc-B means press the ESCAPE key then B and a sequence
+such as ^X-^B means hold down control and press X then hold down control 
+and press B.
+
+          Up-arrow       previous history
+          Down-arrow     next history
+          Left-arrow     backwards-character
+          Right-arrow    forwards-character
+          ^A             beginning-of-line
+          ^B             backward-character
+          ^D             delete-next-character
+          ^E             end-of-line
+          ^F             forward-character
+          ^I             insert-tab
+          ^J             new-line
+          ^K             kill-to-end-of-line
+          ^L             clear-screen
+          ^M             new-line
+          ^N             next-history
+          ^P             previous-history
+          ^T             previous-history
+          ^U             delete-line
+          ^Y             send INTERUPT to Anmap
+          ^X-^B          show-bindings
+          ^X-^H          show-history
+          ^X-^C          terminate (Abort Anmap)
+          ^X-^L          repaint
+          esc-B          backward-word
+          esc-D          delete-next-word
+          esc-F          forward-word
+          esc-H          delete-previous-word
+          esc-L          list-file-name
+          esc-esc        expand-file-name
+          esc-?          help on command-line options
+          esc-_          invoke-shell
+
+There is also a history mechanism accessible via the "!" command --- it
+is very similar to the normal csh history mechanism.
+

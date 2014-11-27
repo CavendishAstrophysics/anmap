@@ -1,0 +1,70 @@
+
+Command: Read data into ANMAP
+
+`Parameters: input-file-name, input-data-style, [[nx,ny], scale, zero]
+             [source-name]
+
+Data will be read from the specified file into a standard map.
+A number of data formats are currently supported:
+
+   FITS            -- DISC fits format file
+   ASCII-HEADER    -- ascii file with header
+   I2-HEADER       -- data array as 2 byte integers with header
+   I4-HEADER       -- data array as 4 byte integers with header
+   R4-HEADER       -- data array as 4 byte real with header
+   ASCII-ARRAY     -- ascii file NO header
+   I2-ARRAY        -- data array as 2 byte integers NO header
+   I4-ARRAY        -- data array as 4 byte integers NO header
+   R4-ARRAY        -- data array as 4 byte real NO header
+   VIEW            -- VIEW format files
+
+If the specified type is FITS then you will not be prompted for
+any additional information as all the relevent data will be found
+from the FITS header; for any other format of file additional information
+will have to be supplied as detailed in the rest of this help entry.
+
+
+Data files with a header option look like
+
+     NX, NY, [SCALE], <more data not read>
+     <data ordered by rows -- top row>
+               .
+               .
+               .
+     <bottow row>
+
+Data files without a header option look like
+
+     <data ordered by rows -- top row>
+               .
+               .
+               .
+     <bottow row>
+
+If the file has no header you will be prompted for the size of
+the input data, NX,NY a scale factor and a zero level. If the
+file has a header then specifying "-1.0" to the scale factor
+will read a scale factor from the same line as NX, NY in the
+file, you will then be prompted for a zero level (it is not
+possible to read a zero level from a file).
+
+
+For the ASCII options data are read using a LIST-DIRECTED
+input so spaces must exist between the data.
+
+In all cases new rows should start at the begining of a
+record, a row may run onto more than one record for ASCII
+files.
+
+Scale factors and zero levels are used as follows:
+
+  data-in-map = scale x ( data-in-file - zero-level )
+
+Further corrections to maps scaling, zero levels and other
+defects may be applied using the standard routines in the MAP-
+ANALYSIS sub-system.
+
+VIEW format files follow the format described in the VIEW manual;
+the consist of a data file (.sdt) and a header file (.spr).  Note that
+the data-file name must be quoted explicitly in the view header file.
+

@@ -1,0 +1,18 @@
+
+Fit a linear function to a set of data:
+      y = m.x + c
+
+Where the x-column is fixed to be column 1 and the y-column is column 2.
+
+Invocation:
+
+    nmr_fitlinear
+
+Keys
+
+ file         nokeyok,needed
+ fit                          fit_output.dat
+ x1                           start of range to fit
+ x2                           end of range to fit
+
+

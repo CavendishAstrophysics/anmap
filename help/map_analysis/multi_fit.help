@@ -1,0 +1,145 @@
+
+Multi-Fit: Fit a function to up to 30-maps
+
+*1 Introduction
+
+Multi-Fit is a command-line driven sub-program to fit a function to
+up to 30 maps.  Each map is assigned an X-value and for each map
+and each pixel in each map fit a specified function of the form;
+
+    I(i,j) = F( C(i,j), K(i,j) )
+
+where C and K are maps of the fitted parameters.
+
+Use the add-map-to-list command to add a map to the list of maps to
+fit, sepcifying the X-value and gate to use.  You can list
+the maps in the list using the list-maps command which will display
+the maps, V-values and gates.  If you make a mistake the command
+remove-map-from-list can be used to remove a single map from the list
+or use the command clear-map-list to start again.  When happy with
+your map list use the go command to do the addition on-line or the
+make command to run in batch.  Basic-commands are not available from
+within this sub-system.
+
+The model to use is specified with the set-model command and any
+constants required by the model can be set with the set-constant
+command.
+
+For example to fit the four maps 4,5,6,7 with function type 2:
+
+  set-model 2
+  add-map-to-list 4 1.5 0.001
+  add-map-to-list 5 3.0 0.001
+  add-map-to-list 6 4.5 0.001
+  add-map-to-list 7 6.0 0.001
+
+check the list with
+
+  list-maps
+
+and if all is OK run on-line:
+
+  go
+
+You will be warned if the maps are "incompatible" in any sense, but if
+you wish you may ignore these warning messages.
+
+*1 add-map-to-list
+
+Parameters: map-entry X-value gate
+
+A map is added to the list of maps to fit.  The map will be added
+with an X-value and will only be used in the fit if the map value is
+above the gate.
+
+To add a map (12) in the catalogue to the list with an X-value of 13.5
+and a gate of 0.1 use:
+
+  add-map-to-list 12 13.5 0.1
+
+A check for consistency is made between the redtape of the map you are
+adding to the list and existing maps in the list.  You will be warned
+of `soft' errors (different map-centres, sampling etc.), it is NOT
+possible to fir maps of different sizes or UV ranges.
+
+You may if desired (although there is no point) specify the same map
+more than once in the list.  The map list must contain more maps than
+the number of parameters to fit in the model.
+
+*1 delete-map-from-list
+
+Parameters: yes/no/ESC in response to prompt for each map in the list
+
+For each map in the list you will prompted for whether you wish to delete
+the specified map, you may reply YES or NO or press ESC to end to
+interogation.  You may add back the map in the list if you wish.
+
+*1 clear-map-list
+
+Parameters: NONE
+
+Clear all entries from the map list and prepare for a new list of maps
+to combine.  You may wish to execute this command each time prior to
+setting up an addition.
+
+*1 go
+
+Parameters: NONE
+
+Run multi-fit on line, but in the background.
+
+Multi-fit runs as a separate sub-program.  To destructively abort the
+fit you must use UNIX facilities to find the process ID and kill the
+process (ps and kill)
+
+*1 make
+
+Parameters: NONE
+
+Run multi-fit off line in batch mode.  Multi-add is run as a separate
+sub-program in the FAST batch queue.  Control is returned immediately
+to the terminal.  The make command creates the output map for your
+addition and it will appear immediately in the catalogue, however it
+will have create access associated with it, indicated by a C when you
+list the catalogue.  This indicates the map has been created, but does
+not yet contain valid data.  When the off-line job completes you will
+be sent a message and the create access flag will be removed from the
+catalogyue entry.
+
+*1 help
+
+Parameter: help entry
+
+Obtain help on the multi-fit sub-system.
+
+*1 set-fit-type
+
+Parameters: model-type
+
+Select the type of model to fit the maps.  The currently defined model
+types are:
+
+Model-No.  Model-description
+   1       I(i,j) = C(i,j) exp( -x/K(i,j) )
+   2       I(i,j) = C(i,j) [ 1 - exp( -x/K(i,j) ) ]
+   3       I(i,j) = C(i,j) exp( -K(i,j) [cd(1) x**2 - cd(2) x**3] )
+   4       I(i,j) = C(i,j) + K(i,j) x
+   5       I(i,j) = C(i,j) + K(i,j) [ cd(1)x + cd(2)x**2 + cd(3)x**3 ]
+
+The value X is the X-value asigned by the user to each map in the
+list.  C(i,j) and K(i,j) are maps of the fitted parameters, for
+some of the models user-supplied constants are needed (cd values);
+the constants are set with the set-constant command.
+
+See also: set-constant
+
+*1 set-constant
+
+Parameters: constant-number value
+
+Set the value of constant "constant-number" for use in the model
+fitting.
+
+See also: set-model
+
+*

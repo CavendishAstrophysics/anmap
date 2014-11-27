@@ -1,0 +1,56 @@
+
+Command: output data in a non-standard format for export
+Parameters: map-entry, output-style, UV-range, output-file-name
+            [icx,icy], [scale], [format]
+
+The region of the input data file will be written to disc in a
+specified format. You will be prompted for the UV-range to
+write to disc and the file name for the output data. The
+possible formats for the output data are:
+
+   FITS       -- DISC FITS format file
+   ASCII      -- ascii file with header of:
+                 NX, NY, IX, IY, SCALE
+                 NY,NY -- size of image in X and Y
+                 IX,IY -- central pixel from bettom left corner
+                 SCALE -- data scale factor if any (see below)
+   I2-ARRAY   -- data array as 2 byte integers NO header
+   I4-ARRAY   -- data array as 4 byte integers NO header
+   R4-ARRAY   -- data array as 4 byte real NO header
+   VIEW       -- VIEW format data files
+
+The header for the options other than ASCII has the format:
+
+      NX, NY, [SCALE]
+
+Where scale is specified for INTEGER output only. The user
+supplied scale factor SCALE scales the map pixel values to the
+output INTEGERs written to disc (or ASCII values) -- in
+general SCALE should be a large number.
+
+For ASCII output you will also be asked to supply a position
+for the central pixel -- this is included to produce a file
+suitable for direct input to the convolve-map command. You
+will also be prmopted for a data format which must be a valid
+FORTRAN expression surrounded with brackets. If the format
+specifier contains spaces you should enclose it in quotes.
+Only minimal checking of the FORMAT specifier is done --
+please be careful or ANMAP will crash. Examples of valid
+specifiers are:
+
+   (20F6.2)        --    up to 20 reals per line like xxx.xx
+   (10(F8.2,2X))   -- up to 10 reals per line like xxxxx.xx  where
+                                                           _
+                        indicates a space in the output.
+                      _
+   (1PE12.3)       -- 1 number per line like xxxx.xxxE+xx
+   (1P20PE9.2)     -- up to 20 numbers per line like xx.xxE+xx
+
+Options without a header a simply an array of numbers. The I/R
+options produce files which can be read with UNFORMATTED
+fortran I/O.
+
+VIEW format files are the format required for the VIEW analysis program.
+They consist of a header file (.spr) and a data file (.sdt).  You should
+only specify the filename without the extension.
+

@@ -1,0 +1,15 @@
+
+Spectrum-analysis-program: Fit a standard relaxation curve
+
+Keys:
+ file         nokeyok,needed
+ fit                          fit_output.dat
+ a                            0.0
+ b                            0.0
+ tr                           1.0
+ t0                           0.0
+ theta                        0.0
+ progsat      nodata
+ invrec       nodata
+ fixed_theta  nodata
+

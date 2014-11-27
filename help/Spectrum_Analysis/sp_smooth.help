@@ -1,0 +1,33 @@
+
+Spectrum-analysis-program: Smooth a spectrum
+
+Keys:
+
+   xc                           X-column in data
+   cols                         list of columns to smooth [ALL]
+   stype                        type of smoothing:
+                                  stype := BOXCAR for box car
+   width                        width in cells of BOXCAR smooth
+   title                        title for outfile
+   comment                      user comment for outfile
+   infile      nokeyok          input file name [-]
+   outfile     nokeyok          output file name [-]
+
+The input file is smoothed.  COLS lists columns to smooth.
+XC should be set to the input X column which is NOT smoothed
+to the output.
+
+The following smoothing types are supported:
+
+   BOXCAR      specify width in cells using WIDTH
+
+Examples:
+
+Simple smooth
+%    sp_smooth in1.dat out1.dat width=2
+
+Simple smooth and title output
+%    sp_smooth in1.dat out1.dat width=2 title 'Smoothed Spectrum'
+
+*1 statistics
+

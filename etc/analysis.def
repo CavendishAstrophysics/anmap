@@ -1,0 +1,71 @@
+\!   SPECLIB analysis command definitions
+\!   ------------------------------------
+\!
+\!   Last upadetd 2/09/91
+\!
+\!
+\! Analysis nmr data file for pore-size distribution
+\*START nmr_PSD
+\ file      \ nokeyok,needed     \ FILE      \
+\ psd       \                    \ PSD       \   psd_output.dat
+\ fit       \                    \ FIT       \   fit_output.dat
+\ m0        \                    \ M0        \   1.0
+\ nj        \                    \ NJ        \   5
+\ tmin      \                    \ TMIN      \   0.1
+\ tmax      \                    \ TMAX      \   1.0
+\ t1        \                    \ T1        \   0.5
+\ alpha     \                    \ ALPHA     \   1.0
+\ beta      \                    \ BETA      \   1.0
+\*END
+\!
+\! Fit a standard relaxation curve
+\*START nmr_fitrelax
+\ file     \ nokeyok,needed      \ FILE      \
+\ fit      \                     \ FIT       \ fit_output.dat
+\ a        \                     \ A         \ 0.0
+\ b        \                     \ B         \ 0.0
+\ tr       \                     \ TR        \ 1.0
+\ t0       \                     \ T0        \ 0.0
+\ theta    \                     \ theta     \ 0.0
+\ progsat  \ nodata              \ PROGSAT   \
+\ invrec   \ nodata              \ INVREC    \
+\ fixed_theta \ nodata           \ FIXED_THETA \
+\*END
+\*START nmr_fit2T1  
+\ file     \ nokeyok,needed      \ FILE      \
+\ fit      \                     \ FIT       \ fit_output.dat
+\*END
+\*START nmr_fitlinear 
+\ file     \ nokeyok,needed      \ FILE      \
+\ fit      \                     \ FIT       \ fit_output.dat
+\ x1       \                     \ X1        \
+\ x2       \                     \ X2        \
+\*END
+\*START ra_dpm
+\ hi       \ nokeyok,needed      \ HI        \
+\ hmi      \ nokeyok,needed      \ HMI       \
+\ hdmi     \ nokeyok,needed      \ HDMI      \
+\ li       \ nokeyok,needed      \ LI        \
+\ lmi      \ nokeyok,needed      \ LMI       \
+\ ldmi     \ nokeyok,needed      \ LDMI      \
+\ dpm      \ nokeyok,needed      \ DPM       \
+\ err      \ nokeyok,needed      \ ERR       \
+\ scale_hi   \                     \ SCALE_HI   \ 1.0
+\ scale_hmi  \                     \ SCALE_HMI  \ 1.0
+\ scale_hdmi \                     \ SCALE_HDMI \ 1.0
+\ scale_li   \                     \ SCALE_LI   \ 1.0
+\ scale_lmi  \                     \ SCALE_LMI  \ 1.0
+\ scale_ldmi \                     \ SCALE_LDMI \ 1.0
+\ xscale     \                     \ XSCALE     \ 1.0
+\ xc         \                     \ XC         \ 1
+\ yc         \                     \ YC         \ 2
+\*END
+\*START nmr_leftshift
+\ shift      \                    \ SHIFT      \ 0
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END

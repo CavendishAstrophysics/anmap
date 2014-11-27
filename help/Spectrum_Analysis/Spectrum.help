@@ -1,0 +1,126 @@
+*1 statistics
+
+Spectral-command: Display statistics about a spectrum file and data.  
+Anmap-command:    statistics
+Shell-command:    sp_statistics
+Parameters: infile col option
+
+The statistics command produces statistics about a spectral-type file.
+ 
+            infile     input spectrum file
+            col        column for determination
+            option     option for statistics output
+
+By itself the command statistics produces statistics for all columns
+in the spectral data file.  If col and option are set then output will
+be one item (unformatted) for the specified column.  All output is to
+the standard output.  The key option may be one of:
+    SUM     sum of values in column
+    DEL     increment between column values (only sensible for X-axis)
+    MAX     maximum value in column
+    MIN     minimum value in column
+    AVG     average of column values
+
+The command is available from within the spectrum-analysis sub-system of
+Anmap -- parameters can be specified on the command line or you will be
+prompted for them; the command may also be used from a shell (UNIX command
+level).
+
+*2 unix_useage
+
+Keys in unix call:
+     infile      nokeyok, needed
+     col
+     option
+
+The use of col and option can be used to set values into shell variables
+or environment variables; the results are written to the standard output.
+
+Formated output of statistics
+%     sp_statistics   data.dat
+
+Set the shell variable xdel to the spacing between x data points
+%     set xdel = `sp_statistics data.dat option del col 1`
+note the use of the back-quote characters to force the execution of the
+command.  
+
+*2 anmap_useage
+
+All commands are available from within the spectral-analysis sub-system.
+
+To obtain statistics for all columns in a data file data.dat
+
+  statistics data.dat,,,,,,,
+
+To obtain statistics for column 2 only
+
+  statistics data.dat 2,all
+
+To obtain the maximum value in column 3
+
+  statistics 3 max
+
+*1 header
+
+Spectral-command: Print the header of a spectrum.
+Anmap-command:    header
+Shell-command:    sp_header
+Parameters:       infile
+
+The header for "infile" is pinted to the standard output.
+
+The command is available from within the spectrum-analysis sub-system of
+Anmap -- parameters can be specified on the command line or you will be
+prompted for them; the command may also be used from a shell (UNIX command
+level).
+
+*2 unix_useage
+
+Keys:
+   infile      nokeyok,needed        
+
+Display the header information for the spectrum test.data
+%      sp_header test.data
+
+Pipe the output of the header command to the line printer
+%      sp_header test.dat | lpr
+
+*3 gethd
+
+Spectral-command: Print a specified item/parameter from the header
+Shell-command:    sp_gethd
+Parameters:       infile parameter
+
+Keys:
+   infile      nokeyok,needed        The input file name to display the
+                                     header item for.
+   parameter   nokeyok               The parameter/item name from the header;
+                                     if the named parameter is not in the header                                     then the routine returns NOT_FOUND
+
+This command is only available from the unix shell; it enables single
+parameters from a data file header to be enquired and used in shell procedures.
+
+Example:
+Show the number of data points in a file
+%      sp_gethd test.data ndata
+
+Set the shell variables ncols to be the number of columns in the file test.data
+%      set ncols = `sp_gethd test.data ncols`
+
+Test to see if the header item "xtitle" is specified in the data file and
+if so use it as the title to sp_display:
+%      set xtitle = "`sp_gethd test.data xtitle`"
+%      if ( $xtitle == NOT_FOUND ) then
+%        sp_display test.data plot_device /xwindow
+%      else
+%        sp_display test.data xtitle "$xtitle" plot_device /xwindow
+%      endif
+
+*2 anmap_useage
+
+All commands are available from within the spectral-analysis sub-system.
+
+To display the header for the data file data.dat
+     header data.dat
+
+*

@@ -1,0 +1,57 @@
+Spectrum-analysis-program: do an FFT to a spectrum
+
+keys:
+
+  xc                         X-column on input data [1]
+  xfftc                      X-column for FFT space [4]
+  new_axis  nodata           if set create a new X-axis for output
+                             spectrum based on input X-axis
+  real                       column for real component [2]
+  imag                       column for imaginary component [3]
+
+  forward   nodata           request FORWARD transform
+  backward  nodata           request BACKWARD  or INVERSE transform
+  inverse   nodata           request BACKWARD  or INVERSE transform
+
+  ntrans                     length of transform array [length of
+                             input array]
+
+  title                      new title for output spectral file
+  comment                    new comment string for output spectral file
+
+  infile    nokeyok          input spectral file [-]
+  outfile   nokeyok          output spectral FFT file [-]
+
+
+The fourier transform of the input file is constructed.  The file must
+have at least 3 columns consisting of X-axis Real-column and Imaginary-column.
+The output consists of an X-axis in transform space, Real and Imaginary
+data and also the X-column from the input data set (as column 4).  The
+output X-column will be:
+
+  The copy of the xfftc column of the input data set if it exists and
+  new_axis is not set.
+
+  If xfftc does not exist or new_axis is specified then a new output
+  X-axis in transform space is created.  
+
+This process ensures that the X-axis is preserved correctly if a number 
+of FFT and INVERSE fft pairs are performed.  
+
+The input array will be zero filled to NTRANS before the transofrm is performed.
+
+Examples:
+
+Do FFT then inverse -- data is unchanged (except for an extra column) if it is
+initially a power of 2 in length:
+  sp_fft in.dat fft.dat
+  sp_fft fft.dat in1.dat inverse
+
+
+Do an fft and increase the sampling
+  sp_fft in.dat ntrans 2048
+
+Do an fft then inverse to increase the sampling in original space - note the
+use of pipes
+  sp_fft in.dat ntrans 2048 | sp_fft inverse > new_in.dat
+

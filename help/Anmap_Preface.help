@@ -1,0 +1,23 @@
+Anmap is a map, image and data analysis system implemented
+at MRAO, Cambridge. This document describes the facilities
+provided by the package and how to use it.  The system is 
+compatible  with the other MRAO software such as Postmortem.
+
+Paul Alexander was responsible for the design and
+implementation of most of the high level and Anmap specific
+utilities, including the routines for handling the map
+catalogue. The IO libraries, command processing and map
+handling libraries were written by Dave Titterington. A number
+of routines, especially for coordinate conversion and
+reprojection have been supplied by Elizabeth Waldram and Nick
+Rees. This documentation has been prepared by Paul Alexander
+
+Routines supplied by the Numerical Algorithms Group are used
+for specific numerical applications. The graphics library is
+the PGPLOT library supplied by T.J. Pearson (Caltech); the NORD
+version is supported by Dave Titterington.
+
+The command language, tcl and interface to the X-windows toolkit
+by Anmap, tk, is written and supported by Professor John Ousterhout
+at the University of Berkely.
+ 

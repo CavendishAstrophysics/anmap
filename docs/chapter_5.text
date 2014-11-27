@@ -1,0 +1,1079 @@
+                   1. MAP ANALYSIS ROUTINES
+                   ________________________
+ 
+ 
+ 
+Central to Anmap are the map analysis routines used to
+determine statistics and fluxes from maps and to construct new
+maps by combining or modifying existing images. This chapter
+describes the facilities available in version 6.3 of Anmap --
+it is likely that new map-utilities will be available in the
+version of Anmap you are using and you should therefore
+consult the on-line documentation for the most update list of
+available routines.
+ 
+ 
+ 
+1.1 Commands Used to get Information from Images
+________________________________________________
+ 
+ 
+1.1.1 Add-Flux
+1.1.1 Add-Flux
+ 
+Parameters: map-entry, UV-range, gate
+ 
+Add numbers on a map in the specified region exluding those
+pixels whose modulus is less than the given gate. The output
+is sent to the terminal and also to the log file, if you have
+specified one and it is open. The routine calculates both the
+un-normalized sum of numbers and the sum normalized by the
+CLEAN beam volume if the map has been CLEANed. If the map is
+not a CLEANed map the normalized sum will be zero, while if
+the map has been CLEANed the normalized sum is a good estimate
+of the integrated flux from extended emission in the specified
+region. The gate must be specified in the units of the map.
+ 
+If the flux normalization constant (calculated by CLEAN and
+stored in the redtape) is unset or incorrectly set you can
+change it by using the edit-redtape sub-system -- this can be
+useful for any of the commands used to determine fluxes and
+described in this section.
+ 
+ 
+1.1.2 Strip-Flux
+1.1.2 Strip-Flux
+ 
+Strip flux can be used to determine the flux in a regular
+array of rectangular regions on your map and, optionally, to
+determine the noise in each region. There is greater
+flexibility than with add-flux as the results are written to
+the results file. Chapter 2 contains some detailed guidance on
+the use of this routine; here we simply list the parameters
+which need to be defined.
+ 
+ 
+Map-entry           the map catalogue entry of the map to
+                    analyse.
+Gate                a gate: only pixels which satisfy
+                    | "pixel-values"| > "gate" will be
+                    included in the sum.
+Perform noise estimate?                    If you answer yes
+                    to this question you will be prompted for
+                    some further information to enable the
+                    routine to determine the error in the
+                    integrated flux in each of your regions:
+                    Size of beam -- number of pixels covered
+                    by the beam; this should be estimated from
+                    the size of the CLEAN beam and the
+                    sampling of the map.
+                    Noise -- on the map in external units.
+Flux-normalization  will be prompted for if the value in the
+                    map redtape is unset (i.e. set to zero).
+                    This is the FLXNRM parameter in the
+                    redtape and is the 'factor for converting
+                    sum of number to flux' which is calculated
+                    by the restoring part of CLEAN. If this
+                    parameter is incorrectly set you can reset
+                    it in the edit-redtape sub-system.
+Number of regions   the number of UV-regions in which you wish
+                    to calculate the flux -- they must be
+                    rectangular -- three possibilities exist:
+                    >  0 = input regions individually
+                    0 = regular grid
+                    -1 = existing regions
+                    If you request a positive number of
+                    regions you will be prompted in turn for
+                    each UV-window in a similar way to add-
+                    flux and they may be specified with the
+                    cursor by replying 'CURSOR' to the prompt.
+                    Choosing 0 will lead to further prompts to
+                    establish the regular grid:
+Width in U/V        width of each strip in the U and V
+                    directions,
+Number in U/V       number of strips in the U and V
+                    directions,
+Start pixel U/V     specify the bottom left-hand corner of the
+                    complete regular UV grid.
+                    The routine will fault you if there are
+                    more regions specified than it can handle
+                    (currently 100) or if the regular grid
+                    would fall off the edge of the map.
+                    The third option (-1) requests the last
+                    set of UV-windows; this provides a
+                    convenient mechanism to perform an
+                    analysis on more than one map (e.g.
+                    different frequencies for the same
+                    source). The UV-window list is lost when
+                    you exit Anmap.
+ 
+ 
+1.1.3 Ring-Flux
+1.1.3 Ring-Flux
+ 
+Ring flux can be used to determine the flux in elliptical
+annuli on a map. Like strip-flux it writes its results to the
+standard results file and is described in Chapter 2 in detail.
+ 
+ 
+Map-entry           map to analyse.
+Number of annuli    the total number of annuli.
+Annulus radius      radius of each annulus in arcseconds (the
+                    default is chosen so that the annuli are
+                    approximately three pixels wide). Note
+                    that considerable errors may be introduced
+                    into the sum if the annuli are too narrow
+                    in terms of pixels -- the routine is
+                    fairly naive in deciding how much flux to
+                    allocate to each annulus. The simplest way
+                    to overcome this problem is to make a map
+                    with greater oversampling.
+Eccentricity        of the ellipse, of course setting this
+                    parameter equal to unity will give
+                    circular annuli.
+Position Angle      of the major axis of the ellipse measured
+                    in degrees from North through East. The
+                    default is 0.0.
+Centre              of the ellipse -- this should be specified
+                    in UV coordinates and may be defined using
+                    the cursor in the normal way -- reply
+                    CURSOR to the prompt.
+UV-range            this is just the UV-range to use in the
+                    analysis, the routine determines the flux
+                    in the intersection of the UV-range and
+                    the annulus.
+ 
+ 
+1.1.4 Map-Histogram
+1.1.4 Map-Histogram
+ 
+Parameters: map-entry, low-gate, high-gate
+ 
+A histogram of map values is plotted on a graphical device.
+You may specify low- and high-gates on the data and only
+values satisfying:
+ 
+            gate-low < abs(data-value) < gate-high
+                     _                 _
+ 
+are plotted. You may send the output to any output device (see
+the information on 'output-device' and the graphics overlay
+facility described in Chapter 4).
+ 
+ 
+1.1.5 Scatter-Plot
+1.1.5 Scatter-Plot
+ 
+Parameters: map-1, gate-1, map-2, gate-2, UV-range
+ 
+To plot map values from map-1 data versus map-2 data in the
+form of a scatter plot. A gate may be specified for each map
+and the range plotted is within the specified gates. An
+individual point is only plotted if it fulfills the gating
+criteria on both maps. Some uses for this routine are:
+ 
+(i)  plotting percentage polarization against depolarization
+ 
+(ii) plotting spectral index against depolarization
+ 
+ 
+1.1.6 Scan-Map
+1.1.6 Scan-Map
+ 
+Parameters: map-entry, UV-range
+ 
+Perform statistics for the specified region on the map. The
+routine will find the maximum and minimum and their pixel
+locations and calculate the mean and standard deviation. If a
+log file has been specified then the output is written to the
+log file in addition to writing to the terminal. For a more
+sophisticated approach to calculating the noise on a map use
+the noise-map utility.
+ 
+ 
+1.1.7 Noise-Map
+1.1.7 Noise-Map
+ 
+Parameters: map-entry, UV-range, areas-u, areas-v, gate
+ 
+Noise-map is a more sophisticated routine to determine the
+noise distribution over a map. The routine operates by
+scanning the map for the mean and standard deviation. The user
+may specify the number of panels on the map. In each of these
+panels an iterative determination of the mean and standard
+deviation is performed. At each iteration points are rejected
+from the analysis if they lie more than "gate" times the
+current standard-deviation from the current mean. In this way
+it is possible to gate out sources from the analysis. The
+output consists of the final mean and standard deviation in
+each of the areas on the map -- these are listed as UV panels.
+By default the program uses two iterations to gate out the
+larger map values (this cannot be changed at present).
+ 
+Output from the program is in the form of a table of numbers
+printed to the screen. The maximum number of panels allowed on
+the map is 16, 4 divisions in U and 4 in V. As well as
+statistics for each region the "average" of the results for
+all the regions is printed. This is not the average over the
+entire map. Output from noise-map is written to the standard
+results file and may be analysed using the results-analysis
+sub-system -- a useful graphical display of the noise
+distribution over a large map may be obtained in this way. A
+complete example is given in Chapter 2.
+ 
+ 
+1.1.8 convert-position
+1.1.8 convert-position
+ 
+This routine allows you to convert between RA/DEC and UV
+positions on a map. Map positions are specified in terms of UV
+positions, while sky positions are RA, DEC. This command
+allows you to convert one to the other. You must specify which
+map you are dealing with.
+ 
+Options:
+ 
+                         RADEC-to-UV
+                         UV-to-RADEC
+ 
+RADEC-to-UV option will prompt for a position on the sky as a
+Right-Ascension Declination pair and the corresponding UV
+position and map interpolated map value will be printed. For
+the UV-to-RADEC you supply a UV position and the corresponding
+RA/DEC will be displayed (1950.0) together with the map value
+at the specified location.
+ 
+ 
+1.1.9 print-map
+1.1.9 print-map
+ 
+Parameters:          map-entry, UV-range, display-as-reals?,
+          field-width, (scale-factor), output-width, title,
+          output-device
+The print-map command may be used to obtain a listing of the
+pixel values in an image in one of two main formats:
+ 
+(a)  As REALs in the format A.xxE+-00
+ 
+(b)  As Scaled INTEGERS in the format xxxxx
+ 
+The number of places after the decimal point or number of
+digits of the integers displayed are termed the field-width
+and default to 2 and 8 respectively.
+ 
+For the case of scaled integers you will be asked to supply a
+scale-factor which multiplies the pixel values (which are
+usually much less than unity) before printing. This form of
+display is considerably more compact (and readable) than the
+display in terms of REAL numbers. The SCALE-FACTOR is
+displayed on all output.
+ 
+You will be asked to supply a WIDTH for the output. In general
+this should be chosen to match the output device:
+ 
+         80   --   terminal output (default)
+         132  --   line-printer output
+ 
+On VT220 (or similar terminals) you may of course use 132 and
+set the terminal characteristics appropriately.
+ 
+Data are printed with U horizontally and V vertically. In
+those cases where the requested U range requires a wider
+output than that available given the device width and field
+width chosen, then the routine panels the output
+appropriately. The panel number and UV range are displayed on
+each panel along with the UV 'tick' marks along the left and
+top edges of the display.
+ 
+You may specify a title for your output; this will appear on
+the output device. The output device is one of the following:
+ 
+         TERMINAL  --   for terminal output (default, type RETURN)
+         PRINTER   --   for direct output on the printer
+         file-name --   for output to a disc file
+ 
+If a file-name is specified the file may be sent to the
+printer at a later date using the print-file command, or
+viewed on the terminal using the type-file command (available
+as basic commands or within the file-system sub-system).
+ 
+ 
+1.1.10 local-maximum
+1.1.10 local-maximum
+ 
+Parameters: map-entry, UV-range
+ 
+This command finds the position and interpolated map value of
+the maximum on a map within a UV-region specified by the user.
+The UV-range is a rectangular area specified in the usual way:
+by replying C (or CURSOR) to the prompt for the UV-range then,
+provided the map is displayed on the current interactive
+display device, the cursor will appear and you may specify the
+range by marking opposite corner of the UV region.
+ 
+This command may often be required from within the map-display
+sub-system, the simplest way of using the command is then to
+say:
+ 
+      map-analysis local-maximum 3,C
+ 
+(assuming the map you wish to analyse is in catalogue entry
+number 3 and CURSOR input is required). On completion of the
+command you will remain in the map-display sub-system.
+ 
+ 
+ 
+1.2 Utilities for Combining Images
+__________________________________
+ 
+ 
+1.2.1 Add-Maps
+1.2.1 Add-Maps
+ 
+Parameters: map-1, scale-1, map-2, scale-2
+ 
+To add two maps with the specified scale factors. For example
+to combine two maps of separate observations of the same
+object you should use both scaling factors equal to 0.5. To
+form a difference map use scale-1 = 1.0 and scale-2 = -1.0,
+while to average images of the same field set both the scale
+factors to 0.5. You may want to combine add-maps with scale-
+map in order to apply a zero-level offset as well as a scale
+factor applied to each map.
+ 
+ 
+1.2.2 divide-maps
+1.2.2 divide-maps
+ 
+Parameters: map-1, gate-1, map-2, gate-2
+ 
+Maps 1 and 2 are divided. The division map is calculated:
+ 
+ output-map = map-1/map-2 (if abs(map-1)>gate-1 and  abs(map-2)>gate-2)
+ 
+The program puts a lower limit to the possible value of gate-2
+to ensure there are no overflows.
+ 
+ 
+1.2.3 Alpha-Map
+1.2.3 Alpha-Map
+ 
+Parameters: map-1, error-1, gate-1, map-2, error-2, gate-2
+ 
+Make a spectral index map from map-1 and map-2. The output and
+an error map are written to the two lowest unused map
+catalogue entries. The user must supply noise estimates for
+both maps; these are used to:
+ 
+(i)  make the error map
+ 
+(ii) to gate the construction of the spectral index map
+ 
+The output will only be produced if:
+ 
+abs(map-1) > gate-1xerror-1  and  abs(map-2) > gate-2xerror-2
+           _                                 _
+ 
+The spectral index, a, is defined in the sense:
+                    a
+ 
+              log(map-1/map-2) = -a  log(v1/v2)
+                                  a      v  v
+ 
+For normal synchrotron spectra a > 0. A good way to display a
+                               a
+spectral index map is either on the LEXIDATA or using the
+grey-scale command to send a grey-scale to the ANADEX or a
+laser printer.
+ 
+ 
+ 
+1.3 Utilities to Modify Images
+______________________________
+ 
+ 
+1.3.1 Reproject-Map
+1.3.1 Reproject-Map
+ 
+Parameters: redtape parameters for output map
+ 
+This routine enables you to re-grid a map onto a new
+projection; at present, the possible projections for old and
+new maps are - aerial coordinates, sky coordinates and tangent
+plane coordinates.
+ 
+A new map projection centre can be chosen and new sampling in
+U and V. The new date of projection must be either the date of
+observation or the reference date (usually 1950.0) of the
+original map. Note that the UV range to be specified is that
+on the new map, not the old.
+ 
+In finding the new data values on the new grid, the old map is
+interpolated using sinc convolution, unless the user
+explicitly specifies that linear interpolation should be used.
+At any points where the new map is undefined (e.g. where it
+goes outside the area of the original map) the BLANK pixel
+value is set.
+ 
+ 
+ 
+Map-entry           the map catalogue entry of the map you
+                    want to reproject.
+ 
+Projection type     the projection type of the map is the type
+                    of coordinate system to be used. The
+                    possibilities are sky, equatorial
+                    (telescope-coordinated), tangent-plane.
+                    Sky coordinates and tangent-plane are very
+                    similar for small maps near to the phase
+                    centre -- tangent plane is closest to the
+                    projection of an optical plate. Equatorial
+                    coordinates are the natural coordinates of
+                    the telescope and are really the only
+                    sensible ones for large areas. You can
+                    therefore change the projection from say
+                    equatorial to sky if you want your map to
+                    'look' more like the actual image on the
+                    celestial sphere.
+ 
+Epoch of projection due to precession the coordinate system of
+                    the celestial sphere changes. We use
+                    either epoch of observation coordinates or
+                    1950.0 coordinates at a standard reference
+                    date. For comparison of maps made at
+                    different epochs it is essential that they
+                    are reprojected to the same reference date
+                    -- usually 1950.0 -- this is especially
+                    important at high declinations where
+                    differential precession across even a
+                    small area of sky can be significant.
+ 
+Sampling in U       the sampling of the map in arcseconds per
+                    grid point can be changed -- you supply
+                    the U coordinate value and the V
+                    coordinate is determined by the projection
+                    type you have already chosen.
+ 
+Position-angle
+or Skew-angle       the map may be rotated by changing this
+                    parameter. For a sky coordinates map you
+                    will be asked for the position angle of
+                    the new V direction of the output map. If
+                    the map is in equatorial coordinates this
+                    description is not appropriate (especially
+                    for wide fields) so you are asked for the
+                    skew-angle, the angle between the V
+                    direction and North through the phase
+                    centre -- this is then most conveniently
+                    expressed in terms of hours-minutes-
+                    seconds.
+ 
+UV-range            the UV-range on the output map.
+ 
+Do you want
+to change the
+map-centre          if you reply YES you will be prompted for
+                    (a) a source name for the new map centre
+                    -- if you supply a source in the internal
+                    list (basically 3C) then the map will be
+                    shifted to this position. For a general
+                    shift supply any name and you will then be
+                    prompted for (b) an RA and DEC of the new
+                    map centre -- these may only differ
+                    slightly from the current map centre.
+ 
+Convolution-type    the possible convolution types -- used in
+                    interpolating the old map onto the new
+                    grid are Gaussian x sinc or linear.
+                    Although the former is more accurate the
+                    latter is considerably faster.
+ 
+Precession-type     can be either fast or slow. The former
+                    does not use the accurate precession
+                    formula when performing the trigonometry
+                    to determine the correct location for a
+                    pixel on the output map -- this is
+                    adequate in a number of cases, for
+                    instance simple rotations or change of
+                    sampling. It is never adequate for
+                    changing the epoch of projection. There
+                    are considerable speed savings in using
+                    the fast routine.
+ 
+ 
+The general rule is: to obtain the default -- no change from
+the input map -- type return. You may want to change to fast
+precession-type and linear-interpolation for simple
+reprojections, especially if they are only for cosmetic
+reasons. For reprojections used in multi-frequency analysis we
+recommend fast precession for rotations and resampling, but
+use of the gaussian x sinc interpolation formula for accuracy.
+ 
+ 
+1.3.2 stretch-map
+1.3.2 stretch-map
+ 
+Parameters: map-entry, UV-range
+ 
+Stretch map provides a simple way of reprojecting a map to sky
+plane if it is an equatorial plane map. If the map is already
+sky-plane projection (or tangent plane) then the action of the
+routine is identical to shrink. The range of the output map
+will of course be larger than that of the input map as the UV-
+range you specify is the UV-range on the INPUT-MAP.
+ 
+This routine provides a simplified interface to reproject for
+this much used operation.
+ 
+ 
+1.3.3 UV-shift-map
+1.3.3 UV-shift-map
+ 
+Parameters: input-map, shift-in-UV
+ 
+This routine performs a shift of the map or image relative to
+the computing grid by an amount (dU,dV) where dU and dV are
+arbitrary displacements. The sense of the shift is such that a
+a point source initially at grid reference (U1,V1) will after
+shifting be at grid reference (U1+dU,V1+dV). This routine does
+not use the astrometric redtape of the map in any way and may
+therefore offer advantages over the more general reproject
+routine in cases where reproject fails due to incorrect
+astrometric redtape entries.
+ 
+ 
+1.3.4 Shrink-Map
+1.3.4 Shrink-Map
+ 
+Parameters: map-entry, UV-range
+ 
+Shrink the size of a map to the specified uv-range, this can
+be useful to save space on disc an make the accessing of the
+data considerably faster. Anmap has a limited size of in-core
+stack; the more maps you can hold in this region the faster
+Anmap will work.
+ 
+ 
+1.3.5 Vertical-flip
+1.3.5 Vertical-flip
+ 
+Parameters: map-entry
+ 
+The specified map is flipped in the V (vertical) direction.
+The effect is to make the bottom row of the input image the
+top row of the output image and so on. This effect is of use
+for images imported from other machines which assume a
+different convention for the ordering of rows in the image
+(e.g. STARLINK).
+1.3.6 Smooth-Map
+1.3.6 Smooth-Map
+ 
+Parameters: input-map, input-beam, output-beam, UV-range,
+output-sampling
+ 
+Gaussian convolution is applied to the input map. You may
+specify a uv-range for the output map and control how the
+program deals with repeated data values. The input and output
+beams are in arcsec. If only one number is specified a beam of
+size:
+ 
+                  beam-U, beam-U cosec(dec)
+ 
+is used. If two numbers are specified you should specify the
+beam sizes as they appear on the sky -- the program correctly
+deals with aerial- and sky-plane projections. If you smooth
+the map heavily you may sample the output map at every other
+or every third pixel etc. Data near the edge of the map will
+not be represented properly after smoothing since there is no
+information beyond the map edge; using repeated values at the
+map edge however gives the correct noise level in these
+regions, but is unsuitable if real structure is present close
+to the edge of the map.
+ 
+The program may insist you reduce your over-sampling if your
+smoothing beam is too large; if this is the case you will get
+the error message:
+ 
+*** Convolving arrays too large
+ 
+The remedy for this state is simple -- you must sample the
+output map, i.e. increase the number of acrseconds per pixel
+and reduce the size of your map. If you wish to keep the large
+over-sampling then you must perform the smoothing in two or
+more stages.
+ 
+ 
+1.3.7 Convolve-Map
+1.3.7 Convolve-Map
+ 
+Parameters: map-entry, file-name-for-function
+ 
+The input map/image is convolved with a function supplied as a
+2D array in in a file. The file must hold the data in ASCII
+format with the following structure:
+ 
+nx, ny, ix, iy
+[top-row; nx-values]
+       .
+       .
+       .
+       .
+[bottom row; nx-values]
+ 
+where NX and NY are the convolving array sizes in X and Y
+directions (U,V) and IX,IY is the pixel of the centre of the
+convolving array. The values supplied will be read as REALS
+into the program. If required each row may flow over onto the
+next line of the file if this is more convenient.
+ 
+ 
+The convolving array must not exceed the size of the image to
+be convolved. The image to be convolved is assumed to be
+surrounded by zero-value pixels -- repeated map-edge values
+are NOT supported at present. The whole of the input image is
+convolved in this way -- use shrink to extract regions of
+interest.
+ 
+ 
+ 
+Examples
+ 
+The following illustrate valid convolving array formats:
+ 
+1) A delta function
+ 
+3,4,2,2
+0. 0. 0.
+0. 0. 0.
+0. 1. 0.
+0. 0. 0.
+ 
+2) An un-normalized top-hat smoothing
+ 
+5,5,3,3
+1. 1. 1. 1. 1.
+1. 1. 1. 1. 1.
+1. 1. 1. 1. 1.
+1. 1. 1. 1. 1.
+1. 1. 1. 1. 1.
+ 
+3) The two arrays forming the "Sobel" edge-enhancement
+operator:
+ 
+3,3,2,2
+-1 0 1
+-2 0 2
+-1 0 1
+ 
+3,3,2,2
+ 1  2  1
+ 0  0  0
+-1 -2 -1
+ 
+These two arrays are used sequentially on a data set and act
+to enhance any edges present.
+ 
+ 
+1.3.8 Gate-Map
+1.3.8 Gate-Map
+ 
+Parameters: map-entry, gate-low, gate-high, replacement-value
+ 
+This routine gates a map with itself replacing map pixel
+values outside the specified range with the "replacement-
+value". All pixels on the map which are outside the specified
+range:
+ 
+      pixel  <  gate-low     or     pixel  >  gate-high
+ 
+will be set to the replacement-value on the map (the default
+is BLANK).
+1.3.9 Mask-Map
+1.3.9 Mask-Map
+ 
+Parameters: map-in, masking-map, low-gate, high-gate, blank-
+value
+ 
+Map "map-in" is masked by the "masking-map" according to the
+following rule:
+ 
+  if ("masking-map" < "low-gate"
+        or  "masking-map" > "high-gate")  then
+    "map-out"  =  "blank-value"
+  else
+    "map-out"  =  "map-in"
+  end if
+ 
+For example, to mask a spectral index map with a total
+intensity map above the 1 mJy contour level, the following
+could be used:
+ 
+      mask-map  1, 2, .001,, 0.0
+ 
+Here the spectral index map has been read into stack 1 and the
+I map into stack 2. A low-gate of .001 has been used (1 mJy)
+and the default (10.030, an arbitrarily large number) for the
+upper gate. Whenever the I map exceeds 1 mJy the output map is
+the same as the input, but when the I map falls below 1 mJy
+then the output map has a zero instead of the value on the
+input map.
+ 
+The default for the "blank-value" is the blank value as
+defined in the map redtape.
+ 
+ 
+1.3.10 Logarithmic-Map
+1.3.10 Logarithmic-Map
+ 
+Parameters: map-entry, zero-level
+ 
+Apply the following transformation to the map:
+ 
+         output-map  =  log10(input-map + zero-level)
+ 
+provided (input-map + zero) > 0.0, but will return the BLANK
+                            _
+value if it falls below zero. The transformation is
+particularly useful for display purposes.
+ 
+ 
+1.3.11 Exponentiate-Map
+1.3.11 Exponentiate-Map
+ 
+Parameters: map-entry
+ 
+A map is exponentiated. The user is warned about any possible
+overflow (overflowing pixels are set to the BLANK value) which
+occurs when the output map exceeds 1.0E+76.
+ 
+ 
+1.3.12 Zap-Map
+1.3.12 Zap-Map
+ 
+Parameters: map-entry, uv-range, replacement-value
+ 
+ 
+The specified UV-range on the map is set to the BLANK value or
+zeros or any value specified by "replacement-value". The
+operation is performed in-place -- that is to say there is no
+output map.
+ 
+ 
+1.3.13 Scale-Map
+1.3.13 Scale-Map
+ 
+Parameters: scale-factor, zero-level-offset
+ 
+The map is scaled and a zero level offset applied according to
+the following rule:
+ 
+    output  =  scale-factor x (input - zero-level-offset)
+ 
+ 
+1.3.14 Change-Blank-Values
+1.3.14 Change-Blank-Values
+ 
+Parameters: map-entry, output-value
+ 
+Any pixels defined as BLANK on the input map (i.e. set to the
+blank-value in the map redtape) will have their value changed
+on the output map to the specified value. This operation is
+sometimes useful (when smoothing for example), especially for
+maps imported from other observatories which do not conform to
+our conventions on the "blank-value" in maps.
+ 
+WARNING -- changing blank values to another value, even zero,
+will affect the output from scan-map and the statistics for a
+map region will not correctly reflect the sky. Scan-map
+ignores blank-pixels when calculating statistics.
+ 
+ 
+ 
+1.4 Polarization Analysis
+_________________________
+ 
+ 
+1.4.1 CHI-map
+1.4.1 CHI-map
+ 
+Parameters: Q-map-entry, U-map-entry
+ 
+Make a map of position angle from input Q and U maps. The
+position angle is that of the E-vector and is given by:
+ 
+              x  =  (1/2)  arctan (Q-map/U-map)
+              x
+ 
+ 
+1.4.2 Makei
+1.4.2 Makei
+ 
+Parameters: IQ-map-entry, Q-map-entry
+ 
+Make an I map from an I+Q map and a Q map. This is most useful
+                       _
+for Ryle Telescope maps since the usual feed rotation cycle
+produces I+Q maps. All items in the redtape are updated
+          _
+correctly.
+ 
+ 
+ 
+ 
+ 
+1.4.3 mI-map
+1.4.3 mI-map
+ 
+Parameters: Q-map-entry, U-map-entry
+ 
+Make an mI-map = (Q2 + U2)1/2 from Q and U maps. An error map
+is also produced which correctly caters for the "ricean" bias
+in making an amplitude map. See J.P. Leahy's thesis (appendix)
+for more details.
+ 
+ 
+1.4.4 PERC-Map
+1.4.4 PERC-Map
+ 
+Parameters: mI-map, I-map, gate
+ 
+Make a map of percentage polarization defined by:
+ 
+                 %P  =  100.0 x mI-map//I-map
+ 
+provided mI-map is above the specified gate (in external units
+-- Jy).
+ 
+ 
+ 
+1.5 Reading and Writing Non-Standard Format Data
+________________________________________________
+ 
+ 
+1.5.1 Output-Map
+1.5.1 Output-Map
+ 
+Parameters: map-entry, UV-range, output-file-name, output-
+style [icx,icy], [scale], [format]
+ 
+The region of the input data file will be written to disc in a
+specified format. You will be prompted for the UV-range to
+write to disc and the file name for the output data. The
+possible formats for the output data are:
+ 
+   ASCII      -- ascii file with header of:
+                 NX, NY, IX, IY, SCALE
+                 NY,NY -- size of image in X and Y
+                 IX,IY -- central pixel from bettom left corner
+                 SCALE -- data scale factor if any (see below)
+   I2-HEADER  -- data array as 2 byte integers with header
+   I4-HEADER  -- data array as 4 byte integers with header
+   R4-HEADER  -- data array as 4 byte real with header
+   I2-ARRAY   -- data array as 2 byte integers NO header
+   I4-ARRAY   -- data array as 4 byte integers NO header
+   R4-ARRAY   -- data array as 4 byte real NO header
+ 
+The header for the options other than ASCII has the format:
+ 
+      NX, NY, [SCALE]
+ 
+Where scale is specified for INTEGER output only. The user
+supplied scale factor SCALE scales the map pixel values to the
+output INTEGERs written to disc (or ASCII values) -- in
+general SCALE should be a large number.
+ 
+For ASCII output you will also be asked to supply a position
+for the central pixel -- this is included to produce a file
+suitable for direct input to the convolve-map command. You
+will also be prmopted for a data format which must be a valid
+FORTRAN expression surrounded with brackets. If the format
+specifier contains spaces you should enclose it in quotes.
+Only minimal checking of the FORMAT specifier is done --
+please be careful or ANMAP will crash. Examples of valid
+specifiers are:
+ 
+   (20F6.2)        --    up to 20 reals per line like xxx.xx
+   (10(F8.2,2X))   -- up to 10 reals per line like xxxxx.xx  where
+                                                           _
+                        indicates a space in the output.
+                      _
+   (1PE12.3)       -- 1 number per line like xxxx.xxxE+xx
+   (1P20PE9.2)     -- up to 20 numbers per line like xx.xxE+xx
+ 
+Options without a header a simply an array of numbers. The I/R
+options produce files which can be read with UNFORMATTED
+fortran I/O.
+ 
+ 
+1.5.2 Input-Map
+1.5.2 Input-Map
+ 
+Parameters: input-file-name, input-data-style, [nx,ny], scale,
+zero
+ 
+Data will be read from the specified file into a standard map.
+A number of data formats are currently supported:
+ 
+   ASCII-HEADER    -- ascii file with header
+   I2-HEADER       -- data array as 2 byte integers with header
+   I4-HEADER       -- data array as 4 byte integers with header
+   R4-HEADER       -- data array as 4 byte real with header
+   ASCII-ARRAY     -- ascii file NO header
+   I2-ARRAY        -- data array as 2 byte integers NO header
+   I4-ARRAY        -- data array as 4 byte integers NO header
+   R4-ARRAY        -- data array as 4 byte real NO header
+ 
+Data files with a header option look like
+ 
+     NX, NY, [SCALE], <more data not read>
+     <data ordered by rows -- top row>
+               .
+               .
+               .
+     <bottow row>
+ 
+Data files without a header option look like
+ 
+     <data ordered by rows -- top row>
+               .
+               .
+               .
+     <bottow row>
+ 
+If the file has no header you will be prompted for the size of
+the input data, NX,NY a scale factor and a zero level. If the
+file has a header then specifying "-1.0" to the scale factor
+will read a scale factor from the same line as NX, NY in the
+file, you will then be prompted for a zero level (it is not
+possible to read a zero level from a file).
+ 
+ 
+For the ASCII options data are read using a LIST-DIRECTED
+input so spaces must exist between the data.
+ 
+In all cases new rows should start at the begining of a
+record, a row may run onto more than one record for ASCII
+files.
+ 
+Scale factors and zero levels are used as follows:
+ 
+  data-in-map = scale :times: ( data-in-file - zero-level )
+ 
+Further corrections to maps scaling, zero levels and other
+defects may be applied using the standard routines in the MAP-
+ANALYSIS sub-system.
+ 
+ 
+ 
+1.6 Some Terms Explained
+________________________
+ 
+ 
+1.6.1 Blank Values
+1.6.1 Blank Values
+ 
+Pixels in a map can have an undefined value. For example after
+reprojection some pixels may no longer correspond to a
+position on the sky covered by the original image (e.g. after
+a rotation). These pixel values are distinguished from real
+values by setting them to a large negative number -- this
+number is stored in the map redtape and the map-utility
+routines recognize that the pixel is "blank" and does not in
+fact have a large negative value. This means that scan-map,
+                                                  scan-map,
+for instance, simply ignores these pixels when calculating
+for instance, simply ignores these pixels when calculating
+statistics on the map.
+statistics on the map.
+ 
+ 
+1.6.2 Projection Codes
+1.6.2 Projection Codes
+ 
+Maps may be in a number of different projections. The most
+common are aerial (or equatorial) coordinates in which the
+declination pixel size is increased by a factor 1/cosec(d).
+                                                        d
+This is the natural coordinate system for E-W synthesis
+telescopes and is the only useful coordinate system for large
+fields. The beam of an E-W telescope is of course also larger
+by the factor cosec(d) in declination which means that the
+                    d
+beam appears circular in the aerial projection. Note that it
+is rather difficult to relate radio maps to optical images and
+measure position-angles etc. in these coordinates.
+ 
+For small areas of sky, sky-coordinates are probably more
+useful. In this system the pixels on the map are square on the
+sky. This coordinate system is not practical for large field
+mapping as there are problems when the true curvature of the
+sky becomes important (e.g. near the NP). The third coordinate
+system we use is tangent-plane which, for small map areas is
+almost identical to sky coordinates but the geometrical
+transformation from aerial coordinates is better defined.
+ 
+A code specifying the coordinate system is included in the
+redtape description and takes the following values:
+ 
+ 
+ 
+1        --   aerial (equatorial) coordinates
+2        --   sky coordinates
+3        --   tangent-plane coordinates
+ 
+ 
+For proper definitions of, and geometrical relationships
+between, these systems you are referred to any of the books on
+spherical astronomy in the RA library. Local experts are EMW
+and SK.
+ 
+ 
+1.6.3 The UV-Range
+1.6.3 The UV-Range
+ 
+The uv-range may be specified in a number of utilities to
+select a region on the map. It is defined with U increasing
+along the x-axis and V increasing up the y-axis, the centre of
+the map is usually 0,0.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

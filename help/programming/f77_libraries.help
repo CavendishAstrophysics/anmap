@@ -1,0 +1,60 @@
+
+*1 introduction
+
+Help is available for all routines in the following libraries:
+
+    chrlib          character / string handling routines
+    iolib           I/O routines for for user input, file I/O, file
+                    system calls and system utilities.
+    cmdlang         command language routines (used in conjunction with
+                    iolib and chrlib)
+    utilib          system-related routines: time/date random numbers,
+                    sorting
+    fftlib          FFT routines 1/2-D R*4, R*8 and complex
+    maplib          low-level MRAO map format handling routines including
+                    projection routines and astrometry
+    fitslib         routines to interconconvert FITS to MRAO map format
+    slalib          STARLINK slalib (astrometry, time/date & precession)
+                    routines
+    pgplot          graphics library
+    pglib           local extensions to pgplot
+    planetlib       astronomy routines related to planets
+    mapcat          Anmap catalogue and stack access routines
+
+*1 chrlib
+*@/mrao/help/libraries/chrlib.help
+
+*1 iolib
+*@/mrao/help/libraries/iolib.help
+
+*1 utilib
+*@/mrao/help/libraries/utilib.help
+
+*1 cmdlang
+*@/mrao/help/libraries/cmdlang.help
+
+*1 fftlib
+*@/mrao/help/libraries/fftlib.help
+
+*1 maplib
+*@/mrao/help/libraries/maplib.help
+
+*1 planetlib
+*@/mrao/help/libraries/planetlib.help
+
+*1 slalib
+*@/mrao/help/libraries/slalib.help
+
+*1 mapcat
+*@/mrao/help/libraries/mapcatlib.help
+
+*1 pglib
+*@/mrao/help/libraries/pglib.help
+
+*1 pgplot
+*@/info/pgplot.help
+
+*1 fitslib
+*@/mrao/help/libraries/fitslib.help
+
+

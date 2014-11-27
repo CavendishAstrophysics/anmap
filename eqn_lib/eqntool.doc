@@ -1,0 +1,56 @@
+EEEEQQQQNNNNTTTTOOOOOOOOLLLL((((1111))))	UUUUnnnniiii    LLLLiiiivvvv    PPPPuuuurrrreeee    MMMMaaaatttthhhh    SSSSiiiinnnngggg    GGGGrrrroooouuuupppp		EEEEQQQQNNNNTTTTOOOOOOOOLLLL((((1111))))
+
+NNNNAAAAMMMMEEEE
+	eqntool - tool for handling equations
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	eeeeqqqqnnnnttttoooooooollll [_f_i_l_e_n_a_m_e|_e_q_u_a_t_i_o_n|----|----cccc----dddd _n_a_m_e|----eeee|----ffff|----FFFF] ...
+
+DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+	_e_q_n_t_o_o_l reads equations either from a file or strings
+	specified on the command line or from the standard input.
+	These equations can be differented, expanded, clean,
+	and are normally printed on the standard output.
+
+OOOOPPPPTTTTIIIIOOOONNNNSSSS
+	Each argument of the program is read in turn and immediately
+	acted upon. Hence the order they appear is important. The
+	possible options are:-
+
+	_f_i_l_e_n_a_m_e	All the equations in the file are read in.
+
+	----		Equations are read in from the standard input
+			until EOF (control-D) is encountered.
+
+	_e_q_u_a_t_i_o_n	An set of equations is read in from the command
+			line. Normally its best if the equations are
+			enclosed in single quotes,
+			e.g. eeeeqqqqnnnnttttoooooooollll ''''x+y''''
+			Note if the equation is a valid filename then
+			the equations will be read in from that file instead.
+
+	----cccc		Flip the clean flag. If the clean flag is set
+			then all equations read in so far and all the
+			following equations will be cleaned up. For example
+			If the clean flag is set the equation 'sin(Pi/6)'
+			becomes '0.5'. The clean flag is ON by default.
+
+	----dddd _n_a_m_e		Differentiate all the equations with respect
+			to _n_a_m_e.
+
+	----eeee		Flip the expand flag. If the expand flag is set
+			then all equations read in so far and all the
+			following equations will be expanded. For example
+			If the expand flag is set the equation '(x+y)^2'
+			becomes 'x*x+x*y+y*x+y*y'.i
+			The expand flag is OFF by default.
+
+	----ffff		Flip the function flag. If the function flag is set
+			then the standard list of functions will be
+			used in all the equations read in so far and all the
+			following equations. If the function flag is set
+			'cos(x)' will be recognized as a function, otherwise
+			'cos' will be treated as a variable and 'cos(x)'
+			becomes 'cos * x'. The function flag is ON by default.
+
+	----FFFF	Print out the definitions of the standard function. 

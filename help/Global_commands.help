@@ -1,0 +1,138 @@
+
+Commands that are available at all levels within ANMAP.  In addition to
+the commands described here all sub-systems are basic-commands.  Basic
+commands can either built-in commands are procedures or aliases which are
+defined as global procedures and aliases; the latter can be added to the
+Anmap system by all users.
+
+*1 read-data-file
+*@$ANMHELP/global/data_in.help
+
+*1 write-data-file
+*@$ANMHELP/global/data_out.help
+
+*1 redtape
+
+Command: Print the redtape of map
+Parameters: map-stack-entry
+
+Print the redtape of the specified map to the screen. The redtape is
+printed formatted for easy reading.
+
+
+*1 add-to-catalogue
+
+Command: Add files to the map-catalogue
+Parameters: map-file-description [yes/no]
+
+This is the same command as available under the CATALOGUE-SYSTEM and
+enables maps to be added to the map catalogue.  If you want to read data
+which is not in the internal "map" format us the read-data-file command.
+
+See also: catalogue-system
+
+*1 remove-catalogue-entry
+
+Command: Remove maps from the catalogue
+Parameters: catalogue entry
+
+This is the same command as available under the CATALOGUE-SYSTEM and
+enables maps to be removed from the map catalogue.  Note that this still
+leaves the map on disc -- use the delete-catalogue-entry command to
+delete the associated disc file.  It is not possible to remove paged
+maps -- see the help entry on the Map-Catalogue for more information.
+
+*1 delete-catalogue-entry
+
+Command: Delete maps from the catalogue and their associated disc files
+Parameters: catalogue entry
+
+This is the same command as available under the CATALOGUE-SYSTEM and
+enables maps to be deleted from the map catalogue.  Note that this
+also deletes the map on disc.
+
+*1 list-catalogue
+
+Command: List the maps in the map catalogue
+Parameters: Start-entry End-entry
+
+This is the same command as available under the CATALOGUE-SYSTEM and
+enables the catalogue to be listed at the terminal.  See the help
+entry on the map-catalogue for more information.
+
+*1 delete-temporary-maps
+
+Command: delete all temporary maps from the catalogue
+
+This is the same command as avalailable in the catalogue-system sub-system.
+
+This command enables you to delete all temporary maps in your catalogue.
+its action is identical to repeated use of the delete-catalogue-entry
+command applied to temporary maps.  By default you will be prompted for
+each temporary map to delete, however you can turn this prompting off
+by using the advanced-mode command prompt-state off.
+
+*1 examine-catalogue
+
+Command: examine catalogue entries by source name
+Parameters: name
+
+Search the map catalogue and return all entries matching the supplied
+name in the Source field of the catalogue.
+
+*1 cursor-position
+
+Global-alias: Return the cursor position on a map
+
+If you have a map drawn on the terminal (and have not used end-plot since
+it was drawn), then you can find the UV, RA/DEC and pixel value at any
+time by using this command. The cursor will appear on the screen and you
+simply position it at the point of interest and type any printing
+character (a-z, A-Z, 1-0) except 'Q' or 'q' and the information for that
+loctaion on the map will be printed on the terminal. This works very
+well for devices with dual screens (Pericoms, Selinars, Dacoll, or
+the LEXI data), but produces a messay result on a BBC.
+
+*1 news
+
+Command: enter news system to find out latest news regarding Anmap
+
+The news system closely resembles help and provides a way of interogating
+the latest information concerning Anmap.
+
+*1 help
+*@$ANMHELP/Help_and_News.help
+
+
+*1 TV-load
+
+Command: Load an image into  the TV-device
+Parameters: map-entry, TV-display-min, TV-display-max
+
+The specified map is loaded into the TV device (currently only
+SAOimage is supported).  You may specify the range of pixel values to
+display; these default to the min and max on the image (as taken from the
+image redtape).
+
+*2 saoimage
+*%man saoimage
+
+*1 postscript_output
+
+Four commands are available to obtain postscript hard copy from Anmap
+displays.
+
+  postscript-dump      will dump the current graphics 
+  postscript-view      will view the dumped file
+  postscript-plot      will plot the dumped file
+  postscript-save      will save the dumped file to a new file
+
+For example the following will save the graphics as a postscript file and
+then send it to the laser printer.
+
+  postscript-dump ; postscript-print
+
+For more information see help graphic postscript.
+
+*
+

@@ -1,0 +1,7 @@
+Spectrum Analysis Library
+-------------------------
+
+The routines in this library perform basic spectral analysis tasks.  The
+routines fall into two main groups, the user callable routines with the
+prefix "spec_" and the internal routines with the prefix "spi_".  Only
+the user callable routines should be included in any application programs.

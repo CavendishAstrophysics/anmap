@@ -1,0 +1,33 @@
+#!/bin/csh
+
+# setup default values for various options
+@ i = 1
+set applic = Anmap
+while ($i <= $#argv)
+  if ( $argv[$i] == -help ) then
+    echo "  -help       this message"
+    echo "  -test       start Anmap Test version"
+    exit
+  else if ( $argv[$i] == -test ) then
+    set applic = test_Anmap
+  endif
+   @ i = $i + 1
+end
+
+# check key bindings
+if ( ! -e ~/.feprc ) then
+  cp /mrao/anmap/etc/fep_feprc ~/.feprc
+endif
+
+# setup library search path for shared images
+if ($?LD_LIBRARY_PATH) then
+  unsetenv LD_LIBRARY_PATH
+endif
+source /mrao/login
+
+# setup for output from SAOimage
+setenv R_DISPOSE 'lpr -Phplaser -r %s'
+
+/mrao/bin/fep /mrao/anmap_v7.5/src/$applic
+
+

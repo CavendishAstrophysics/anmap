@@ -1,0 +1,193 @@
+
+The data-display sub-system is used to display data which is supplied
+in the form of x,y data pairs.  The data can be displayed in a wide
+variety of ways and indeed may represent quite different quantities.
+Some possibilities include:
+
+ o  Plotting a graph of x,y data pairs.
+ o  Plotting a scatter plot of x,y data pairs.
+ o  Plotting a histogram of x,y data pairs.
+
+Moreover, more than one data set may be plotted at once therefore
+data can be compared to other data sets or data can be comapred to
+a model either supplied as another set of data or as a specified
+function (the data-display system has a fairly extensive repatoire
+of functions to use).
+
+To help with displaying multiple data sets the appearance of the data
+can be completely controlled for each line specifying the attributes
+required
+
+ o  line style, colour, width, marker symbols, 
+    line type (none, continuous or stepped).
+
+You can also control the scaling of data sets displayed, the full range
+of scalings is as follows:
+
+
+ o  linear, logarithmic, x,y scaling factors, x,y offsets
+    auto-scaling, automatic rescaling of (a sub-set) of the data
+    sets plotted.
+
+To complement the control of the appearance of the data, then all
+aspects of the frame and axes surrounding the plot can be easily
+controlled:
+
+ o  options to control the line-style, text-style or frames, the
+    type and number of tick marks and labels, the type of frame and
+    axes
+ o  X, Y and main titles that can be positioned anywhere on the plot
+    with control of text style for them
+ o  any annotations can be added to the plot using the annotate sub-system.
+
+Finally, complicated graphics can be constructed out of multiple graphs
+combined with images and scratch graphics, all under the control of the
+graphics sub-system and the commands to position graphics accordingly.
+
+The easiest way to use the data-display sub-system if you have some
+data you wish to represent as a graph is to use one of the four graph
+commands
+
+   graph-linear-linear  file [options]
+   graph-log-log        file [options]
+   graph-linear-log     file [options]
+   graph-log-linear     file [options]
+
+and these will display a graph.  For example to display the standard Anmap
+results file:
+
+   graph-lin-lin anmap_results.dat 
+
+will produce a linear graph.  To add a title to this plot you can do it
+in one of two ways.  Firstly the simple graphing commands take options
+(these really are options in that if they are not specified on the command
+line then you will not be prompted for them) and among these options
+are "-title" "-xtitle" "-ytitle" options, together with options to
+control the range plotted "-xrange", "-yrange" and a few more.  The second,
+and more general method is to use some of the options of the data-display
+sub-system directly:
+
+  title     text for title
+  x-title   text for X title
+  y-title   text for Y title
+
+here if you do not type any text after the command you will be prompted for
+it.  Having specified a title or titles you will find that nothing appears
+on the plot, this is because the data-display sub-system uses an object
+model to describe the plots, you enter information to describe the graph/
+plot you want to construct then you have to tell Anmap to actually plot it.
+The command to do the plotting is plot and takes an option, the most
+important options to plot are
+
+  plot all       plot all outstanding graphics
+  plot refresh   refresh the current plot incorporating any new options
+
+Since titles are treated as options, you need to do a plot refresh.  Therefore,
+to add a main and X-axis title you need to type
+
+  title This is my title
+  x-title X-axis label
+  plot refresh
+
+This is the basic model for updating a graph.  
+
+Before looking in detail at some of the other options offered by the
+data-display sub-system, it will be useful to see the more general way
+of plotting data which does not use the simplified graph-... commands.
+The most important command in data-display if the command line-options
+(or simply "line" which is a sufficient abbreviation).  This command
+can be used to set all the options for a given line on the graph, it
+takes as arguments a line number (1-10 at present), then an option
+then any data required for that option --- you will be prompted for
+any data needed.  For example to plot the anmap_results.dat file not
+using the graph-linear-linear command, we could type
+
+ # start by initialising everyting just in case!
+  initialise all ; initialise plot
+
+ # define the file to plot and do the plotting
+  line 1 file anmap_results.dat
+  plot all
+
+and for our simple example this is all graph-linear-linear actually does.
+Whichever method we have chosen to get to this point doesn't matter the
+graph we have (and the internal definition of it) is the same.  How do
+we overlay a second graph on the same axes for comparison purposes.  This
+is in fact very easy, suppose the second data file is called test.dat,
+then the following is all we need
+
+  line 2 file test.dat
+  plot line 2
+
+Here we need to issue an explicit plot command, we could have achieved
+the same result using plot all, but a plot refresh would not have added
+the second line --- refresh attempts to reproduce what you already have,
+but just incorporating and changes of style/options etc.  No doubt it
+would be useful to have the two data sets plotted with different line
+styles to distinguish them, again this is achieved using the line-options
+command and the line-style option to it:
+
+  line 2 line-style 2 1 red ; plot refresh
+
+and here we use a simple plot refresh to make the options take effect.  Line
+styles all follow the same convention of requiring an actual style (numbered
+1-5), a linbe width in integer multiples of the thinest possible line and
+a colour --- our example chooses dashed red lines.  The line-options command
+provides a full range of options to control the appearance of each line
+and you should refer to the help entry on line-options for more details.
+One final thing you commonly want to change is the text size for the
+lables and titles --- these can be altered independently by setting
+text-styles.  A text style requests a font to use (numbered 1-4, where
+1 standard and 2 roman are the most useful), a font size in multiples of
+the default size, a colour and a line width to use when drawing the
+text.  To specify the text style for titles and labels use the following
+two commands:
+
+ o text-style                      for titles etc.
+ o set-frame-style text-style      for lables on the frame
+
+The set-frame-style commands has a number of options to control the
+appearance and labelling of the frame, while the appearance of titles
+is controlled by the text-style command and also the set-title-options
+command which effects things such as the positioning of titles around the
+frame.
+
+One final addition to our example is a key, this will identify the lines
+that have been plotted, again we must specify the options then ask for it
+to be plotted:
+
+  set-key-options on ; plot all
+
+will have the desired effect.  The position, and other style options for
+the key can be controlled with the set-key-options command and the
+key-display option to line-options can be used to specify key options for
+each line (such as the text used to annotate the key).
+
+Finally we shall concclude this introduction with a table giving the main
+commands of the data-display sub-system.  For more information use the
+rest of help on data-display and also look at the examples --- this is
+best done from an X-windows terminal or console after starting up Xanmap
+as this then provides "hypertext" examples with which you can interact.
+
+Main data-display commands
+==========================
+
+Command                    Action
+-------------------------------------------------------------
+set-frame-style .......... set style options for frame
+set-text-style ........... set text options for titles
+set-title-options ........ set options for title positions
+set-key-options .......... set options for key
+line-options ............. specify options for each line
+title .................... specify title for the plot
+x-title .................. specify x-title for the plot
+y-title .................. specify y-title for the plot
+x-range .................. range for X-axis values
+y-range .................. range for Y-axis values
+view-port ................ (sub) view-port for the graph
+plot ..................... plot or update the current graph
+initialise ............... initialise options for the graph
+annotate ................. annotate the graph
+get ...................... get information for the graph
+
+*

@@ -1,0 +1,103 @@
+
+Vectors Sub-System: to define options for vector plots
+
+The vectors sub-system can be used to setup and define various
+options for vector plots. The commands available within the
+sub-system are as follows:
+
+*1 on
+
+This command must be given if vectors are to be plotted. In
+addition it will be necessary to define the map to use as the
+position angle map and (optionally) the map to use as the
+intensity scaling map.
+
+*1 off
+
+You can suppress the plotting of vectors using this command:
+other options are not changed with this command.
+
+*1 position-angle-map
+
+Parameters: map-entry
+
+This command is always required if vectors are to be plotted,
+it defines which map in the map catalogue is the map of
+position angles. This map must always be defined for vector
+plots.
+
+*1 intensity-map
+
+Parameters: map-entry
+
+If the vectors are to have variable length scaled by an
+intensity image then you should use this command to define the
+map to use for the intensity scaling. Two further options
+exist in the way the vectors are scaled for the plot:
+
+(1)  You specify a scale of grid-points per map unit
+
+(2)  You specify the length of the longest vector (in grid
+     points)
+
+*1 sampling
+
+Parameters: sampling-in-u, sampling-in-v
+
+This command provides the facility for plotting vectors at
+every:
+              sampling-in-U'th   grid point in U
+              sampling-in-V'th   grid point in V
+
+For highly over-sampled images this will produce a more
+comprehensible plot than one sampled at every grid point.
+
+*1 gate
+
+Parameters: gate (intensity map units)
+
+Specify a gate value on the intensity image below which
+vectors will not be drawn. Alternatively, you may use mask-map
+to mask the position-angle map since pixels which equal the
+BLANK-VALUE on the image will not be plotted.
+
+*1 scaled-vectors
+
+Parameters: vector-scale (grid-points per map units on
+intensity map)
+
+Request a plot of vectors scaled by the magnitude of the
+intensity map. The user supplies a scale in terms of the
+number of grid-points per unit on the intensity map. For those
+cases in which the dynamic-range of the intensity map is
+uncertain you may specify a maximum length of vectors in terms
+of the longest vector; to do this enter a negative number in
+response to the prompt for the scale factor -- the longest
+vector on the plot will then be the absolute value of the
+number you type in grid-points.
+
+*1 display
+
+The current options for the vector plot are displayed on the
+terminal. There is also a vectors option for the display
+command at the main map-display sub-system level.
+
+*1 help
+
+The help information on the vectors sub-system is entered. To
+access other help information you must be at the main map-
+display sub-system level.
+
+
+*1 rotation-angle
+
+Command:    specify rotation angle for vectors
+Parameters: angle (degrees)
+
+Specify an angle by which all vectors will be rotated before plotting. For
+example to obtain a plot of B-field vectors instead of the default E-field
+vectors use the command:
+
+rotation-angle 90.0
+
+*

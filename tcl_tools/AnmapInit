@@ -1,0 +1,49 @@
+#!%WISH% -f
+#
+# Wish script to display an intentionally colourful startup message on
+# the display when Anmap is started
+#
+if [file exists ~/.wishrc] then {
+  source  ~/.wishrc
+}
+set AnmapSource $argv
+
+wm title . "Anmap Initialisation"
+wm geometry . +1+1
+frame .m
+frame .f
+pack append .m\
+   [label .m.l1 -bitmap @$AnmapSource/etc/bitmaps/logo.xpm] {left} \
+   [message .m.m1 -width 250 \
+    -text "Anmap Initialising:\nPosition graphics window and command window"]\
+   {left fillx filly pady 10 padx 10}
+
+   set col_list [list white snow ivory honeydew lavender {misty rose}\
+           {light gray} gray {slate gray} {dim gray} {dark slate gray} black \
+            {light blue} {cadet blue} {sky blue} blue {medium blue} navy \
+             khaki aquamarine {pale green} green {sea green} {dark green} \
+             tan yellow gold {dark goldenrod} sienna brown \
+             {light pink} {hot pink} {deep pink} coral {orange red} red]
+ 
+# create a frame with colours displayed
+set w .f
+frame $w.col -relief sunken -borderwidth 2
+pack append $w.col \
+   [frame $w.col1] {top} [frame $w.col2] {top} [frame $w.col3] {top} \
+   [frame $w.col4] {top} [frame $w.col5] {top} [frame $w.col6] {top}
+for {set m 0} {$m < [llength $col_list]} {incr m} {
+    set n [expr "1 + $m/6"]
+    set col [lindex $col_list $m]
+    pack append $w.col$n [button $w.col$n.$m -bitmap @/soft/tcl/ndt/bitmaps/clear.xbm \
+         -background $col -activebackground $col \
+         -relief raised -borderwidth 1 ] {left}
+}
+
+pack append $w $w.col {top pady 10 padx 10}
+
+pack append . .m {top fillx filly} .f {top fillx filly}
+after 20000 {destroy .}
+
+
+
+

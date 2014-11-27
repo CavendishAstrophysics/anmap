@@ -1,0 +1,65 @@
+
+Command: modify the tranfer function used in
+         setting the TV lookup table
+
+A number of options exist to choose and define various transfer functions
+to modify the lookup table for the TV device.  Results very similar to
+moving the cursor/tracker-ball in AIPS/TVFIDDLE command may be achieved.
+
+Options:
+
+*1 linear-grey-scale
+
+A normal linear grey-scale from image min to image max (default)
+
+*1 inverse-grey-scale
+
+An inverse grey-scale so that the most intense regions of the image
+appear black and the least intense white (similar to the standard
+output on a grey-scale hard-copy device (e.g. the ANADEX).
+
+*1 standard-colour
+
+This is a standard colour transfer function.
+
+*1 rainbow-standard
+
+This is a standard colour transfer function.
+
+*1 enhanced-grey-scale
+
+This enables you to set the parameters of the transfer function:
+
+ intensity = ((x-lower_bound)/(upper_bound-lower_bound))**power
+
+where x is the image value scaled between 0 (=image_minimum) to
+1 (=image_maximum) and intensity is the intensity appearing on the
+TV device.  You may set lower_bound, upper_bound and power.
+
+
+*1 inverse-enhanced-grey
+
+This enables you to set the parameters of the transfer function:
+
+ intensity = ((upper_bound-x)/(upper_bound-lower_bound))**power
+
+where x is the image value scaled between 0 (=image_minimum) to
+1 (=image_maximum) and intensity is the intensity appearing on the
+TV device.  You may set lower_bound, upper_bound and power.
+
+
+*1 enhanced-colour
+
+This enables you to set the parameters of the transfer function:
+
+ intensity(col) = ((x-start_colour(col))/
+                        (upper_bound-start_colour(col))**power(col)
+
+where x is the image value scaled between 0 (=image_minimum) to
+1 (=image_maximum) and intensity is the intensity appearing on the
+TV device.  You may set lower_bound, upper_bound as well as the power,
+and starting position for each colour, colours are 1=red, 2=green,
+3-blue.  The default values will give a scale from faint blue to intense
+red and then white.
+
+*

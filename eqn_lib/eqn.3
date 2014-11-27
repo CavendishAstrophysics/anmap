@@ -1,0 +1,635 @@
+EEEEQQQQNNNN((((3333LLLL))))		LLLLiiiivvvv    UUUUnnnniiii    PPPPuuuurrrreeee    MMMMaaaatttthhhhssss    SSSSiiiinnnngggg    GGGGrrrroooouuuupppp
+
+NNNNAAAAMMMMEEEE
+	scan_eqn, fscan_eqn, sscan_eqn, assign, duplicate, copy_node,
+	free_eqn_tree, free_eqn_node, count_eqn_tree, count_eqn_args,
+	get_eqn_arg, join_eqns, join_dup_eqns, expand, clean_eqn,
+	eval_funs, eval_ops, display_eqn, print_eqn, fprint_eqn,
+	substitute, print_poly1, fprint_poly1, init_poly1, order_poly1,
+	add_to_poly1, fprint_poly2, print_poly2, init_poly2,
+	order_poly2, add_to_poly2, fprint_poly3, print_poly3,
+	init_poly3, order_poly3, add_to_poly3, make_rpe, check_rpe,
+	print_rpe, fprint_rpe, eval_rpe, make_vrpe, check_vrpe,
+	print_vrpe, fprint_vrpe, eval_vrpe, add_eqn_names,
+	print_eqn_names, fprint_eqn_names, free_eqn_names,
+	make_variable, num_parameters, get_parameter, remove_eqn_name,
+	get_eqn_name, num_eqn_names, add_external_function,
+	add_internal_function, add_constant, add_operator,
+	add_standard_functions, fprint_funs, set_input_functions,
+	get_input_functions, eqn_op, eqn_l, eqn_r, eqn_val, eqn_name,
+	eqn_fun, eqn_arg, eqnop, eqnl, eqnr, eqnval, eqnname, eqnfun,
+	eqnarg, - equation handling.
+
+SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+	#include <eqn.h>
+
+	////****    EEEEqqqquuuuaaaattttiiiioooonnnn    IIIInnnnppppuuuutttt    ****////
+
+	eqnode *scan_eqn();
+	eqnode *fscan_eqn(FILE *fp);
+	eqnode *sscan_eqn(char *string);
+
+	////****    UUUUttttiiiilllliiiittttyyyy    rrrroooouuuuttttiiiinnnneeeessss    ****////
+
+	print_eqn(eqnode *base);
+	fprint_eqn(FILE *fp, eqnode *base);
+	int count_eqn_tree(eqnode *base);
+	int count_eqn_args(eqnode *base);
+	display_eqn(eqnode *base,int depth);
+	eqnode *duplicate( eqnode *base);
+	copy_node(eqnode *target, eqnode *source);
+	free_eqn_tree( eqnode *base);
+	free_eqn_node( eqnode *base);
+	eqnode *join_eqn(int op, eqnode *left, eqnode *right);
+	eqnode *join_dup_eqn(int op, eqnode *left, eqnode *right);
+	eqnode *get_eqn_arg(eqnode *base,int num);
+
+	////****    eeeexxxxppppaaaannnnssssiiiioooonnnn    aaaannnndddd    ssssiiiimmmmpppplllliiiiffffiiiiccccaaaattttiiiioooonnnn    ****////
+
+	int expand(eqnode *base);
+	int clean_eqn(eqnode *base);
+	int eval_funs(eqnode *base);
+	int eval_ops(eqnode *base);
+
+	////****    ddddiiiiffffffffeeeerrrreeeennnnttttiiiiaaaattttiiiioooonnnn    ****////
+
+	diff_wrt(eqnode *base, char *name);
+
+	////****    CCCCoooonnnnvvvveeeerrrrssssiiiioooonnnn    ttttoooo    ppppoooollllyyyynnnnoooommmmiiiiaaaallllssss    ****////
+ 
+	order_poly1(poly1,int ord1);
+	print_poly1(poly1);
+	fprint_poly1(fp,poly1);
+	init_poly1( poly1);
+	int add_to_poly1(eqnode *eqn,poly1,char *name1);
+
+	order_poly2(poly2,int ord1,int ord2);
+	print_poly2(poly2);
+	fprint_poly2(fp,poly2);
+	init_poly2( poly2);
+	int add_to_poly2(eqnode *eqn,poly2,char *name1,char *name2);
+
+	order_poly3(poly3,int ord1,int ord2,int ord3);
+	print_poly3(poly3);
+	fprint_poly3(fp,poly3);
+	init_poly3(poly3);
+	int add_to_poly3(eqnode *eqn,poly3,
+			char *name1,char *name2,char *name3);
+
+	double poly1[MAXORDER];
+	double poly2[MAXORDER][MAXORDER];
+	double poly3[MAXORDER][MAXORDER][MAXORDER];
+	FILE   *fp;
+
+	////****    ssssuuuubbbbssssttttiiiittttuuuuttttiiiioooonnnn    ****////
+
+	substitute(eqnode *base, eqnode *sub);
+	eqnode *assign(char *name,double val);
+
+	////****    rrrreeeevvvveeeerrrrsssseeee    ppppoooolllliiiisssshhhh    ccccaaaallllccccuuuullllaaaattttoooorrrr    ****////
+
+	int *make_rpe(eqnode *eqn , int n,char *names[]);
+	print_rpe(int rpe[], names[]);
+	fprint_rpe(FILE *fp, int rpe[], char *names[]);
+	double eval_rpe(int rpe[], double vars[]);
+	clear_rpe_const();
+
+	////****    nnnnaaaammmmeeee    hhhhaaaannnnddddlllliiiinnnngggg    ****////
+
+	eqn_names *add_eqn_names(eqn_names *names,eqnode *eqn);
+	void	print_eqn_names(eqn_names *names);
+	void	fprint_eqn_names(FILE *fp,eqn_names *names);
+	int	num_parameters(eqn_names *names);
+	int	num_eqn_names(eqn_names *names);
+	void	free_eqn_names(eqn_names *names);
+	int	remove_eqn_name(eqn_names *names,char *varname);
+	int	make_variable(eqn_names *names,char *varname);
+	char	*get_eqn_name(eqn_names *names,int i);
+	char	*get_parameter(eqn_names *names,int i);
+
+	////****    FFFFuuuunnnnccccttttiiiioooonnnn    HHHHaaaannnnddddeeeelllliiiinnnngggg    ****////
+
+	eqn_funs *add_external_function(fun_list,profile,funptr,diff1,...);
+	eqn_funs *add_internal_function(fun_list,eqn);
+	eqn_funs *add_constant(fun_list,name,val);
+	eqn_funs *add_operator(fun_list,name,funptr);
+	eqn_funs *add_standard_functions(fun_list);
+	void     set_input_functions(fun_list);
+	eqn_funs *get_input_functions();
+	void	 fprint_funs(fp,fun_list);
+	int	 use_functions(eqn,fun_list);
+
+	eqn_funs *fun_list;
+	eqnode	 *eqn;
+	char	 *profile,*diff1,*name;
+	double	(*funptr)(),val;
+	FILE	*fp;
+
+	////****    MMMMaaaaccccrrrroooossss    ****////
+
+	int	eqn_op(eqn), eqnop(eqn);
+	double	eqn_val(eqn), eqnval(eqn);
+	char	*eqn_name(eqn), eqnname(eqn);
+	eqn_node *eqn_l(eqn), *eqn_r(eqn), *eqnl(eqn), *eqnr(eqn);
+	eqn_funs *eqn_fun(eqn), eqnfun(eqn);
+	eqn_node *eqn_arg(eqn), *eqnarg(eqn);
+
+	eqn_node *eqn;
+
+SSSSYYYYNNNNTTTTAAAAXXXX    OOOOFFFF    EEEEQQQQUUUUAAAATTTTIIIIOOOONNNNSSSS
+	Equations are made up of variable names, numbers and the The
+	standard operations (+ - * / ^ =) as well as bracketing with
+	'(' and ')'. The '*' for multiplication is optional and the
+	product of two variables can be indicated by 'x y' but note
+	that if the space was omitted here then it would be treated
+	like the single variable 'xy'. The equation must contain one
+	'=' and be terminated by a ';'.
+
+	The names of variables must start with a letter but and can
+	contain numbers and the underscore '_'. Case is significant.
+	Comments are allowed and start with a '#' and continue to the
+	end of the line. Newline are not significant and are treated
+	like white space.
+
+	Function definitions are of the form 'f(x,y,...)'.
+
+	For example the following defines an ellipse
+
+		(x/a1)^2 + (y/a2)^2 + (z/a3)^2 = 0;
+
+	For compatibility ':=' and '=' are treated identically and
+	'**' is interpreted as '^'. To specify ranges square brackets
+	can be used, eg '[-1,1]' specifies the range from -1 to 1,
+	not all functions understand ranges.
+
+BBBBAAAASSSSIIIICCCCSSSS
+	The basic data type is a _e_q_n___n_o_d_e or _e_q_n_o_d_e. Each
+	node consists of a operator (one of NAME, NUMBER, FUNCTION,
+	INTERVAL, '+', '-', '*', '/', '^', '=', ',') and depending on
+	the the value of the operator either a string (the name of a
+	variable), a double position floating point number, a pointer to
+	a function definition, or pointers to left and right sub-trees
+	which describe the expressions on the left and right of the
+	operator.
+
+	The macros _e_q_n___o_p, _e_q_n___n_a_m_e, _e_q_n___v_a_l, _e_q_n___f_u_n, _e_q_n___a_r_g,
+	_e_q_n___l and _e_q_n___r respectively return: the operator;
+	a pointer to a string; the double precision value; a pointer
+	to a function; the arguments of the function; the left sub-tree
+	and the right sub-tree. All these macros return NULL if the
+	equation is NULL or the operator has the wrong value. The macros
+	_e_q_n_o_p, _e_q_n_n_a_m_e, _e_q_n_v_a_l, _e_q_n_f_u_n, _e_q_n_a_r_g,
+	_e_q_n_l and \eqnr do check for constancy and can be used
+	on the left hand side of assignments.
+
+RRRREEEEAAAADDDDIIIINNNNGGGG    IIIINNNN    EEEEQQQQUUUUAAAATTTTIIIIOOOONNNNSSSS
+	'scan_eqn' reads and equation from the standard input,
+	'fscan_eqn(fp)' reads an equation from the file 'fp' and
+	'sscan_eqn(string)' reads an equation from the string
+	'string'.
+
+GGGGEEEENNNNEEEERRRRAAAALLLL    RRRROOOOUUUUTTTTIIIINNNNEEEESSSS    FFFFOOOORRRR    EEEEQQQQUUUUAAAATTTTIIIIOOOONNNNSSSS
+	'print_eqn' prints the equation on the standard output with
+	lots of brackets and 'display_eqn' prints it as a tree the
+	parameter 'depth' controls the number of tabs spaces before the
+	left most node, it is usual for depth to be 0.
+	'fprint_eqn' prints the equation into file fp.
+
+	'count_eqn_tree' counts the number of nodes in a tree.
+	'count_eqn_args' counts the number of arguments in a vector.
+
+	'duplicate' returns a pointer to a copy of the equation
+	allowing the new equation to be used without corrupting the
+	original.  Many of the routine change the internal
+	representation of the equation, by using 'duplicate' the copy
+	can be changed by the other routines and the original equation
+	is still intact.
+
+	'copy_node' copies just the information contained in the node,
+	and not the entire sub tree.
+
+	'free_eqn_tree' frees the space used by the equation. 'free_eqn_node'
+	frees just the top node and not the sub-trees.
+
+	'join_eqn' combines two equations with the operator op
+	(one of '+', '-', '*', '/', '^', '=', ',', '.'). 'join_dup_eqn'
+	does the same but uses duplicates of the left and right equations.
+
+	'get_eqn_arg' gets the i'th argument from a comma separated
+	list, i>= 1.
+
+EEEEXXXXPPPPAAAANNNNDDDDIIIINNNNGGGG    EEEEQQQQUUUUAAAATTTTIIIIOOOONNNNSSSS
+	'expand' expands an equation multiplying out brackets and
+	raising brackets to powers. Some simplification also occurs
+	e.g. 'x^0 = 0' 'expand' returns TRUE if an expanded form which
+	is suitable for converting into a polynomial is arrived at, a
+	return value of FALSE indicates that such an expansion was not
+	possible for example 'x^a' where a is a variable or 'x/y'. The
+	internal representation of the equation is altered by 'expand'
+	to keep the original unexpanded version use the 'duplicate'
+	routine.
+
+	'clean_eqn' simplifies expressions like '0 + x' and '2 * 3',
+	but does not expand brackets.
+
+	'eval_funs' does the same as 'clean_eqn' but also evaluates
+	functions which have numbers for arguments, e.g. 'cos(Pi/3)'
+	becomes '0.5'.
+
+	'eval_ops' performs all the functions of 'eval_funs' and also
+	evaluates any operators like 'diff(x^2,x)'.
+
+DDDDIIIIFFFFFFFFEEEERRRREEEENNNNTTTTIIIIAAAATTTTIIIIOOOONNNN
+	'diff_wrt(eqn,name)' differentiates the equation with respect
+	to 'name'.
+
+CCCCOOOONNNNVVVVEEEERRRRTTTTIIIINNNNGGGG    TTTTOOOO    PPPPOOOOLLLLYYYYNNNNOOOOMMMMIIIIAAAALLLLSSSS
+	Equations can be converted to polynomials represented by
+	arrays of maximum size _M_A_X_O_R_D_E_R_*_M_A_X_O_R_D_E_R in 2D or
+	_M_A_X_O_R_D_E_R_*_M_A_X_O_R_D_E_R_*_M_A_X_O_R_D_E_R in 3D. 
+
+	Now a set of routines to handle two variable polynomials.
+	'init_poly2' sets the polynomial to zero.
+	'order_poly2(poly,&ord1,&ord2)' finds the order of a polynomial
+	'ord1' and 'ord2' contain the two orders on exit.
+	'print_poly2' prints a polynomial.
+
+	'add_to_poly2(eqn,poly,name1,name2)' adds the equation 'eqn' to
+	the two variable polynomial 'poly'. 'name1' and 'name2' are two
+	strings which hold the names of the variables. Terms on the left
+	of the equal sign will be added to the polynomial and those on
+	the right will be subtracted. 'add_to_poly2' returns TRUE if
+	the polynomial was successfully created. The element
+	_p_o_l_y_[_i_]_[_j_] will be the coefficient of _n_a_m_e_1_^_i_ _n_a_m_e_2_^_j
+	in _e_q_n. FALSE will be returned if:-
+
+	(i)	'eqn' contains a name which is neither 'name1' or 'name2'.
+	(ii)	a polynomial can not be created eg 'x/y'
+	(iii)	the degree of the polynomial is too large.
+
+	It is assumed that 'eqn' has been previously been expanded by
+	'expand'.
+
+	'add_to_poly1','add_to_poly3' etc. are similar routines for
+	one and three dimensions.
+
+	When printing the polynomials the lowest degree terms will be
+	printed first, with columns of increasing order of 'name1',
+	rows with increasing order of 'name2' and for 3D a stack of
+	matricies with increasing orders of 'name3', for example
+	'(2x+1)(3y+1)z' would be printed as
+
+		0.00000		0.00000
+		0.00000		0.00000
+
+		1.00000		2.00000
+		3.00000		6.00000
+
+SSSSUUUUBBBBSSSSTTTTIIIITTTTUUUUTTTTIIIIOOOONNNN    AAAANNNNDDDD    AAAASSSSSSSSIIIIGGGGNNNNMMMMEEEENNNNTTTT    OOOOFFFF    VVVVAAAARRRRIIIIAAAABBBBLLLLEEEESSSS
+	Now some routines for handling substitution.  In
+	'substitute(base,sub)' 'sub' must be an equation of the form
+
+		name = eqn;
+	or
+		name(var1,..) = eqn;
+
+	In the first form each appearance of 'name' in the equation
+	'base' is replaced by 'eqn'. In the second form each occurrence
+	of 'name(x,y,z)' is replace by 'eqn' with 'x',... has been
+	replacing 'var1' etc. The internal representation of the
+	equation is altered by 'substitute' to keep the original
+	unexpanded version use the 'duplicate' routine.
+
+	'assign(name,value)' creates an equation of the form
+
+		name = value
+
+	'assign' can be used with 'substitute' to assign parameters in
+	equations.
+
+	eg.	temp = assign("a",5.0);
+		substitute( main, temp );
+		free_eqn_tree(temp);
+
+	changes each occurrence of "a" in 'main' to be 5.0.
+
+AAAA    RRRREEEEVVVVEEEERRRRSSSSEEEE    PPPPOOOOLLLLIIIISSSSHHHH    CCCCAAAALLLLCCCCUUUULLLLAAAATTTTOOOORRRR
+	To speed up the evaluation of an equation it can be converted
+	into a reverse polish expression ('rpe'). This string is a series
+	of instructions which can be interpreted by a special
+	calculator.  Each instruction is coded as an integer.
+
+	'make_rpe(eqn,n_vars,names[n_vars])' converts 'eqn' into an
+	rpe. It returns a pointer to a string of integers. If the
+	string can not be created then NULL is returned. 'n_vars' is
+	the number of variable names the equation contains. And 'names'
+	is an array of the names of the variables, i.e. an array  (of
+	dimension 'n_vars') of character strings.
+
+	'print_rpe( rpe, n ,names[n] )'  prints out the rp-string. And
+	'fprint_rpe(fp,rpe,n,names[n])' prints the rpe to file fp.
+	
+	'eval_rpe( rpe, vars[] )' evaluates rp-string 'rpe' using a
+	stack 'vars' is an array of doubles which must be of the same
+	dimension (ie. 'n') as the array of names. When the token $0,
+	is found in 'rpe' the value 'var[0]' is substituted.
+
+	There are three different types of token in an rpe string
+	operators ('+', '-', ...); constants pointers, which point to
+	an element in an array of doubles which contain the value of
+	the constant (the 'constant_array'); and tokens relating to the
+	variables.  Each each occurrence of a variable name in 'eqn' is
+	replaced by a special token (written here as $0 $1...) in the
+	rpe. It is an error for 'eqn' to contain a name not in the
+	array of names. A stack is used for the evaluation of an rpe
+	if this stack will overflow on evaluation 'make_rpe' will
+	return FALSE. Also FALSE will be returned if too many constants
+	are in use.
+
+	The constant array is common to all 'rpe-strings'.
+	'clear_rpe_const()' clears the constant array allowing more
+	constants to be used. This should be called at regular
+	intervals but not if any rpe-strings are currently in use as
+	the constants that string will use would be erased.
+
+HHHHoooowwww    tttthhhheeee    ccccaaaallllccccuuuullllaaaattttoooorrrr    wwwwoooorrrrkkkkssss
+	Each token is read from the string in turn. If the token is a
+	variable then corresponding value from the array 'vars[]' will
+	be pushed onto the stack. If the token is a a constant then the
+	value from the array of constants will be pushed onto the
+	stack. If the token is an operator then the top two values are
+	popped from the stack the operator is applied to them and the
+	result is pushed back onto the stack.
+
+	If 'eqn' is 
+
+		'(x+y)/(w-z)=0.7',
+		n = 4,
+		names[] = "x","y","z","w",
+
+	the string produced is 
+
+		$0 $1 + $3 $2 - / #0 = 
+
+	Here we write $0, $1, $2, $3 to be tokens representing the
+	variables and #0 represents the constant which is in this case
+	is 0.7.  If the elements of 'vars' are x,y,z,w then we have the
+	following sequence of operations when evaluating the string.
+
+	   token    action              state of stack
+
+	     $0     push(vars[0])         x
+	     $1     push(vars[1])         y , x
+	      +     r = pop()             x
+	            l = pop()
+	            push(l+r)             x+y
+	     $3     push(vars[3])         w, x+y
+	     $2     push(vars[2])         z, w, x+y
+	      -     r = pop()             w, x+y
+	            l = pop()             x+y
+	            push(l-r)             w-z, x+y
+	      /     r = pop()             x+y
+	            l = pop()
+	            push(l/r)             (x+y)/(w-z)
+	     #0     push(const[0])        0.7, (x+y)/(w-z)
+	      =     r = pop()             (x+y)/(w-z)
+	            l = pop()
+	            return(l-r)
+	
+	so we get a return value of (x+y)/(w-z) - 0.7.
+	
+HHHHAAAANNNNDDDDEEEELLLLIIIINNNNGGGG    NNNNAAAAMMMMEEEESSSS
+	The names in an equation can be accessed by using the routine
+	aaaadddddddd____eeeeqqqqnnnn____nnnnaaaammmmeeee which returns a pointer to the list of
+	names which was found in the equation. If _*_n_a_m_e_s is
+	not NULL then the names found will be added to the list. The
+	names are lexagraphically sorted.
+
+	pppprrrriiiinnnntttt____eeeeqqqqnnnn____nnnnaaaammmmeeeessss and ffffpppprrrriiiinnnntttt____eeeeqqqqnnnn____nnnnaaaammmmeeeessss print the
+	list of names on the standard output or the file respectively.
+
+	There are two types of names variables, and parameters.
+	Each name is by default a parameter but the routine mmmmaaaakkkkeeee____vvvvaaaarrrriiiiaaaabbbblllleeee
+	sets the specific _v_a_r_n_a_m_e in the list _n_a_m_e_s to
+	be a variable.
+
+	The number of parameters in the list is returned by
+	nnnnuuuummmm____ppppaaaarrrraaaammmmeeeetttteeeerrrrssss, and a pointer to the i'th parameter is
+	the list is returned by ggggeeeetttt____ppppaaaarrrraaaammmmeeeetttteeeerrrr. The list of
+	names can be freed using ffffrrrreeeeeeee____eeeeqqqqnnnn____nnnnaaaammmmeeeessss.
+
+	The following example reads in two equations, finds the names
+	and sets 'x', 'y' to be variables, and then automatically ask
+	the value of the parameters.
+
+	eqn1 = scan_eqn();	/* read in the equations		*/
+	eqn2 = scan_eqn();
+	names = add_eqn_names(NULL,eqn1);	/* Add the names to 	*/
+	names = add_eqn_names(names,eqn2);	/*  the list.
+	make_variable(names,"x");  /* "x" and "y" are made variables	*/
+	make_variable(names,"y");  /* all other names are parameters	*/
+
+	num = num_parameters(names);
+	for( i=1; i<= num; ++i )
+	{
+	  parameter = get_parameter(names,i);	/* get the name of i'th
+							parameter	*/
+	  printf("input value for %s\n",parameter);
+	  scanf("%f",&val);			/* read in its value	*/
+	  eqn3 = assign(parameter,val);	/* assign the name to the value */
+	  substitute( eqn1, eqn3 );  /* substitute the value into eqns	*/
+	  substitute( eqn2, eqn3 );
+	  free_eqn(eqn3);		/* free temporary equation	*/
+	}
+	/* eqn1 and eqn2 should now only depend on 'x' and 'y'		*/
+
+
+	If you are not interested in distinguishing between variables
+	and parameters, _n_u_m___e_q_n___n_a_m_e_s, _r_e_m_o_v_e___e_q_n___n_a_m_e,
+	and _g_e_t___e_q_n___n_a_m_e, are alternative names for
+	_n_u_m___p_a_r_a_m_e_t_e_r_s, _m_a_k_e___v_a_r_i_a_b_l_e, and _g_e_t___p_a_r_a_m_e_t_e_r.
+
+HHHHAAAANNNNDDDDEEEELLLLIIIINNNNGGGG    FFFFUUUUNNNNCCCCTTTTIIIIOOOONNNNSSSS
+	A mechanism has been built in to handle functions like _c_o_s_(_)
+	and _s_i_n_(_) as well as functions defined by the user. Definitions
+	of function are added to a list a method for evaluating the function
+	as well as rules for differentiating the function are included for
+	each entry. Once complete this list can be applied to an
+	equation, replacing strings which match one of the function
+	names with a pointer to the element in the list. This modified
+	equation can then be differentiated and evaluated (using _d_i_f_f___w_r_t,
+	_m_a_k_e___r_p_e, _e_v_a_l___r_p_e) correctly. Functions can have a
+	maximum of five arguments.
+
+	Two type of function definition can be used, eeeexxxxtttteeeerrrrnnnnaaaallll functions
+	where the function is evaluated by a call to a c-function, and
+	iiiinnnntttteeeerrrrnnnnaaaallll functions where the function is defined by an equation.
+
+	To add an external function use
+
+		_a_d_d___e_x_t_e_r_n_a_l___f_u_n_c_t_i_o_n_(_f_u_n_l_i_s_t_,_d_e_c_l_,_f_u_n_p_t_r_,_d_i_f_f_1_,_._._)_;
+
+	Where _f_u_n___l_i_s_t is a list of functions, _d_e_c_l is
+	a string declaring the function of the form "name(var1,var2,...)",
+	where name is the name of the function and _v_a_r_1, etc. are
+	the formal parameters. Next follow the name of the C-function,
+	to be evaluated when the function is used and finally there is
+	one equation for each formal parameter, which is the partial derivative
+	of the function with respect to that parameter. The function
+	returns a pointer to a new list of functions which contain all
+	the functions in _f_u_n_l_i_s_t and the new function. The following
+	example defines the functions _s_i_n and _c_o_s,
+
+		eqn_funs *funlist;
+
+		funlist = add_external_function(NULL,"sin(x)",sin,"cos(x)");
+		funlist = add_external_function(funlist,"cos(x)",cos,"-sin(x)");
+
+	Note that _s_i_n is added to a NULL list of function, there is
+	only one formal parameter in each function so only one derivative
+	is specified. The derivative can contain the names of other functions
+	which may be added to the list before or after the function.
+
+	The other way to add functions is by using 
+
+		_a_d_d___i_n_t_e_r_n_a_l___f_u_n_c_t_i_o_n_s_(_f_u_n_l_i_s_t_,_e_q_n_)_;
+
+	where _f_u_n_l_i_s_t is a list of functions and _e_q_n is an
+	equation defining a new function, to add tan to the above list
+	we could use,
+
+		taneqn = sscan_eqn("tan(x)=sin(x)/(cos(x))");
+		funlist = add_internal_function(funlist,taneqn);
+		free_eqn_tree(taneqn);
+
+	For internal functions all the functions included in the equation
+	must already appear in the list of functions, it would be
+	illegal to define _t_a_n before _s_i_n or _c_o_s. Note
+	that _s_i_n and _c_o_s are both enclosed in brackets,
+	which is necessary to ensure the equation is parsed correctly,
+	see below.
+
+	It is also posable to define constants for example
+
+		funlist = add_constant(funlist,"Pi",3.1415926535898);
+
+	Operators can also be defined for example
+
+		funlist = add_operator(funlist,"foo",foo);
+
+	the function must be of the type 'eqnode *foo(eqnode *)'
+	i.e. takes an equation as input and returns an equation.
+	The operator could take a comma separated list as its argument.
+
+	Once the list of functions has been compleated, the program
+	can be instructed to use these functions when reading in
+	an equation using _s_c_a_n___e_q_n. This is done using the call
+
+		set_input_functions(funlist);
+
+	The list of input functions can be retrieved using 
+
+		funlist = get_input_functions();
+
+	An other obsolete method of using the function definitions
+	in an equation is via the call
+
+		use_functions(eqn,funlist);
+
+	This uses the function definitions after the equation has been
+	parsed. Hence at the time of parsing the program will treat
+	any occurrence of the function name as just a name. This can
+	lead to incorrect parsing in particular '1/f(x)' is interpreted
+	as '(1/f)*x'. With 'set_input_functions' the parser knows that
+	'f' is a function so '1/f(x)' is treated correctly.
+
+	As not all function names are known while the function
+	list is being built up the above parsing error may occur, this
+	can be prevented by putting in enough brackets.
+
+	The list of functions can be written to a file with
+	_f_p_r_i_n_t___f_u_n_s_(_f_p_,_f_u_n_l_i_s_t_)_;.
+
+	Definitions for many standard functions have already be worked
+	out. To include these standard definitions use
+
+		funlist = add_standard_functions(funlist);
+
+	The following functions are included in the standard list,
+	cos(x),sin(x),tan(x), acos(x),asin(x),atan(x), sec(x),cosec(x),cot(x),
+	cosh(x),sinh(x),tanh(x), acosh(x),asinh(x),atanh(x),
+	sqrt(x),exp(x),pow(x,n),ln(x), abs(x), sgn(x), max(x,y), min(x,y)
+	if(x,y,z) as well as the constant Pi.
+
+	 Most functions correspond to the
+	the function with the same name in the maths library math(3).
+	The function sgn(x) returns -1 if x < 0; 0 if x = 0 and +1 if x > 0.
+	The function if(x,y,z) returns y if x >=0 and z otherwise.
+	A single operator diff(eqn,x) is also defined which gives the
+	derivative of eqn with respect to x, x must be a name.
+
+VVVVEEEECCCCTTTTOOOORRRR    OOOOPPPPEEEERRRRAAAATTTTIIIIOOOONNNNSSSS
+	Vectors can be expressed in the equations, and the following
+	operations can be used '+', '-', '.' (dot product) and '^'
+	(cross product). For example we could have
+
+		(a,b,c)^(d,e,f).(g,h,i);
+
+	which expands to
+
+		(b*f*g-c*e*g)+(c*d*h-a*f*h)+(a*e*i-b*d*i);
+
+	When trying to evaluate equations involving vectors, the routines
+	make_vrpe, eval_vrpe, fprint_vrpe, print_vrpe, should be used
+	instead of the normal rpe procedures. 'eval_vrpe' returns a
+	pointer to an array of doubles, of the appropriate size, this
+	array will be corrupted the next time eval_vrpe is called.
+
+IIIINNNNTTTTEEEERRRRNNNNAAAALLLL    RRRREEEEPPPPRRRREEEESSSSEEEENNNNTTTTAAAATTTTIIIIOOOONNNN
+	EQUATIONS are represented internally as a binary tree each node
+	can either be:- a string giving a variable name; a floating
+	point number; an operator ('+', '-', '*', '/', '^', '=') which
+	has two sub-trees which are the operands. The base node of an
+	equation must be the operator '='. For example the equation
+	'(x+y)(x-y)=0' is represented internally as
+
+				x
+			+
+				y
+		*
+				x
+			-
+				y
+	=
+		0.
+	Written with lots of brackets this is '(((x+y)*(x-y))=0)'.
+
+	If 'base' is a pointer of type 'eqnode *' then 
+	'base->op' is one of '+', '-', '*', '/', '^', '=', ',',
+	NAME, NUMBER, FUNCTION, INTERVAL. If 'base->op' is NUMBER
+	then 'base->u.num' is a double precision floating point
+	number. If 'base->op' is NAME the 'base->u.str' is a string
+	containing the name of the variable. If 'base->op' is FUNCTION
+	the 'base->u.f.f' is a pointer to a structure describing the
+	function, and 'base->u.f.a' is is a pointer to a tree describing
+	the comma separated list of arguments. For all the other
+	types we have a binary operator and 'base->u.n.l' and 'base->u.n.r'
+	are pointers to trees containing the expressions on the left
+	and right of the operator.
+
+CCCCOOOOMMMMPPPPIIIILLLLAAAATTTTIIIIOOOONNNN
+	cc main.c -leqn -lm -o main     using multiple character names
+
+FFFFIIIILLLLEEEESSSS
+	eqntool.c	main routine for the eqntool program and a good
+				example of how to use the package.
+
+BBBBUUUUGGGGSSSS
+	The mathematical equations can be a syntatical nightmare, and
+	there may still be equations which are interpreted wrongly.
+	
+AAAAUUUUTTTTHHHHOOOORRRR
+	Richard Morris 11/5/93
+	Liverpool University, Department of Pure Mathematics,
+	P.O. Box 147, Liverpool L69 3BX
+	email - rmorris@liverpool.ac.uk

@@ -1,0 +1,80 @@
+Plot_sys
+--------
+
+This is the Anmap map-display/plotting system.
+
+
+ Update Log.
+ -----------
+
+ 17/9/87:  Defined basic commands etc. and simple (non-plotting) routines.
+ 18/9/87:  More routines added, some commands changed.
+ 19/9/87:  Corrections to Contour input (new method) and scaling plot.
+ 20/9/87:  Corrections to frame scaling and contouring + general.
+ 21/9/87:  Addition of text plotting - corrected dashed-contours;
+           cursor input and linear contours implemented
+ 22/9/87:  changes to command names (some removed). UV-box and grid
+           options added, change to character representation of levels.
+ 23/9/87:  Corrections to some routines. Addition of "add-cross; 'C' in
+           W-O-P; SET-CROSS-STYLE; NEXT-FRAME", correction to framing
+           and character size definition.
+ 24/9/87:  Preparing for release; help written, bugs cleared up - only
+           pips are unavailable.
+ 27/9/87:  Correction to CROSSes option, optionally fast contour algorithm
+           installed. Line width option added.
+ 30/9/87:  Correction to map size handling and checking of "R" option.
+ 14/10/87: Pips added and tested; change to UVTORD calls throughout.
+           (This will need looking at again).
+           READ-MAP command added to this sub-system.
+ 17/10/87: Corrections to pips (setup up STPROJ parameters consistent
+           with the "quick" precession routine PRECES).
+           Correction to printing of contour levels and the handling of
+           the zero contour.
+ 17/11/87: Installation of OVERLAY-MAP and FAST-CONTOUR commands. Change
+           to the way contours are labelled (stop at bottom of plot and
+           only those plotted are recorded). OUTPUT-DEVICE now handled
+           by io_getplt; DATE and program name plotting installed.
+ 11/12/87: EXPLAIN now uses updated HELP_UTIL program. Set-output-device
+           now does an end-plot.
+ 21/12/87: LINEAR-CONTOURS and LOGARITHMIC-CONTOURS now have proper error
+           checking of user inputs before setting up the contour levels.
+ 12/01/88: Modification to allow calling of BASIC-COMMANDS.
+           Change in style of wording on output plot.
+ 21/01/88: Update state is correctly handled during output to the
+           Pericom -- this should stop screen flicker.
+ 24/03/88: The number of commands has been reduced (by adding multiple
+           option commands) and some bugs have been fixed. All routines
+           requiring 'UV-range' input can now read from the graphics
+           screen if required (and appropriate).
+ 14/09/88: All routines now forced to access STATUS using the routine
+           argument. All variables defined so that $inplicit off may be
+           used.
+ 21/09/88: Proper interpolation option installed for contouring which
+           by default will be off. INTMAP is now used to interpolate the
+           required UV region into the work array. This must occur each
+           time PLT_DOCONT is called so as to be able to correctly
+           release space in the work array for other utilities.
+ 20/1/89:  More corrections to linear-contours and log-contours
+ 13/02/89: New DISPLAY command replaces show commands
+ 23/03/89: Substantial changes to plot library in the way
+           overlay maps are handled. New include file format.
+           Grey-scales improved. Colours for LEXI enhanced.
+           Drawing-sys allows redefinition of frame.
+ 22/08/89: plot_TVmod and internal functions for setting colour
+           table moved to PLOT-COL-TABLE and enhanced colour
+           option added.
+ 23/10/89: bug fixed in interpolation option for large maps
+ 14/12/89: added support for vector plotting
+ 05/03/90: added plotting of symbols representing special data
+ 01/05/90: new option to allow full use of plotting area
+ 20/06/90: cursor-position command added to display sub-system
+ 11/03/91: standard get-type command added to plot system
+ 20/11/91: additional options to frames and graphics overlay
+ 16/12/91: new surface plot option to do a surface plot in a graphics
+           overlay window.
+ 01/04/92: SUNOS version started; added support for external TV device
+           via command TV-load. Rename TV-modify to modify-lookup-table.
+ 15/01/93: Major re-write to use ne graphic object oriented approach.
+           Many routines removed from map-display and now treated as
+           additional graphics options: slice, surface-plot, TV-load.
+

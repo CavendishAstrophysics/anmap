@@ -1,0 +1,14 @@
+*1 tcl_language
+*@$ANMHELP/programming/tcltk.help
+
+*1 commands_and_modules
+*@$ANMHELP/programming/commandsTcl.help
+
+*1 imaging
+*@$ANMHELP/programming/imageTcl.help
+
+*1 map-catalogue
+*@$ANMHELP/programming/imcatTcl.help
+
+*1 io
+*@$ANMHELP/programming/ioTcl.help

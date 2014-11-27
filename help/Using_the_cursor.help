@@ -1,0 +1,27 @@
+
+Information: on use of the cursor
+
+Most the the interactive graphics devices we have support input from the
+cursor. There are a number of places when cursor input can be used:
+
+1) Some commands will prompt for a uv-position and offer a default of
+   "[cursor]" - pressing return will make the cursor appear and you will
+   then have the cursor appear for input
+
+2) In response the any prompt for a uv-range you may specify "Cursor"
+   (or any valid abbreviation) and you may then specify the uv-range
+   using the cursor by marking two corner of the uv-box.
+
+3) Some special command clearly activate the cursor - e.g.
+   cursor-position (which may be called at any time).
+
+It is clearly important that you measure uv-positions/ranges etc. from
+the same map which you are trying to process - the uv-position returned
+is taken from the map on the SCREEN.
+
+When you have positioned the cursor, simply press any printing character
+character (A-Z or a-z are best) except Q (or q) - the latter stands for
+Quit and is equivalent to typing ESC in reponse to a normal prompts
+(unfortunately the graphics interface routines do not understand ESC or
+other control characters and in general when the cursor appears you
+should avoid typing ESC, RETURN or other non-printing characters).

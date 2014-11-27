@@ -1,0 +1,196 @@
+#
+# Anmap standard tcl initialisation loading all required command definitions
+#
+# unknown ::: modified unknown to check for matches to compound command names
+#
+#	1. See if the autoload facility can locate the command in a
+#	   Tcl script file.  If so, load it and execute it.
+#       2. Check for a match among defined compound-name commands.
+#	3. See if the command exists as an executable UNIX program.
+#	   If so, "exec" the command.
+#
+proc unknown args {
+    global Anmap
+    global auto_noexec auto_noload env unknown_pending anmap_sys
+    set name [lindex $args 0]
+    if ![info exists auto_noload] {
+	#
+	# Make sure we're not trying to load the same proc twice.
+	#
+	if [info exists unknown_pending($name)] {
+	    unset unknown_pending($name)
+	    if ![array size unknown_pending] {
+		unset unknown_pending
+	    }
+	    error "self-referential recursion in \"unknown\" for command \"$name\"";
+	}
+	set unknown_pending($name) pending;
+	set ret [auto_load $name];
+	unset unknown_pending($name);
+	if ![array size unknown_pending] {
+	    unset unknown_pending
+	}
+	if $ret {
+	    return [uplevel $args]
+	}
+    }
+    uplevel interp_command $anmap_sys $args
+}
+
+
+# interp_command :::: perform compound string matching on commands
+#                     and execute matching commands
+# Parametsrs:
+#   system  ==  anmap (sub-)system in which commands are searched
+#   args    ==  arguments to pass to command
+#
+# The global command name space is also searched for matches
+#
+proc interp_command {system args} {
+  global   global.commands shellmode
+  upvar #0 $system.commands ca
+  set command [lindex $args 0]
+  set pars [lrange $args 1 [llength $args]]
+  set iamb 0
+  if !$iamb then {
+    if [llength $pars] then {
+      set iamb [eval lcexec ca $command $system.command $pars]
+    } else {
+      set iamb [eval lcexec ca $command $system.command]
+    }
+  }
+  if !$iamb then {
+    if [llength $pars] then {
+      set iamb [eval lcexec global.commands $command global.command $pars]
+    } else {
+      set iamb [eval lcexec global.commands $command global.command]
+    }
+  }
+  if "$iamb > 1" then {
+    puts "*** Ambiguous command"
+    prmatch $command [array names ca]
+    prmatch $command [array names global.commands]
+  } else {
+    if !$iamb then {
+      if $shellmode then {
+        if [auto_execok $command] {
+          return [uplevel anmap_system \"$command $pars\"]
+        }
+      }
+      puts "*** Unknown command $command"
+    }
+  }
+}
+
+#
+# procedure to define prompt strings
+proc anmap_prompt {prompt_string} {
+  global tcl_prompt1
+  set tcl_prompt1 "puts -nonewline \"$prompt_string\""
+}
+#
+# Setup default prompt
+anmap_prompt "Anmap> "
+
+# redefine system exit command
+rename exit _exit
+
+# define global variables used for anmap
+global global.commands sysnames anmap_sys anmap_parent anmap_owner shellmode
+global anmapnames
+  set anmap_sys main
+  set anmap_owner main
+  set anmap_parent none
+  set shellmode 1
+
+# define commands
+# global commands and procedures
+proc global.command {args} { eval anmap_command $args }
+proc global.exit {args} {
+  global anmap_sys anmap_parent
+  if [string match $anmap_parent main] then {
+    set anmap_sys main
+    set anmap_parent none
+  } else {
+    set anmap_sys $anmap_parent
+    set anmap_parent main
+  }
+  uplevel #0 "anmap_prompt $\{$anmap_sys.prompt\}"
+
+}
+set global.commands(abort) {_exit}
+set global.commands(exit) {global.exit}
+set global.commands(quit) {global.exit}
+set global.commands(news) {main.news}
+set global.commands(help) {main.help}
+set global.commands(redtape-display) {redtape_display}
+set global.commands(tv-load) {}
+set global.commands(read-data-file) {in_data}
+set global.commands(write-data-file) {out_data}
+
+proc main.news { } {
+   global AnmapSource
+   anmap_system "/mrao/bin/help @$AnmapSource/help/anmap.news"
+}
+proc main.help { args } {
+   global AnmapSource
+   anmap_system "/mrao/bin/help @$AnmapSource/help/anmap.help $args"
+}
+
+# anmap main commands and procedures
+set anmapnames(main) {}
+set main.prompt "Anmap> "
+set main.commands(exit) {_exit}
+set main.commands(quit) {_exit}
+proc main.command {args} { eval anmap_command $args }
+proc main.system { sysname args} {
+   global anmap_sys anmap_parent sysnames
+   set sys $sysnames($sysname)
+   if [llength $args] then {
+     eval interp_command $sys $args
+   } else {
+     uplevel #0 "anmap_prompt $\{$sys.prompt\}"
+     set anmap_parent main
+     set anmap_sys $sys
+   }
+}
+     
+
+#
+# load information data base for top-level commands
+#
+set main.info(exit) {}
+set main.info(news) {}
+set main.info(help) {}
+set main.info(redtape) {}
+set main.info(tv-load) {}
+set main.info(read-data-file) {}
+set main.info(write-data-file) {}
+set main.info(graphic-system) {}
+set main.info(catalogue-system) {}
+set main.info(edit-redtape) {}
+set main.info(edit-image) {}
+set main.info(drawing-display) {}
+set main.info(data-display) {}
+set main.info(map-display) {}
+set main.info(scratch-display) {}
+set main.info(news) {}
+set main.info(help) {}
+set main.info(redtape) {}
+set main.info(tv-load) {}
+set main.info(read-data-file) {}
+set main.info(write-data-file) {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,42 @@
+
+The command calculates statistics which may be used to determine the
+fractal dimension of an image.  The results are in the form of an
+area perimter relationship which is written to the stanfdard anmap
+results file (~/mrao/anmap_results.dat).
+
+The algorith employs a modified Hashen & Kopleman algorithm. It looks 
+at pixels which are adjacent to one another searching for clusters of
+connected pixels which are contiguous and which have intensity values
+between specified gating levels.  Connectivity between pixels in a 
+cluster can be defined by either edge sharing or edge-sharing plus corner
+sharing criteria.
+
+Output to the results file is in the form of three columns with an
+entry for each cluster found.  The first column is the boundary size of the
+cluster, the second the area and the third the gating level above which the
+cluster was identified.
+
+Inputs to the routine are as follows:
+
+Catalogue-entry
+	Catalogue entry of image to analyse
+
+Start-gate, Increment-gate, End-gate
+	A series of gating levels are analysed between Start-gate and
+	end-gate in increments of increment-gate.  The gating level is
+	determined for the "n'th" level by:
+		gate(n) = start-gate + (n-1) * increment-gate
+	All pixels with values above gate are then analysed at a given
+	pass for belonging to clusters.  Clusters are identified and
+	tabulated for each gating level so defined.
+
+Exlude-data-level
+	Data below this value are treated as "noise" and are excluded
+	from all analysis.
+
+Include-diagonally-connected-pixels ?
+	You can choose the algorithm used for identifying clusters by
+	selecting to include (or not) diagonally connected pixels as
+	belonging to a given cluster.
+
+*p

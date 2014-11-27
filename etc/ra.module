@@ -1,0 +1,118 @@
+#
+# Module: Radio Astronomical Specific Tools
+#
+# Setup Synchrotron Analysis sub-system:
+# define command to switch to the synchrotron sub-system
+set global.commands(synchrotron-analysis) {main.system synchrotron-analysis}
+
+# define basic commands for the synchrotron analysis sub-system
+set anmapnames(synch) {synchrotron-analysis}
+set sysnames(synchrotron-analysis) {synch}
+set synch.prompt "Synchrotron> "
+proc synch.command {args} { eval anmap_command synchrotron-analysis $args }
+set synch.commands(equipartition-parameters) {}
+set synch.commands(equipartition-calculation) {equipartition_calculation}
+set synch.commands(define-synchrotron-spectrum) {}
+set synch.commands(plot-synchrotron-spectrum) {plot_synchrotron_spectrum}
+set synch.commands(plot-fitted-spectrum) {synch_plotfit}
+set synch.commands(output-synchrotron-spectrum) {}
+set synch.commands(fit-synchrotron-spectrum) {fit_synchrotron_spectrum}
+set synch.commands(make-alpha-X-table) {}
+set synch.commands(alpha-map) {synch_alpha_map}
+set synch.commands(fit-maps) {}
+set synch.commands(alpha-to-age-map) {}
+set synch.commands(break-to-age-map) {}
+set synch.commands(B-spiral) {synch_B_spiral}
+set synch.commands(X-synchrotron-analysis) {Xsynch}
+
+# add aliases to procedure-based commands
+command_create fit-map-spectrum -command fit_map_spectrum -system synch
+
+# setup default to the synchrotron analysis sub-system
+synchrotron-analysis define-synchrotron-spectrum 5 2.0
+
+# setup default equipartition parameters
+synchrotron-analysis equipartition-parameters 1 0 1 0.01 100 0.75 0
+
+#
+# Define additional map-analysis commands
+#
+set anal.commands(alpha-map) {ra_dispatch alpha-map}
+set anal.commands(chi-map) {ra_dispatch chi-map}
+set anal.commands(mi-map) {ra_dispatch mi-map}
+set anal.commands(perc-map) {ra_dispatch perc-map}
+set anal.commands(makei) {ra_dispatch makei}
+set anal.commands(predict-map) {ra_dispatch predict-map}
+set anal.commands(pb-correction) {ra_dispatch pb-correction}
+set anal.commands(pbcor-omt) {ra_dispatch pbcor-omt}
+set anal.commands(pbcor-cat) {ra_dispatch pbcor-cat}
+set anal.commands(pb-make) {ra_dispatch pb-make}
+
+#
+# Procedural definitions required by RA routines
+#
+proc equipartition_calculation { args } {
+  set val [eval anmap_command synchrotron-analysis \
+                equipartition-calculation $args]
+  puts "Field strength = $val nT"
+}
+
+proc fit_synchrotron_spectrum { args } {
+  set vals [eval anmap_command synchrotron-analysis \
+                 fit-synchrotron-spectrum $args]
+  puts "Synchrotron-flux (mJy) = [lindex $vals 0]"
+  puts "Fit(2)                 = [lindex $vals 1]"
+  puts "Fit(3)                 = [lindex $vals 2]"
+  puts "Error in fit (mis-fit) = [lindex $vals 3]"
+}
+
+proc synch_B_spiral { args } {
+  if [llength $args] then {
+    call iocmd set-cli $args
+  }
+  set vals [eval anmap_command synchrotron-analysis \
+                 B-spiral $args]
+  puts "Bfield = $vals nT"
+}
+
+
+proc plot_synchrotron_spectrum { args } {
+  eval anmap_command synchrotron-analysis \
+                     output-synchrotron-spectrum $args
+  graphic select graph 10
+  data-display init plot
+  data-display init all
+  data-display line 1 file ~/mrao/anmap_results.dat
+  data-display set-frame log-labels on
+  data-display set-frame text-style 1 1.5 white 1
+  data-display set-frame grid-option on
+  data-display set-frame grid-style 2 1 white
+  data-display set-text-style 1 1.75 white 1
+  data-display x-title {\gn/\gn\dT\u}
+  data-display y-title Flux
+  set t [lindex [synch_enquire] 0]
+  set g [lindex [synch_enquire] 1]
+  data-display title Synchrotron spectrum type = $t {\gg} = $g
+  data-display plot all
+}
+
+
+proc synch_enquire { } {
+  return [anmap_command synchrotron-analysis enquire-spectrum]
+}
+
+proc synch_alpha2break { alpha } {
+  return [anmap_command synchrotron-analysis \
+          calculate-break-from-alpha $alpha]
+}
+
+proc synch_break2age { break bfield } {
+  return [anmap_command synchrotron-analysis \
+          calculate-age-from-break $break $bfield]
+}
+
+
+proc synch_alpha_map { args } {
+  anmap_command fit-maps 11 $args
+}
+

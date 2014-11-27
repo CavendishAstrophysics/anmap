@@ -1,0 +1,18 @@
+
+TOOLS
+-----
+
+This directory contains the source for standard SPECTRUM tools.
+
+To link a particular tool use the following:
+
+  f77 -xl tool_name.f -o $MRAO_SOURCE/bin/spec/tool_name `spec_libs` \
+          `nag` `pgplot`
+
+Where `nag` and `pgplot` need only be included if the NAG library or
+graphics respectively are required by the tool.  All tools should
+be documented in the directory $MRAO_SOURCE/spec/docs.
+
+The command file build.com makes each entry in the tools definition
+using the make-file Makefile.
+

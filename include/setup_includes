@@ -1,0 +1,12 @@
+#!/bin/csh
+#
+# shell script to setup links to include files in other directories
+#
+  foreach dir (../ic_lib)
+    foreach file ($dir/*.inc $dir/*.h)
+      set name=$file:t
+      rm -rf $name
+      ln -s $file $name
+    end
+  end
+

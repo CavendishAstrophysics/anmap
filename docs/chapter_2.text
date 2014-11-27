@@ -1,0 +1,1704 @@
+                     1. AN ANMAP TUTORIAL
+                     ____________________
+ 
+ 
+ 
+1.1 Introduction
+________________
+ 
+This tutorial gives a simple guide to the main features of
+Anmap. A detailed description of all the facilities is
+available in the extensive help information available "on-
+line" within the program, and in the full Anmap manual.
+ 
+The first thing to do is to start the program running, so
+after logging on at one of the NORD terminals (preferably a
+graphics terminal) just type:
+ 
+       anmap
+ 
+and a message will appear telling you the version number and a
+short message -- generally speaking you should pay some
+attention to this message as it may well have information
+which affects you. The terminal will now display the Anmap>
+prompt.
+ 
+You will often be told to look at the News file. To do this
+type the command:
+ 
+       news
+ 
+and text will appear on the screen giving a list of the latest
+changes to Anmap. To select an item just type the name of the
+required item in response to the topic> prompt -- minimal
+matching applies here as elsewhere within Anmap and underline
+and dash are treated as equivalent. To return to the Anmap>
+prompt press return by itself on a line a number of times
+until the prompt re-appears -- you are now ready to to start
+work.
+ 
+Anmap is organized into sub-systems in a way similar to
+Postmortem and other programs on the NORD. Sub-systems are
+used to group together commands having similar functions.
+Commands are available to move between sub-systems. The
+commands available at the Anmap> prompt provide facilities for
+moving between sub-systems and other general operations and
+are known as basic commands: for example news and help are
+basic commands. Basic commands, are available in most Anmap
+sub-systems. In addition to commands it is also possible to
+define procedures within Anmap (see Chapter 3). A procedure is
+simply a short-hand for a number of Anmap commands; some
+procedures are defined for you and you can think of them as
+being similar to basic commands. It is also possible to define
+your own procedures. An example of a procedure is the fact the
+add-to-catalogue command described below. When you type add-
+to-catalogue at any point withing Anmap it envokes the
+catalogue-system command add-to-catalogue; this is achieved
+very simply by defining a procedure add-to-catalogue which is
+translated by Anmap into the command catalogue-system add-to-
+catalogue. For now you need not worry what is a command and
+what is a procedure.
+ 
+ 
+1.2 Finding Out About Commands
+______________________________
+ 
+A help facility is provided to explain the various commands
+available. Just typing help will cause you to be prompted for
+the output file, press return to specify the terminal or
+printer for the line printer, you have now entered the help
+system. This is identical to the help system available at the
+NORD "@" prompt and is very similar to news and the help on a
+VAX. A list of topics help knows about will appear on the
+screen and the prompt topic>. To find out more about a
+particular topic simply type the name of the topic required
+(as with news described above). Some information will now be
+printed on the terminal with possibly another set of options
+-- note how the prompt changes so that you know where you are
+in help. Help is organized in a hierarchical way, it is
+probably worth spending some time exploring help now before
+doing anything else. To exit help simply press return a number
+of times -- this moves you back up through the help tree, or
+type ESC to return immediately to the Anmap> prompt.
+ 
+In addition to using help you can obtain a list of all the
+current commands and a brief indication of what they do simply
+by typing a question mark '?', while
+ 
+      ? delete,,,
+ 
+will list all commands beginning delete.
+ 
+Within any sub-system certain commands, basic-commands, are
+always available although they will not appear when you type
+'?' unless you are at the Anmap> prompt. To list basic
+commands, use:
+ 
+      list-basic-commands,,,
+ 
+To list the available procedures you can use the command
+language command:
+ 
+      /\list-procedures
+ 
+ 
+ 
+1.3 Getting data into Anmap
+___________________________
+ 
+Anmap uses the concept of a map-catalogue, similar to the map
+catalogue used by AIPS. You have to add maps to the map
+catalogue before you can use them in Anmap: maps created
+within Anmap will be added automatically to the catalogue and
+indeed they are usually not available outside it unless you
+take some specific action.
+ 
+A wide variety of commands exists to manipulate the catalogue,
+but in general you need only a very few:
+ 
+  add-to-catalogue                add maps to the catalogue
+  remove-from-catalogue           remove maps from the
+                                  catalogue
+  list-catalogue                  list (a part of) the catalogue
+  export-permanent-map            save temporary maps
+  delete-catalogue-entry          delete maps from disc
+These commands are available in the catalogue-system, sub-
+system but because they are used so frequently they have also
+been defined as procedures so that they behave in the same way
+as basic-commands.
+ 
+To add a map NGC4410:MAP and its beam NGC4410:BEAM to your
+catalogue you use the add-to-catalogue command:
+ 
+      add-to-catalogue NGC4410
+ 
+and you will be prompted to confirm each map matching the name
+you type -- the map catalogue commands recognize all the
+standard file types for maps and images such as map, imap,
+beam, qmap, umap, cln etc. You will also be told which
+catalogue-entry the map has been added to -- in our example
+they will be added to catalogue-entries 1 and 2 as these are
+the first maps to be added to you map catalogue. The catalogue
+entry number provides a convenient short hand way of referring
+to a map, although in Anmap you may also refer to maps by
+name: the two maps may therefore be referred to as maps 1 or 2
+or NGC4410-MAP-MAPPER or NGC4410-BEAM-MAPPER. Note how the
+file type is referred to as another part of the name and the
+MAPPER part is derived from the program name which created the
+images -- in this case the mapper. Upper and lower case
+characters are not distinguished in the NORD implementation of
+Anmap and therefore you could have typed in the above example:
+ 
+      add-to-catalogue NGC4410
+ 
+To compile a catalogue of all the maps on your default map
+directory simply type
+ 
+      add-to-catalogue ,,
+ 
+You will then be prompted to confirm each map in turn -- as
+the default is yes (i.e. include the map in your catalogue)
+simply pressing carriage return will add the map to your
+catalogue; you may of course reply no in which case the
+current map will be skipped and you will be prompted if you
+want to add the next (if one exists). If you definitely want
+to include all maps matching your description in the catalogue
+then since the default is yes a series of commas ',,,,,' will
+accept all the default answers and speed up this process
+considerably.
+ 
+Note that the catalogue is held in a file on your user
+directory and therefore you do not need to "re-make" the
+catalogue each time you enter Anmap -- it is remembered by the
+system.
+ 
+The command list-catalogue will produce a listing on the
+terminal of all the maps in your catalogue. Each map is
+uniquely identified by its catalogue number, however you can
+also refer to a map in your catalogue by name.
+ 
+When commands run which produce maps they create what are
+termed "temporary maps" -- they are identified by a 'T' in the
+last column of output from the list-catalogue command. These
+maps are temporary in the sense that they are anonymous as
+regards the NORD filing system, but the maps are not lost when
+you leave Anmap -- they will still be there tomorrow. You may
+treat temporary maps in the same way as normal maps, but if
+you wish to use them in a program which does not use the map-
+catalogue, or you wish to archive them to tape or write a FITS
+tape, then you must change them to be permanent maps. The
+command export-permanent-map can be used to change a temporary
+map to a permanent map. One word of warning -- if your default
+map directory is a common-user map space such as MAPS-:T151 or
+MAPS-:RYLE, then these file spaces are cleared periodically of
+temporary maps older than a week or so: this clearing up does
+not apply to your personal file space for which you alone are
+responsible.
+ 
+The commands remove-from-catalogue and delete-catalogue-entry
+can be used to keep your catalogue tidy. The former can be
+used to remove permanent map files from the catalogue, but
+leaving the permanent map intact on disc. The delete-
+catalogue-entry command also removes a map from the catalogue,
+but also deletes the associated disc file -- use this command
+with care as mistakes cannot be rectified.
+ 
+The catalogue-system sub-system contains a number of commands
+which you may well find useful once you have become familiar
+with the basic concepts of the map catalogue.
+ 
+Anmap has facilities for handling a wide variety of non-
+standard formats for data; the commands input-map and output-
+map in the map-analysis sub-system can be used to read and
+write non-standard format data. Both ASCII and binary formats
+are supported. The data are read into standard map format with
+a map redtape with sufficient information for Anmap commands
+to be used; the edit-redtape sub-system can be used to make
+corrections and additions to the retape of the map as
+required.
+ 
+ 
+ 
+1.4 Displaying Your Map
+_______________________
+ 
+Anmap has a versatile way of displaying your data -- the map-
+display sub-system which is entered by typing map-display.
+This sub-system has its own set of commands and a help; try
+'?' within map-display and help.
+ 
+Map-Display provides a powerful contouring and image-
+processing tool which can send its output to all the devices
+supported on the NORD. The program uses the PGPLOT package and
+therefore has access to all the supported characters and
+fonts. You can type commands to set various options, define
+contour levels and generally control the layout of the
+display. Additionally on interactive devices, once you have
+displayed an image, information such as positions (UV, RA/DEC)
+can be read from the display at any time.
+ 
+When you enter map-display the prompt will change to Map-
+display>. The commands you will need to use most often when
+you are getting started are:
+ 
+ 
+ 
+ 
+    set-map                  [catalogue-entry]
+    set-uv-range             [uv-range]
+    add-title                [text]
+ 
+ 
+and the ...-contours routines to define the contour levels.
+Once everything is set up, just type
+ 
+      go-plot
+ 
+This is exactly equivalent to the command plot full or the
+commands plot frame, plot grey, plot contours, plot vectors,
+plot symbol, plot text obeyed sequentially. The power of the
+command-line driven program lies in the ability to change the
+options which control the style of the plot, to do multiple
+plots or to send output to another device. For instance, once
+you have drawn your contour plot you can add more contour
+levels just by giving one of the ...-contour commands and the
+contours will be added to the current plot by typing plot
+contours. To send the output to another output device you
+simply have to say
+ 
+      end-plot
+ 
+followed by go-plot again and specify a different output
+device in response to the prompt. The devices follow the
+standard PGPLOT convention -- a list of valid devices can be
+obtained by typing a '?' in response to the prompt. [1] As a
+complete example consider the following, you have already
+added a map of size 128x128 onto the map-catalogue (entry 1)
+and have entered map-display; then type
+ 
+      set-map 1
+ 
+to specify the map to display and
+ 
+      set-uv-range -25,25,25,-25
+ 
+to set the UV-range to plot the central part of the map, (a
+128x128 image has coordinates from -64 to 63 in U and 64 to
+-63 in V)
+ 
+      add-title NGC 3690; 5.0GHz (RT)
+      linear-contours 0.0005,0.0005,0.015
+      go-plot
+ 
+this produces a contour plot on the device you specify with
+contour levels 0.5,1.0,1.5,...15 mJy/Beam and a title above
+the plot. After seeing the plot we decide we need some
+negative contours so we specify them as dashed contours as
+follows
+ 
+      dash-contours -0.0005,-0.001,-0.0015,,,
+      plot contours
+____________________
+ 
+[1]  Alternatively you could use the output-device command to
+     reset the output device, but note that in this case the
+     setting remains in force until another output-device.
+the extra ',,' terminates the input list. Three dashed
+contours will now appear on the screen. We could have achieved
+the same result by typing:
+ 
+      linear-contours -0.0015,0.0005,0.015,no
+      plot contours
+ 
+and the default then is to plot negative contours as dashed.
+Logarithmically spaced contour levels can be specified with
+log-contours -- for each positive level a negative level will
+be plotted automatically.
+ 
+Having got the plot you want you decide a copy on the ANADEX
+would be useful: to do this type
+ 
+      end-plot
+      go-plot
+ 
+and reply '/ANADEX' in response to the prompt asking for an
+output device. This will produce an A4-page size plot -- to
+get a double-sized plot use the '/BIG ANADEX'
+                                     _
+specification. [2] Alternatively, you decide that you want to
+look at the region -25, 0, 25, -5; in this case we could end-
+plot but as you don't want to change output device you can
+just say
+ 
+      next-frame
+ 
+and then reset the UV-region with:
+ 
+      set-uv -25,0,25,-5
+      go-plot
+ 
+the final go-plot will draw the plot with the same contour
+levels. If the levels were incorrect you could have started
+again by typing:
+ 
+      reset-levels
+ 
+and then inputting some new contour levels. Having drawn the
+plot on the screen you decide that you would like to know the
+position of the peak on the map, simply give the command
+ 
+      cursor-position
+ 
+the cursor will appear on the plot: position the cursor using
+the arrow keys on the terminal (or the 'joy-stick' on the
+LEXIDATA) and press any printing character (except 'q' or 'Q')
+when the cursor is in the correct place -- on your terminal
+will appear the RA/DEC of the cursor position, the nearest
+pixel (IU, IV) and the map value at the cursor location
+(interpolated if not exactly at a grid point).
+____________________
+ 
+[2]  Some useful device specifications are: /PERICOM; /DACOLL;
+     /BBC; /LEXI; /PS; /ANADEX; /BIG ANADEX. Most of these can
+                                    _
+     be abbreviated to three letters. The /PS option is for
+     POSTSCRIPT, you should specify this in conjunction with a
+     file name, e.g. plot-file:psf/ps. This may be sent to the
+     laser printer.
+Grey-scales are an excellent way of displaying certain types
+of data, for instance spectral index plots, and make full use
+of the LEXIDATA. They are very easy in Anmap, the following
+will produce a grey-scale plot on the ANADEX:
+ 
+      set-map 1
+      set-uv-range -20,20,20,-20
+      grey-scale on 0.0, 1.5
+      go-plot /ANADEX
+      end-plot
+ 
+where black = 1.5 and white = 0.0. [3] To overlay contours on
+top of a grey-scale on the LEXIDATA:
+ 
+      set-map 1
+      grey-scale on 0.4, 1.5
+      go-plot /LEXI
+      linear-contours 0.4, 1.5, 0.1
+      plot contours
+ 
+If the output were being directed to a hardcopy device you
+would now need to add an end-plot to make the output appear.
+ 
+The colour/grey-scale can be changed interactively on the
+LEXIDATA using the TV-fiddle command. To do a simple display
+on the LEXIDATA of an image you can use TV-load (in fact is it
+a simple procedure) which combines the above sequence of
+commands to speed up your working.
+ 
+When you get used to using the program you may like to alter
+the type of plot you produce. You can change the font and size
+of characters used in the plot or you can choose to annotate
+the frame with U and V rather than RA and DEC coordinates. The
+style of the plot is controlled with options of the set-style
+command. RA/DEC or U/V grids may also be drawn and the default
+action of pips being drawn may be turned off or replaced by
+UV-pips -- separate set-... commands exist for these
+operations.
+ 
+If you want to stick to one output device then it can be a
+good idea to use the output-device command to save quite a bit
+of typing. Another useful feature is the ability to segment
+the screen into 4 or 9 smaller "screens" in each of which you
+can draw a separate map. To move between them use the next-
+frame command (the end-plot command will always start the
+screen afresh). In this way you can have plots of different
+sources or frequencies on the screen for easy comparison; you
+may like to ask for larger mark sizes in this case so that you
+can read them easily. It is also possible to plot two maps on
+the same frame, perhaps using dash and solid contours for the
+different images; you have to plot them in the same UV window.
+This is the overlay-map facility.
+ 
+Complicated plots can be built up using the graphics overlay
+facility which enables plots to be positioned anywhere on the
+screen (or paper) and to be of any size -- other Anmap
+____________________
+ 
+[3]  Note that the lowest level is white on the ANADEX and
+     black on the LEXIDATA.
+commands which also produce graphical output can be used with
+this facility as well. Other commands which produce graphical
+output (e.g. map-histogram, slice ) usually cause the screen
+to be cleared and the new plot to appear -- this can be rather
+inconvenient if you have just finished a large plot. The
+graphics-overlay-mode will prompt you for where the new plot
+is to go -- the coordinate is such that the bottom left-hand
+corner of the screen is 0.0, 0.0 and the top right hand corner
+is 1.0, 1.0.
+ 
+ 
+ 
+1.5 Using the CURSOR
+____________________
+ 
+Anmap has many interactive graphics facilities -- almost all
+commands can interact in some way with the graphics display if
+you want them to -- specifically in the reading of positions
+and defining UV-windows.
+ 
+To get started enter the map-display sub-system and use the
+normal commands to display your map on an interactive graphics
+terminal (e.g. a PERICOM, DACOLL, SELENAR, LEXIDATA or even a
+BBC -- although the last is very limited). Only one special
+action is required: do not end your plot with the end-plot
+command, but rather leave it active.
+ 
+The simplest way you can use the plot is then to read a point
+value, UV-position and 1950.0 position by typing cursor-
+position -- this is a basic-command and can be called at any
+time. You can then position the cursor and its location and
+map value at that point will be written on the text screen.
+The value of the map is interpolated using sinc-interpolation
+to the cursor position.
+ 
+The second, and more powerful feature, is the ability to
+define any UV-window with the cursor. Many commands request a
+UV-range or UV-window or even a UV-position. In all cases when
+the prompt appears on the screen, instead of typing in a UV-
+range (which is of course a perfectly valid response) just
+type CURSOR (C is sufficient) and the cursor will appear on
+the screen. Move the cursor to the required UV location and
+type any printing (A-Z, 0-9) character except 'Q' or 'q'. To
+define a UV-window or a UV-range mark opposite corners of the
+UV-window successively. Nothing will be drawn on the plot. If
+you want to abandon the cursor input (equivalent to typing ESC
+normally) then type 'Q' or 'q' -- ESC will not work and may
+cause unfortunate problems.
+ 
+One warning: do not press CARRIAGE RETURN to make the cursor
+disappear -- this has unpredictable results on some devices
+and may well 'hang' some terminals.
+ 
+ 
+ 
+1.6 CLEANing Your Maps
+______________________
+ 
+A CLEAN sub-system is available with Anmap -- to enter it just
+type Clean and the prompt will change to Clean>. The first
+command you will need is set-map to define the map and beam to
+use for CLEANing. You can set control parameters for the CLEAN
+using the set-XXX commands and inspect their current values
+with display-options. When you are happy with all the values
+you start the CLEAN running either interactively at the
+terminal or as a detached process. The most useful things to
+change are:
+ 
+ 
+set-map             name of map to clean (you will need to use
+                    this command before setting windows or
+                    running CLEAN). The map and beam must both
+                    be in the map catalogue.
+ 
+set-search-window   set up the search window to look for
+                    maxima. Up to nine windows may be
+                    specified and the cursor may be used in
+                    the normal way to mark each UV-window.
+ 
+set-clean-beam      set sizes of the clean beam. This will
+                    normally only be necessary if for some
+                    reason the beam map has on it regions
+                    which should not be included in the beam
+                    -- e.g. if the beam map is in fact a point
+                    source from a nearby region of sky.
+ 
+set-iteration-limit set the limit on the number of iterations.
+                    This should normally be set to a moderate
+                    number, a few hundred to one or two
+                    thousand, especially if the flux limit is
+                    not set carefully.
+ 
+set-flux-limit      set the limiting flux. This will
+                    determine, together with the iteration
+                    limit, when CLEAN stops.
+ 
+set-clean-beam      set the size of the CLEAN (restoring) beam
+                    in arcseconds. This is the beam with which
+                    the residuals from the CLEANing process
+                    are convolved when they are added back
+                    into the residual map.
+ 
+ 
+A number of commands exist to run CLEAN and monitor its
+progress.
+ 
+display-options     display the current settings of CLEAN
+                    parameters and results of any previous
+                    CLEANs.
+ 
+make                run CLEAN in batch, i.e. as a detached
+                    process. A batch job is submitted
+                    automatically -- the batch queue may then
+                    be inspected with the list-queue-entries
+                    command in the batch sub-system. When the
+                    job is completed you will be sent a
+                    message which you will receive when you
+                    next use Anmap or Postmortem.
+ 
+go-clean            run clean on line at the terminal -- this
+                    gives you the options of interrupting the
+                    CLEAN by pressing ESC. The CLEAN is then
+                    terminated at the stage it has reached and
+                    no data will be lost. You can then inspect
+                    the CLEANed and residual maps and decide
+                    if further CLEANing is required, if it is
+                    then just restart the CLEAN by typing go-
+                    clean again -- the iteration limit refers
+                    to the number of iterations to perform in
+                    this CLEAN cycle not in total. The maximum
+                    size of on-line CLEANs is restricted to
+                    256x256 pixels for both the map and the
+                    beam.
+ 
+help                can be used to obtain more information on
+                    specific items related to CLEAN or more
+                    generally.
+ 
+If running CLEAN on line then you can interrupt the CLEAN by
+pressing ESC; wait for a few moments, then when prompted type
+Q to finish the CLEAN or N to continue the process.
+ 
+The maps are cleaned and restored automatically. CLEAN creates
+a number of files all with different type: for example if you
+started with 3C111-f5-map in the catalogue as the map to
+clean, you will get the following files:
+ 
+ 
+    3C111-f5:RESI      --    residual map.
+    3C111-f5:CLN       --    CLEANed map.
+    3C111-f5:CCMP      --    CLEAN components file.
+ 
+ 
+and the residual and cleaned maps will be added to your map
+catalogue. The root name for these files, in this example
+3C111-F5 is known as the 'generic-name' for the CLEAN.
+ 
+The :CLN map is the CLEANed and restored map. The :RESI file
+is the residual map and is what was left when CLEAN
+terminated. The :CCMP map contains a list (in map format) of
+the point peaks that CLEAN has found during the deconvolution
+of the image. The standard Anmap utilities can be used to
+display and analyse this map. The :CLN map is the :RESI map to
+which has been added (restored) the peaks listed in the :CCMP
+map convolved with the clean-beam (which you control with the
+set-clean-beam and set-position-angle commands). The :CLN map
+is added to your catalogue, the other maps reside on disc and
+you must add then to your catalogue explicitly if you want to
+look at them or perform other processing.
+ 
+To initiate a CLEAN run therefore, enter the CLEAN sub-system
+and define a map to clean with the set-map command. Then have
+a look at the current values of the CLEAN settings:
+ 
+      display-options
+ 
+A table will appear on the screen which you should examine
+carefully and decide what needs changing. Suppose you felt the
+default clean-beam was not appropriate (something which often
+occurs) then give a new beam size:
+ 
+      set-clean-beam 70.0,,
+Note that CLEAN will correctly choose the beam in the 'V'
+direction using the information concerning map projection
+contained in the map redtape and assuming the telescope is
+East-West. To set the beam appropriate for, say, the VLA you
+will need to say:
+ 
+      set-clean-beam 2.0,2.2
+      set-position-angle 34.0
+ 
+where you have now defined both dimensions of the beam and
+specified that the ellipse is to have its major axis in a
+direction making an angle 34.0o from North towards East.
+ 
+The other parameters you will almost certainly have to set are
+the iteration and flux limits (beware the latter as it is
+sensible for the RT telescope not the CLFST!).
+ 
+      set-iteration-limit 500
+      set-flux-limit 0.2
+ 
+As a guide to choosing these parameters it is useful to plot
+your 'dirty' map (the original data) and decide the lowest
+believable contour you would like to properly represent --
+this gives you a good idea what the flux-limit should be. In
+many cases it will not be necessary to have such a low flux
+limit; for instance, if you are just trying to remove the
+side-lobes and grating responses from the bright sources, the
+flux-limit need only be set at such level as to achieve the
+required dynamic range. If, however, you are using CLEAN to
+deconvolve fully a map of an extended object you should aim to
+include all of the flux in the deconvolved image -- if you
+don't then the low-level (usually extended) structure on the
+map will have a slightly different beam shape from the
+emission you have CLEANed; this may be important in cases
+where accurate fluxes are required in extended regions -- for
+instance in spectral index work. It is more difficult to
+determine the number of CLEAN iterations required. In
+practice, although the flux-limit is the more sensible
+parameter to set to determine when CLEAN should terminate, the
+limited computing power available often means CLEAN is
+terminated at a finite number of iterations -- you may then
+look at the residual map (using map-display ) to decide how
+far from the ideal flux limit you actually are. If further
+iterations are required it is very easy to restart CLEAN,
+simply type go-clean or make as appropriate. [4] For maps of
+say 256x256 an initial CLEAN run of say 500 iterations will
+give you a good idea of how the image is CLEANing; you may
+then like to do a very deep CLEAN (say 5000 iterations) if the
+quality of the data (and what you want from it) demands it.
+ 
+A useful feature to drive CLEAN towards a good solution, as
+well as speed the process up considerably, is to define a
+number of search windows (up to nine). These can very usefully
+be set using the cursor:
+____________________
+ 
+[4]  The iteration limit will apply to each CLEAN cycle and is
+     not cumulative so it is quite valid to set it to some
+     small value, say 250 and repeatedly run CLEAN on line and
+     then display the results.
+      set-search-windows 3
+      Search-window 1 [-128, 127, 128, -127] : C
+ 
+The cursor will appear on the screen -- mark opposite corners,
+windowing the true source as well as possible, but being
+careful to include any structure for which you are unsure
+whether it is real or not. Windows can be a powerful way a
+forcing CLEAN to avoid problem areas. For example, you can
+choose windows so as to explicitly differentiate between real
+source and side-lobes. As a guide, if in any doubt include the
+structure in the CLEAN rather than exclude it. To continue
+with our example setting the second and third search windows:
+ 
+      Search-window 2 [-128, 127, 128, -127] : C
+      Search-window 3 [-128, 127, 128, -127] : C
+ 
+Check once again with display-options and, if you are happy,
+then run the CLEAN on line by typing go-clean or in a job with
+make. You should run all but very small CLEANs in a job.
+ 
+To see how the job is progressing in the queue you can use the
+commands available in the batch-system (the sub-system to
+control the batch queue). The most important commands are set-
+batch-queue and list-queue-entries. You will need to use the
+set-batch-queue if you want to look at the CLEAN queue from
+within Postmortem -- if you are inside the clean sub-system
+and enter the batch sub-system the default for the batch queue
+will be set to CLEAN. The list-queue-entries command will show
+how your job is getting on, when it is running 'Active' will
+appear after the job name. On occassions you may find that no
+jobs are active, this probably means that the computer is busy
+processing other work and has not started up CLEAN; in this
+case use the list-system command to see what is actually
+running, if you are not in the queue something is wrong --
+seek advice!
+ 
+When the CLEAN has finished you have a permanent record of
+what happened in the file CLEAN:LOG which may be typed or
+printed. You will also receive a message the next time you use
+Anmap or Postmortem telling you the job has completed. This
+CLEAN:LOG file will be added to each time a batch job runs so
+you may need to edit it or delete it from time-to-time. A
+record of how CLEAN worked is also held in the redtapes of the
+maps created by CLEAN. To examine this record of how CLEAN
+worked use the set-map command to set the map name to the
+'generic-name' (e.g. 3C111-F5 in our example) and then the
+display-options command will display information on how CLEAN
+finished as well as the parameter values used will be
+displayed. This is easy to do if running on-line as there is
+no need to do an extra set-map command.
+ 
+More specialist CLEAN options can be easily obtained with
+other commands.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1.7 General Map Analysis
+________________________
+ 
+Map Analysis is the main purpose of Anmap and in the Map-
+Analysis sub-system a number of different map utilities are
+provided. In this section a brief introduction to some of the
+facilities available is given and it may well be the case that
+the particular routine you need to use is not described here,
+please refer to the detailed description in the manual or to
+the online documentation available via help. To get started
+just type map-analysis and the prompt will change to Map-
+Analysis>. Basic commands are of course available and those
+used to access the map-catalogue.
+ 
+ 
+1.7.1 Making New Maps From Old
+1.7.1 Making New Maps From Old
+ 
+A number of routines will make a new map from an old one. As
+an example suppose you have a 512x512 map, but you are in fact
+only interested in the source located in the inner 64x64
+region. It is wasteful to keep manipulating the entire image
+so you decide to reduce its size -- the command to use in this
+instance is shrink. Suppose the map you wish to 'shrink' is in
+catalogue entry number 1, and is called (in full in the
+catalogue system) 3C219-MAP-MAPPER then
+ 
+      shrink 1,-32,31,32,-31
+ 
+will have the desired affect as shrink takes the map-catalogue
+entry for the input range and the output UV-range as its
+arguments. Of course shrink will prompt for all the
+information required if you do not supply it on the command
+line. Alternatively you could have referred to the map by
+name:
+ 
+      shrink 3c219-map,-32,31,32,-31
+ 
+where we have used the minimal-matching facilities used
+throughout Anmap.
+ 
+The output map will be placed in the lowest unused catalogue
+entry, and if there had not been anything else in the
+catalogue this will just be catalogue-entry number 2 -- it
+would be a good idea to try a list-catalogue at this stage to
+check what you have got. Note that the output will look
+something like:
+ 
+1   3C219-MAP              MAPPER       512 x 512
+2   3C219-MAP              SHRINK        64 x 64         T
+ 
+Two things should be noticed: the first is that the program
+which was last used to generate the map is named (in our case
+SHRINK specifying the shrink command) and the stack entry is
+marked as 'temporary' meaning you have created a new map which
+has been written to an anonymous file on disc -- the data are
+perfectly secure and will not be lost even if you leave Anmap.
+The full name of the map as far as Anmap is concerned is
+3C219-MAP-SHRINK and you can refer to this map from now on
+either by its catalogue-entry number (2) or its catalogue
+name.
+ 
+You may wish to change this map to be a permanent map on disc
+with a sensible file name understood to the filing system: to
+do this use the export-permanent-map command in the map-
+catalogue sub-system:
+ 
+      map-catalogue export-permanent-map 2 3C219-SHRINK:MAP
+ 
+The default file name would have clashed with that of the
+original map and therefore we have supplied a new name for the
+file. On completion of this command you will still be in the
+map-analysis sub-system: if you type map-catalogue on a line
+by itself then you will enter the map-catalogue sub-system and
+the prompt will change to Map-Catalogue> and you have
+available the full range of map-catalogue commands. To return
+to the map-analysis sub-system from the map-catalogue sub-
+system simply type exit.
+ 
+Other commands which make new maps from old are:
+ 
+add-maps            adds two maps together with the same or
+                    different different weights.
+reproject-map       reprojects a map to another coordinate
+                    system -- it can be used to change the
+                    sampling of the map as well as rotating
+                    the image on the computing grid -- more
+                    general reprojections are available.
+shrink-map          reduce the size of a map.
+smooth-map          convolve a map with a gaussian beam.
+mask-map            mask one map with another.
+scale-map           apply a scaling and zero-level correction
+                    to a map.
+zap-map             set regions of a map to a specified value
+                    (BLANK or ZERO usually).
+change-blank-values change the values of BLANK to some other
+                    value in the map.
+ 
+ 
+A second class of commands which produce output maps are those
+to work on multi-frequency and polarization data:
+ 
+alpha-map           makes a spectral index map from two input
+                    maps at different frequencies.
+chi-map             make a position-angle map x from a Q and U
+                                              x
+                    map.
+mI-map              make a map of polarized intensity mI = (Q2
+                    + U2)1//2.
+PERC-map            make a map of percentage polarization
+                    100 x mI//I.
+makei               makes an I map from a linear combination
+                    of a I+Q map and a Q map.
+                          _
+This is not a complete list and you should refer to the on-
+line help documentation for a complete list of available
+commands.
+ 
+ 
+The second class of commands with the exception of makei
+produce two output maps -- the maps as specified by the
+command name and an error map. The two output maps occupy the
+lowest unused entries in the catalogue and can be identified
+with the list-catalogue command.
+All the map utilities prompt for the data they need and are in
+general fairly easy to drive -- you are referred to the
+appropriate sections in help for more details. The remainder
+of this section introduces some of the problems you can
+attempt to solve using these programs.
+ 
+ 
+ 
+Adding Separate Observations of the Same Field
+ 
+If you have made two separate observations of the same field,
+it is very often the case that you want to average them to
+obtain an improvement in the signal-to-noise. Suppose you have
+the two maps in catalogue entries 1 and 2. The following will
+add the maps with the correct weight:
+ 
+      add-maps 1,0.5,2,0.5
+ 
+the output map will then be in catalogue-entry number 3. One
+or two complications may arise however. Suppose the second map
+has a small zero level offset from the first, this can be
+corrected using scale-map which applies a scaling:
+ 
+     output-map   =  input-map x scale   +   zero-level 
+ 
+so just type
+ 
+      scale 2,1.0,0.050
+      add-maps ,,0.5,1,0.5
+ 
+to add a 50 mJy zero-level correction to catalogue-entry 2.
+Note that the output from scale is in a new catalogue entry
+(probably number 3), but we have used the fact that the output
+map from the scale command is then the default map which is
+taken as input to the add-maps command.
+ 
+Finally, if the second map has a slightly different map centre
+from the first this, can be corrected using reproject-map:
+take all the defaults except those requesting a change in map-
+centre, answer yes to the relevant question and then type in
+the RA and DEC of the map centre of catalogue entry number 1
+-- you will need to call the new map centre by a name, but
+this is only for the redtape and can be ignored.
+ 
+ 
+ 
+Making a Spectral Index Map
+ 
+To make a spectral index map, you require two maps at
+different frequencies which we will assume are in catalogue
+entries numbers 1 and 2 respectively. You will first need to
+determine the noise on the map: to do this use either scan-map
+or noise-map both of which are described in the next section,
+then simply use the spectral index program -- alpha-map:
+ 
+      alpha-map 1,0.001,3, 2,0.002,3
+ 
+the data supplied to the program are, for each map, the noise
+and a gate which works such that only pixels which satisfy:
+ 
+ 
+                 map-1  >  gate-1 x noise-1 
+                 map-2  >  gate-2 x noise-2 
+ 
+ 
+will be included in the output. The output map will be in
+catalogue entry number 3 (if no other maps were in the
+catalogue) and in catalogue entry number 4 will be the error
+map -- this is simply the error in the spectral index at each
+point given the noise on the map.
+ 
+A common problem when trying to compare maps is that they do
+not have the same map centre -- this may be due either to
+different observations actually having different phase
+centres, or to some other error in pointing or software. To
+diagnose the problem the overlay-map facility in the map-
+display sub-system may prove useful (see below in the section
+on advanced plotting) and may be corrected using reproject-map
+or shift-map. The former can be used to shift the map centre
+to a new RA and DEC (you will have to change offsets in
+acrseconds to a new map centre position) or to rotate a map:
+errors in the map redtape may be corrected using edit-redtape;
+the shift-map command can be used just to shift the map
+relative to the computing grid and is considerably faster than
+the reproject-map command for this simple operation.
+ 
+ 
+ 
+Reprojecting Maps
+ 
+In both the two examples considered so far the possible need
+to reproject the map to another coordinate system or grid has
+become apparent. Here we describe briefly the facilities of
+reproject-map -- a very general facility which can be used in
+a variety of ways. Reproject will prompt for the following in
+turn:
+ 
+ 
+Map                      this is the catalogue entry of the
+                         map to reproject.
+ 
+Projection type          the projection type of the map is the
+                         type of coordinate system used to
+                         represent the map. The types
+                         reproject knows about are sky,
+                         equatorial (telescope coordinates),
+                         tangent-plane. Sky coordinates and
+                         tangent-plane are very similar for
+                         small maps near to the phase centre
+                         -- tangent plane is closest to the
+                         projection of an optical plate.
+                         Equatorial coordinates are the
+                         natural coordinates of the telescope
+                         and are really the only sensible ones
+                         for large areas of sky. You can
+                         therefore change the projection from
+                         equatorial to sky if you want your
+                         map to 'look' more like the actual
+                         image on the celestial sphere.
+ 
+Epoch of projection      due to precession the coordinate
+                         system of the celestial sphere
+                         changes. We use either epoch of
+                         observation coordinates or 1950.0
+                         coordinates at a standard reference
+                         date. For comparison of maps made at
+                         different epochs it is essential that
+                         they are reprojected to the same
+                         reference date -- usually 1950.0;
+                         this is especially important at high
+                         declinations where differential
+                         precession across even a small area
+                         of sky can be significant.
+ 
+Sampling in U            the sampling of the map in arcseconds
+                         per grid point can be changed -- you
+                         supply the U coordinate value and the
+                         V coordinate is determined by the
+                         projection type you have already
+                         chosen.
+ 
+Position-angle
+or Skew-angle            the map may be rotated by changing
+                         this parameter. For a sky coordinates
+                         map you will be asked for the
+                         position angle of the new V direction
+                         of the output map. If the map is in
+                         equatorial coordinates this
+                         description is not appropriate
+                         (especially for wide fields) so you
+                         are asked for the skew-angle, the
+                         angle between the V direction and
+                         North through the phase centre --
+                         this is then most conveniently
+                         expressed in terms of hours-minutes-
+                         seconds.
+ 
+UV-range                 the UV-range on the output map.
+ 
+Do you want to change
+the map-centre           if you reply yes you will be prompted
+                         for (a) a source name for the new map
+                         centre -- if you supply a source in
+                         the internal list (basically 3C) then
+                         the map will be shifted to this
+                         position. For a general shift supply
+                         any name and you will then be
+                         prompted for (b) an RA and DEC of the
+                         new map centre.
+ 
+Convolution-type         the possible convolution types used
+                         in interpolating the old map onto the
+                         new grid are Gaussian x sinc or
+                         linear. Although the former is more
+                         accurate the latter is considerably
+                         faster.
+ 
+Precession-type          can be either fast or slow. The
+                         former does not use the accurate
+                         precession formula when performing
+                         the trigonometry to determine the
+                         correct location for a pixel on the
+                         output map -- this is adequate in a
+                         number of cases, for instance simple
+                         rotations or change of sampling. It
+                         is never adequate for changing the
+                         epoch of projection. There are
+                         considerable speed savings in using
+                         the fast routine.
+ 
+ 
+The general rule is: to obtain the default -- no change from
+the input map -- type return. You may want to change to fast
+precession-type and linear-interpolation for simple
+reprojections, especially if they are only for cosmetic
+reasons. For reprojections used in multi-frequency analysis we
+recommend fast precession for rotations and resampling, but
+use of the gaussian x sinc interpolation formula for accuracy.
+ 
+ 
+1.7.2 Statistics of Maps
+1.7.2 Statistics of Maps
+ 
+Two commands provide useful statistics on a map:
+ 
+Scan-Map can be used to scan a specified UV-region of the map
+for the following:
+ 
+ 
+  Maximum and Minimum and the associated pixels
+  Mean and Standard deviation
+ 
+ 
+This may be sufficient information in some cases, however the
+noise-map command can be very useful if you want a better
+determination of the noise in a map especially in crowded
+fields.
+ 
+Noise-map performs a proper noise analysis on a map. The map
+is divided into a number (up to 16) UV-windows. In each window
+the mean and standard deviation are found, pixels are then
+rejected if they differ by more than a specified number of
+standard deviations from the mean (this clips out point
+sources) and the mean and standard deviation recalculated.
+This process is then repeated and the final mean and standard
+deviation reported to the user. You will need to supply a map-
+catalogue-entry, a full UV-window and the number of sub-
+windows in U and V. Additionally you will be prompted for a
+gate -- this is defined so that points whose absolute value is
+more than:
+ 
+                     gate  x  current SD 
+ 
+are clipped.
+ 
+The output from noise-map is written to the screen in the form
+of a table. A number of ways exist of getting hard-copy
+output, the simplest being to use the log file facility. A log
+file may be opened and a copy of the output of many commands
+can be written to it -- noise-map and scan-map are two such
+commands.
+      log-utility open,,
+ 
+will open the log-file (the default file name is analysis-
+log:symb on your default -- not MAPS -- directory). A copy of
+the output written to the screen is sent to the file -- if an
+existing file is opened the output is appended.
+ 
+      log-utility close,,
+      file-system print-file (user-name)analysis-log:symb
+ 
+will print the output from the log on the ANADEX line-printer
+-- note you have to stop output to the log with the log close
+command. You can re-open output to the file just by typing:
+ 
+      log-utility open,,,
+ 
+Other information can be added to the file:
+ 
+      log-utility title 1
+ 
+will add the title of map in catalogue entry 1 to the file --
+useful to keep a track of which maps are which.
+ 
+      log-utility comment   This is a line of text
+ 
+will add the text you type to the log file as a comment.
+ 
+The output of noise-map is also written to the general results
+file -- the use of this facility is described later in this
+tutorial.
+ 
+ 
+1.7.3 Flux on CLEANed Maps
+1.7.3 Flux on CLEANed Maps
+ 
+If you have deconvolved images, such as those produced from
+CLEAN or MEM, it is possible to calculate the flux from
+sources, or regions of an extended source without model
+fitting. Three commands are available in the map-analysis sub-
+system:
+ 
+ 
+add-flux
+strip-flux
+ring-flux
+ 
+ 
+Of these, add-flux provides a simple to use means of finding
+the flux in a specified UV-window while strip-flux can be used
+for a regular array of regions or ring-flux for integrals over
+circular or elliptical regions. The output from add-flux is
+just to the screen (and the log-file if it is open) while that
+from the other two commands is placed in the standard results
+file (see Section 2.8) for further processing.
+ 
+To run add-flux just enter the map-analysis sub-system and
+type
+ 
+      add-flux 1, -10,10,5,-5,0.001
+ 
+to find the flux for the map in catalogue-entry number 1 in
+the UV-range -10,10,5,-5: only points with pixel values whose
+absolute value is greater than 0.001 will be included in the
+sum. If you have a current plot of the map in catalogue entry
+number 1 then you could use the cursor to define the UV-
+window:
+ 
+      add-flux 1
+      UV-range [-127,128,128,-127] : CURSOR
+      Gate [0.0] : 0.001
+ 
+and the cursor will appear on the screen. Use the arrow keys
+on the terminal to position the cursor at opposite corners of
+the UV-window. When you are happy with the position of each
+corner type any printing character (except 'Q' or 'q' which
+will break out of the routine). In either case the flux will
+be written to the terminal and to the log file if it is open
+-- two numbers are printed one of which is simply the sum of
+numbers on the image above the gate (in an absolute sense) and
+the other this sum multiplied by the flux-normalization factor
+for the CLEAN beam of your map -- this number is present in
+the redtape of the map.
+ 
+More complicated cases can be dealt with by using strip-flux.
+Options exist to find the flux in a regular array of UV-
+windows, or you can input a set of UV-ranges either by hand or
+with the cursor. The routine has some advantages over repeated
+use of add-flux as it is possible to perform an error analysis
+and the results are written to the results file for additional
+processing. Strip-flux will prompt for the following in turn:
+ 
+Map-entry                the map catalogue entry of the map to
+                         analyse.
+Gate                     a gate: only pixels which satisfy
+                         | "pixel-values"| > "gate" will be
+                         included in the sum.
+Perform noise estimate   If you answer yes to this question
+                         you will be prompted for some further
+                         information to enable the routine to
+                         determine the noise in each of your
+                         regions:
+                         Size of beam -- number of pixels
+                         covered by the beam,
+                         Noise -- on the map in external
+                         units.
+Flux-normalization       will be prompted for if the value in
+                         the map redtape is unset (i.e. set to
+                         zero). This is the FLXNRM parameter
+                         in the redtape and is the 'factor for
+                         converting sum of numbers to flux'
+                         which is calculated by the restoring
+                         part of CLEAN. If this parameter is
+                         incorrectly set you can reset it in
+                         the edit-redtape sub-system.
+Number of regions        is the number of UV-regions you wish
+                         to calculate the flux in -- they must
+                         be rectangular; three possibilities
+                         exist:
+                         >  0 = input regions individually
+                         0 = regular grid
+                         -1 = existing regions
+                         If you request a positive number of
+                         regions you will be prompted in turn
+                         for each UV-window in a similar way
+                         to add-flux and they may be specified
+                         with the cursor by replying 'CURSOR'
+                         to the prompt. Choosing 0 will lead
+                         to further prompts to establish the
+                         regular grid:
+Width in U/V             width of each strip in the U and V
+                         directions,
+Number in U/V            number of strips in the U and V
+                         directions,
+Start pixel U/V          specify the bottom left-hand corner
+                         of the complete regular UV grid.
+                         The routine will fault you if there
+                         are more regions specified than it
+                         can handle (currently 100) or if the
+                         regular grid would fall off the edge
+                         of the map.
+                         The third option (-1) requests the
+                         last set of UV windows, this provides
+                         a convenient mechanism to perform an
+                         analysis on more than one map (e.g.
+                         different frequencies for the same
+                         source). The UV-window list is lost
+                         when you exit Anmap.
+ 
+ 
+The routine will now calculate the flux in each region -- the
+results will be written to the screen in the form of a simple
+table and to the log file if it is open. In addition the
+results are written to the general results file for analysis
+using the results-analysis sub-system. As an example, you can
+obtain a UV-overlay plot of these values in the following way:
+we assume you have run strip-flux successfully and that a
+current plot of the source is open and displayed on the
+graphics device:
+ 
+      results-analysis
+      UV-overlay
+ 
+The columns present in the results file will now be listed,
+the first four are the UV-windows, the fifth column is the
+flux, which is what we want so:
+ 
+      Column to plot [ ] : 5
+      Format description [(1PE12.2)] : (F10.2)
+ 
+We request a FORTRAN format for the numbers of F10.2.
+ 
+A set of rectangles will now appear on the plot -- these are
+just the UV-windows in which you have calculated the flux. In
+each rectangle a number will appear in the format you
+requested -- this is the flux in the UV-region as calculated
+by strip-flux. The size and font of the text plotted may be
+controlled using the set-style TEXT command of the map-display
+sub-system.
+ 
+The final command to calculate the flux on a map which will be
+described here is ring-flux which like strip-flux outputs its
+results to the standard results file. Ring-flux calculates the
+flux in elliptical annuli about a central position. You will
+have to supply the following:
+ 
+Map                      map-catalogue entry of the map to
+                         analyse.
+Number of annuli         the total number of annuli.
+Annulus radius           radius of each annulus in arcseconds
+                         (the default is chosen so that the
+                         annuli are approximately three pixels
+                         wide). Note that considerable errors
+                         may be introduced into the sum if the
+                         annuli are too narrow in terms of
+                         pixels -- the routine is fairly naive
+                         in deciding how much flux to allocate
+                         to each annulus. The simplest way
+                         round this problem is to make a map
+                         with greater oversampling.
+Eccentricity             of the ellipse; setting this
+                         parameter equal to unity will
+                         integrate in circular annuli.
+Position Angle           of the major axis of the ellipse
+                         measured in degrees from North
+                         through East. The default is 0.0.
+Centre                   of the ellipse -- this should be
+                         specified in UV coordinates and may
+                         be defined using the cursor in the
+                         normal way -- reply CURSOR to the
+                         prompt.
+UV-range                 this is just the UV-range of the map
+                         to use in the analysis. Only flux
+                         within both this UV-range and a given
+                         anulus will contribute to the sum.
+ 
+The results of the analysis are written to the standard
+results file. To produce a plot of say flux in an annulus
+against the mean radius of the annulus you can use the plot
+options of results-analysis in the following way (we assume
+you have successfully used ring-flux):
+ 
+      results-analysis
+      plot
+      Column for x-axis [1] : 1
+      Column for y-axis [2] : 2
+ 
+This uses the mean radius and flux columns
+ 
+      Range in x [0.0,25.0] : CR
+      Range in y [0.0,0.02] : CR
+ 
+the actual ranges on the data will have been displayed to help
+you
+ 
+      Plot as single points [yes] : y
+      Symbol for plot [1] : CR
+      Title [Ring-Flux output on July 1 1988] : ... some text ...
+ 
+The plot will now appear on the screen -- this may be plotted
+as an overlay to the current plot if the graphics-overlay-mode
+has been enabled in the map-display sub-system.
+1.8 Analysing the Results File
+______________________________
+ 
+Certain commands in ANMAP write their results to a standard
+format file -- the results file. A sub-system, results-
+analysis is provided to perform simple analysis on these data
+either printing or plotting in a variety of formats. In the
+previous section examples of analysing the results from strip-
+flux and ring-flux were given and you are referred to this
+section for details. Here we list the commands which write to
+the results file and give an example of using the print
+facility.
+ 
+The facilities provided by results-analysis are:
+ 
+Saving, and recalling    saving and the recalling standard
+                         form results files.
+Plot                     plotting as a graph.
+Print                    printing to a file, the screen or the
+                         printer.
+UV-overlay               overlaying results on a plot of the
+                         source.
+ 
+The commands which currently write to the results file are
+(with useful options to analyse the results):
+ 
+strip-flux              print, plot, UV-overlay
+ring-flux               print, plot
+noise-map               print, plot, UV-overlay
+ 
+As an example of the commands not covered we will consider
+printing the output from noise-map to the printer, we will
+assume that noise-map has been run successfully, so enter the
+results analysis system:
+ 
+      results-analysis
+      save noise-results:symb
+ 
+where 'noise-results:symb' is the name of the file you have
+chosen to save the current results to. We start by saving our
+results to a permanent disc file called 'noise-results:symb'
+ 
+      print
+ 
+a list of columns in the output file will be listed
+ 
+      Columns to print [ ] : 1-4,5
+ 
+We will print columns 1,2,3,4 (the UV-ranges) and column 5 the
+standard deviation in the UV-window
+ 
+      Format description [(1X,1P10E12.3)] : (1X,4F6.0,' ' sd= ' ',F12.3)
+ 
+we have to supply a valid FORTRAN format control description
+for the output -- all quotes must be supplied as pairs of
+single quotes (a ' followed by a second '). Note that all data
+are treated as REAL*4 in the file, and that there is only
+limited checking for the validity of what you type -- we have
+not written a FORTRAN compiler -- so please be careful. If you
+are in doubt, simply take the default. The description must be
+enclosed in parentheses.
+      Additional Title [ ] : CR
+      Output file : printer
+ 
+Finally we request output to go to the printer -- you could
+have given a file name or 'terminal' at this stage in answer
+to the prompt.
+ 
+If at some later time you wish to look at these particular
+results again we can enter the results-analysis sub-system and
+make the file you saved earlier the current results file:
+ 
+      recover noise-results
+ 
+and then continue as above. Note that any contents of the
+results file will be lost with the recover command.
+ 
+ 
+ 
+1.9 Advanced Plotting
+_____________________
+ 
+In this section we describe some of the more advanced features
+available in the map-display sub-system; some of them may have
+already been alluded to in passing but are discussed here in
+more detail.
+ 
+ 
+1.9.1 Changing the Style of the Plot
+1.9.1 Changing the Style of the Plot
+ 
+You have a great deal of control over the appearance of the
+final plot in terms of size, shape, layout, fonts and line-
+styles used: this can be very useful when constructing plots
+for publication. Most style options are controlled with the
+set-style command which takes as an argument the 'option' to
+change.
+ 
+ 
+Examples:
+ 
+1. Change from dashed to dot-dashed contours for negative
+levels
+ 
+      set-style LINES ,,,3,,,
+ 
+2. Request that the date and program name not be written on
+the plot
+ 
+      set-style DATE off
+ 
+3. Reset defaults
+ 
+      set-style RESET
+ 
+ 
+ 
+To control whether grids and pips are to be drawn separate
+commands are provided: set-grid and set-pips. For example to
+have a plot with an RA/DEC grid but no pips then type:
+ 
+      set-pips off, off
+      set-grid on,,,,,
+the second 'off' turns UV-pips off also. Alternatively to plot
+a UV-grid marking each pixel centre:
+ 
+      set-pips off,on
+      set-grid off,on,1,1
+ 
+and a (very) closely packed grid will be drawn. The display
+options or display all commands can be used to see which
+options are currently in effect.
+ 
+ 
+1.9.2 Adding Annotations to the Plot
+1.9.2 Adding Annotations to the Plot
+ 
+Annotations may be added to the plot; by this we mean a title,
+crosses or indeed more complex designs. To add a title is
+easy:
+ 
+      add-title 3C405 I-Q 5GHz
+ 
+will add the specified text to the title line (just above the
+plot). More generally text can be written at an arbitrary
+location using the add-text command, which requires you to
+specify the location of the text as an RA/DEC position. The
+size and font used are determined by the set-style text
+command: the add-cross command is perhaps more useful as you
+can draw a labelled cross at any RA/DEC position.
+ 
+If you don't want to specify positions as RA/DEC then you
+should use the draw-on-plot sub-system. This is a powerful
+drawing system to add just about anything you like to the plot
+and is fully described in the on-line documentation for the
+map-display sub-system. As an example of its use consider
+adding a beam to the plot; this can be achieved with the
+following set of commands:
+ 
+      draw-on-plot
+      beam -120,-120,70.0,,,
+ 
+which will draw a telescope beam shape of 70" centred at the
+UV-position -120, -120 (you could have typed CURSOR instead of
+the UV-position and then have chosen the location of the beam
+by positioning the cursor using the arrow keys on the
+terminal).
+ 
+Special care is needed if you want to output your plot which
+you have carefully prepared to another device (usually a hard-
+copy device). When you enter the draw-on-plot sub-system you
+should give the save-commands command which will then save all
+your drawing commands to a file as you type them in -- these
+can then be replayed later. A full session might look like:
+ 
+      set-map 1
+      set-uv-range -120,120,120,-120
+      log-contours .2,2,,,
+      go-plot /PERICOM
+ 
+now the annotations:
+ 
+ 
+ 
+      draw-on-plot
+      save-commands
+      beam CURSOR
+      set-text-font 2
+      circle 10.0,10.0,18.0
+      text 30.0,10.0, Galaxy Extent
+      exit
+      add-cross 18 20 10.0 45 0 0 NGC 1000
+ 
+Now to change device:
+ 
+      end-plot
+      go-plot /BIG:us:ANADEX
+      add-cross no 18 20 10.0 45 0 0 NGC 1000
+      draw-on-plot
+      replay-commands
+      exit
+      end-plot
+ 
+and the output will appear on the ANADEX -- note the need to
+explicitly re-create the annotations you have added to the
+plot.
+ 
+ 
+1.9.3 Crosses Files
+1.9.3 Crosses Files
+ 
+ANMAP can plot a set of crosses on a plot which are supplied
+in a file instead of typing each one in by hand. The format of
+the file is simply:
+ 
+ 
+  RA   DEC   text to use as the label
+ 
+ 
+The text may include standard PGPLOT escape sequences and the
+style of the cross plotted can be controlled with the set-
+style CROSS command. The format of the crosses file differs
+somewhat from that used in older programs, but the file has a
+simple format and is easy to construct. To use the crosses
+file options answer 'yes' to the initial prompt in the add-
+cross command and then supply the file name for the crosses
+file -- by default your default directory not maps directory
+and a file type of ':CROS' are assumed.
+ 
+ 
+1.9.4 Using The Graphics Overlay Facility
+1.9.4 Using The Graphics Overlay Facility
+ 
+The graphics overlay facility enables the graphical output
+from commands to be added to the existing plot without re-
+drawing the whole screen. You can specify which region of the
+plot is to be used for the overlayed graphics. The coordinate
+system has the bottom left-hand corner of the screen as 0, 0
+and the top-right hand corner as 1, 1. To add a plot to say
+the bottom right hand corner type:
+ 
+      graphics-overlay on 0.5,1,0,0.5
+ 
+Any command producing graphical output will now plot their
+graph etc. in this restricted region of the screen. For
+example to plot an enlargement of a feature in a map in the
+bottom right-hand corner of the plot the following will
+suffice (assuming the main plot is drawn):
+ 
+      graphics-overlay on 0.5,1.,0.0,0.4
+      map-analysis
+      set-uv-range CURSOR
+      reset
+      linear-contours 0.001,0.001,0.02
+      next-frame
+      go-plot
+ 
+By specifying CURSOR in response to the plot for the UV-range
+to plot you can use the cursor to mark the region on the
+existing plot in the usual way. The contour levels are then
+chosen to be linear at 1 mJy increments. It is important that
+you do not use the end-plot command when attempting to use the
+graphics overlay facilities as these will result in the screen
+being re-drawn for the new graphical output instead of
+overlaying the plot as you had (presumably) wanted.
+ 
+The simplest use of the graphics overlay facility is simply to
+control the size of a standard plot -- for example to plot a
+map at 60 percent of the normal size:
+ 
+      set-map 1
+      graphics-overlay on,0.2,0.8,0.2,0.8
+      linear-contours 0.001,0.001,,,,
+      go-plot plot-file/ps
+ 
+where the output in this example is to a file suitable for
+plotting on the POSTSCRIPT laser printer -- the file will be
+called PLOT-FILE:PSF in your standard directory.
+ 
+ 
+1.9.5 Vector Plots
+1.9.5 Vector Plots
+ 
+A map of position angles (measured North through East), such
+as the one produced by chi-map can be displayed as a vector
+map with the length of the vectors either fixed or
+proportional to the intensity of a second map. A sub-system
+vector-plot is available to define the options for a vector
+plot which is then drawn with the go-plot or plot vectors
+commands. For example, to produce a plot of vectors where
+length is proportional to mI and superimposed on a contour map
+of I:
+ 
+       set-map 3C61p1-I-map
+       logarithmic-contours 0.0025,2,,,,
+       set-uv-range -60,60,120,-120
+ 
+Now define options for the vector plot so that the longest
+vector is 10 pixels and the vectors are plotted every third
+pixel. Only pixels with mI > 2.5 mJy will have a vector
+plotted.
+ 
+ 
+ 
+ 
+ 
+ 
+       vector-plot
+       on
+       chi-map 3c61p1-chi
+       intensity-map 3c61p1-mI
+       scaled-vectors -10
+       sampling 3,3
+       gate 0.0025
+       exit
+ 
+To plot everything on the terminal
+ 
+       go-plot,,,
+ 
+To get a printed copy on the Anadex printer:
+ 
+       end-plot
+       go-plot /big anadex
+                   _
+ 
+ 
+1.9.6 Symbol plots
+1.9.6 Symbol plots
+ 
+Symbol plots can be used to mark specific pixels on an image.
+For example suppose we wish to identify all pixels in the
+image which are in fact equal to the "blank" value. This can
+be achieved by setting options to symbol plot:
+ 
+       symbol-plot
+       on
+       mark-blank-pixels
+       exit
+ 
+and all blank pixels in the plot will be marked with a dot
+when the next go-plot or plot symbol command is given.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

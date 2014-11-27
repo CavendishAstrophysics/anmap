@@ -1,0 +1,25 @@
+# define command to switch to the catalogue sub-system
+set global.commands(edit-redtape) {main.system edit-redtape}
+
+# edit-redtape-system commands
+set anmapnames(redtape) {edit-redtape}
+set sysnames(edit-redtape) {redtape}
+set redtape.prompt "Edit-Redtape> "
+proc redtape.command {args} { eval anmap_command edit-redtape $args }
+set redtape.commands(read-redtape) {}
+set redtape.commands(write-redtape) {}
+set redtape.commands(display-redtape) {}
+set redtape.commands(dump-redtape) {}
+set redtape.commands(set-to-j2000) {edit_setJ2000}
+set redtape.commands(set-redtape-item) {}
+set redtape.commands(list-extra-redtape) {}
+set redtape.commands(clear-extra-redtape) {}
+
+# procedures used in the edit-redtape module
+proc edit_setJ2000 { map rah ram ras decd decm decs } {
+   read-redtape $map
+   set-redtape-item astrometric-header $rah $ram $ras $decd $decm $decs \
+			2000.0 2000.0
+   set-redtape-item map-centre  $rah $ram $ras $decd $decm $decs
+   write-redtape $map
+}

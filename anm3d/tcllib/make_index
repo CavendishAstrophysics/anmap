@@ -1,0 +1,5 @@
+#
+# tcl script to make index for the desktop library
+#
+  auto_mkindex . *.tcl
+

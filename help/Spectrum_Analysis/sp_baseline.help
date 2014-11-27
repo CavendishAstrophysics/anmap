@@ -1,0 +1,52 @@
+
+Spectrum-analysis-program: Fit a baseline to a data file and remove it 
+                           outputting a baseline removed data file.
+
+
+Keys
+
+ cols                              columns to fit baseline to [ALL]
+ xc                                X-column  [1]
+ a0           nodata               } parameters of quadratic baseline
+ a1           nodata               } to include in fit
+ a2           nodata               }
+ window1                           } windows in data to exclude from
+ window2                           } fit to determine baseline
+  ...                              }
+ window9                           }
+ title
+ comment
+ infile       nokeyok              input file [-]
+ outfile      nokeyok              output file [-]
+
+
+The fitted baseline has the form:
+
+   y = a0 + a1.x + a2.x**2
+
+To include any of the three terms in the fit the parameters a0, a1, a2
+must be specified.  The windows s[ecify regions of the dataset to exclude
+from the fit.  Title and comment strings may be set for the output file.
+Each of the columns listed in cols will have a baseline removed except for the
+x-column (xc); the default is to use column 1 as the x-column and fit all of
+the data with no exclusion windows.
+
+Examples:
+
+1) Remove a linear baseline from the data set in.dat; only the data in the
+   central -.5 -> .5 of the data are used to find the baseline.
+
+  sp_baseline in.dat out.dat a0 a1 window_1 -1.0E6,-0.5 window_2 0.5,1.0E6
+
+2) Remove a flat baseline using the edges of the spectrum file to determine
+   the baseline
+
+  sp_baseline in.dat out.dat a0 window_1 120.0,180.0
+
+3) Remove a linear baseline from column 1 using column 2 as the independent
+   "x" coordinate; all the data is used in the fit -- all other columns are
+   copied unchanged to out.dat.
+
+  sp_baseline in.dat out.dat xc 2 cols 1 a0 a1
+
+

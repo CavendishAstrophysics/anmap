@@ -1,0 +1,41 @@
+
+When Anmap starts up it runs two possible statup scripts to provide
+local and user customization.  The local customization is provided in
+the file:
+
+   /mrao/anmap_v7.5/etc/init_anmap.tcl
+
+This defines commands and options for the local version of Anmap. 
+
+Users may also have their own initialization file:
+
+  ~/mrao/init_anmap.tcl
+
+which is run (sourced) after the local initialization file.  This file
+may contain any Anmap or command language (tcl) commands including
+windowing commands.  One global variable is set which is of importance
+if you want to have slightly different initializations depending on
+whether you are running Anmap or Xanmap -- if you are running Xanmap
+then the variable Xanmap is set to 1 (true), otherwise it is set to 0
+(false).  You can test this variable in the standard way:
+
+    if $Xanmap then {
+      #  commands appropriate for Xanmap windows version
+    } else {
+      #  commands appropriate for Anmap, non-windows version
+    }
+
+Typical information / commands you will want to include in your own
+initialisation file are definitions of procedures, perhaps a command
+to change working directory etc.
+
+Additionally you may find it useful to set some options regarding working
+directory in your ~/mrao/init_anmap.tcl file.  For example to stop Anmap
+changing directory to ~/mrao then simply add the following to your init
+file:
+
+	set Anmap(init:cwd) 1
+
+Or to change to your own specified working directory add the following:
+
+	set Anmap(init:dir) directory_name

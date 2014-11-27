@@ -1,0 +1,251 @@
+
+Scratch-display : sub-system to control the display of scratch graphics.
+
+Scratch graphics is the term used to describe plots produced from within
+Anmap by a command, but not one of the standard object-oriented display
+sub-systems (map-display, data-display, drawing-display); the scratch-display
+sub-system allows these scratch graphics to be controlled in the same way
+as other graphic produced from within Anmap.
+
+*1 Introduction
+
+A number of commands within Anmap produce scratch graphic; the positioning
+of the graphic in relation to other graphics, line and frame styles used
+and labels for axes etc. can be controlled by the scratch-display sub-system.
+
+The following commands produce scratch graphics:
+
+   map-display    surface-plot
+   map-analysis   plot-slice
+   map-analysis   map-histogram
+   map-analysis   scatter-plot
+
+Each of these uses the information contained in the current scratch graphic;
+the scratch graphic is one of the graphic types selected with the graphic
+select command in the graphic-system sub-system.  The view-port can be
+controlled by setting the view-port of the scratch graphic, for example by:
+
+   graphic select scratch 1
+   graphic view-port 0.7,1.0,0.7,1.0
+
+and then by positioning the graphic within this window using the view-port
+command of the scratch-display sub-system.  Note that since the default
+style for scratch graphics is opaque, the whole of the view-port specified
+for the scratch graphic is cleared before the scratch plot is drawn.
+
+The line-styles, text-styles, frame-styles and annotations for the scratch
+plot can be controlled using this sub-system although not all commands
+producing scratch graphics will necessary honour all the options you choose;
+for example the surface-plot command will use the line-style you select, but
+will never draw a frame not matter what options to set-frame-style you select.
+
+Most users will want to set view-ports for scratch graphics so that they do
+not completeley overwrite map-display, data-display or drawing-display
+graphics (the default view-port for scratch graphics is the complete screen
+or plot device).
+
+The plot refresh command is provided to attempt to refresh the scratch plot;
+this can be successful in most cases, but as it does the plot refresh by
+recording the options you type when the scratch plot is first created there
+are instances where this can fail (for example you have altered the map
+catalogue in some way).
+
+The options to set styles for scratch plots are
+
+    set-line-style        for lines drawn in plots
+    set-text-style        for text and lables
+    set-frame-style       for frames and labels on the frame
+
+Titles can be added with the following commands:
+
+    title
+    x-title
+    y-title
+
+and all use the text-style set with the set-text-style command.  The default
+setup can be returned using the initialise all command.
+
+Annotations can be added to a plot (using the coordinate system of the
+scratch plot) using the annotate sub-system from within the scratch-display
+sub-system.  Plot commands within annotate or the plot annotations command
+can be used to plot the annotations once they are defined.
+
+*1 set-line-style
+
+Command: set style for lines plotted in scratch graphics
+Parameters: style, width, colour
+
+The standard parameters for a line style can be set with this
+command -- note that the style of any frame drawn (including lines)
+is controlled with the set-frame-style command.
+
+*2 attributes
+*@$ANMHELP/Attributes.help
+
+*1 set-text-style
+
+Command: set style for text plotted in scratch graphics
+Parameters: font, size, colour, width
+
+The standard parameters for a text style can be set with this
+command -- note that the style of any frame drawn (including text)
+is controlled with the set-frame-style command.
+
+*2 attributes
+*@$ANMHELP/Attributes.help
+
+*2 set-frame-style
+*@$ANMHELP/Frame_Style.help
+
+*1 title
+
+Command: define a string to be used as a title for a scratch plot
+Parameters: title
+
+The title for a scratch plot is defined -- the text will be plotted using
+the style set by the set-text-style command, but note that the way this
+title string is used depends onthe scratch graphic.
+
+*1 x-title
+
+Command: define a string to be used as a X-title for a scratch plot
+Parameters: title
+
+The X_title for a scratch plot is defined -- the text will be plotted using
+the style set by the set-text-style command, but note that the way this
+title string is used depends onthe scratch graphic.
+
+*1 y-title
+
+Command: define a string to be used as a Y-title for a scratch plot
+Parameters: title
+
+The y-title for a scratch plot is defined -- the text will be plotted using
+the style set by the set-text-style command, but note that the way this
+title string is used depends onthe scratch graphic.
+
+*1 view-port
+
+Command: set the (sub-)view-port for the scratch display object
+Parameters: u1,u2,v1,v2
+
+The view-port specified with this command is relative to the view-port of
+the scratch graphic itself (set with the graphic view-port command).  The
+scratch graphic is displayed with its frame aligned with this view-port,
+whereas the larger view-port of the scratch graphic is the region of the
+display (or plot device) allocated to this graphic and if the mode is
+set to opaque, the region of the screen which will be cleared.  For example
+the following will ensure the entire screen is cleared when a scratch graphic
+is defined, but sufficient space will be allowed for the plotting of
+labels and titles which are placed outside of the frame
+
+   graphic select scratch 1
+   graphic view-port 0.0,1.0,0.0,1.0
+   scratch view-port 0.15,0.85,0.15,0.85
+
+Alternatively if the scratch graphic is to appear in a small region of the
+screen to the top right (perhaps allowing space for an image to be displayed)
+then the following would be more appropriate
+
+   graphic select scratch 1
+   graphic view-port 0.7,1.0,0.7,1.0
+   scratch view-port 0.15,0.85,0.15,0.85
+
+*2 examples
+
+Select the whole device for display of a scatter plot
+   graphic
+     select scratch 1
+     view-port 0.0,1.0,0.0,1.0
+   scratch
+     view-port 0.1,0.9,0.1,0.9
+   map-analysis
+     scatter-plot 1 ...
+
+Display a grey scale image then display a slice in a small box to the top right
+   map-display
+     set-map 1
+     grey on,,,,
+     plot grey
+   graphic
+     select scratch 1
+     view-port 0.7,1.0,0.7,1.0
+   scratch
+     view-port 0.1,0.9,0.1,0.9
+   map-analysis
+     plot-slice 1,-30,30,20,30
+
+
+
+*1 plot
+
+Command: plot a scratch graphic object
+Parameters: option
+Options: all annotations refresh
+
+The plot command behaves somewhat differently to the plot commands in
+other display sub-systems since the actual plotting is controlled by
+specific commands which are not part of the scratch-display sub-system.
+The only plotting actually done by this sub-system are annotations.  The
+meaning of the options are therefore:
+
+   annotations      plot annotations, same as annotate plot all or
+                    plot all.
+   all              same as plot annotations
+   refresh          attempt to refresh the graphic.  This command works
+                    be re-issuing the command used to create the scratch
+                    plot in the first instance and should work in most
+                    cases, however if the state of things has changed in
+                    ways such that just giving the same command as before
+                    would produce a different answer then this is
+                    exactly what will happen.
+
+
+*1 initialise
+
+Command: initialise the scratch-display sub-system
+Parameters: option
+Options: all annotations options titles
+
+This command can be used to initialise parts of the scratch-display
+sub-system. The options have the following meaning:
+
+   annotations     initialise all annotations and annotation options
+   options         initialise line, text and frame style options
+   titles          initialise title strings
+   all             equivalent to all the above
+
+
+*1 annotate
+*@$ANMHELP/Annotate.help
+
+*1 get
+
+Command: retrieve information about the current sub-system
+Parameters: option
+Options: cursor-input coordinates command scratch
+
+Get returns information about the current scratch-display definition or
+prompts the user for necessary input.  All information is returned via
+command-language parameters.
+
+   cursor-position     the user is requested to enter a position using
+                       the cursor.  The routine will return
+                         %X %Y       coordinate position in current scratch
+                                     coordinates.
+                         %GR-X %GR-Y position in screen coordinates.
+                         %GR-CHAR    character typed
+
+   coordinates         return the current coordinates as an array
+                         %COORDINATES
+
+   command             the command used to setup the scratch plot
+                         %COMMAND   graphic select scratch 1
+
+   scratch             details of the options for the current scratch
+                       definition
+
+*2 standard_parameters
+*@$ANMHELP/Standard_parameters.help
+
+*

@@ -1,0 +1,399 @@
+The following are a list of the examples available to illustrate the
+use the the data-display sub-system.  All the examples can be found in
+the examples directory in the standard Anmap release tree (from within
+Anmap type cd $Anmap(src)/examples), or better still use the X-windows
+help facility and use the hypertext help facilities provided in this
+help file to display and test out the examples.
+
+*1 Basic_Graph
+
+This example shows how to create a basic graph using the tools in the
+data display sub-system.  All the defaults are used and the entire plot
+is utilised.
+
+#
+# Example Graph 1:  basic use of the data display sub-system to
+# display a graph
+
+# start by initilialising the whole graphic.  We select graphic 1
+# using the graphic sub-system and set view ports on the display to
+# use --- this is only necessary to ensure we are not in some strange
+# state, if you have just started Anmap this is not necessary
+graphic select graph 1
+graphic view-port 0,1,0,1
+
+# initailise the graph itself in the data-display sub-system
+data-display
+initialise all ; initialise plot
+
+# now specify the file to plot and do the plotting (we first change
+# to the directory in which the data is stored, again this is not
+# necessary in the simplest case
+global Anmap ; cd $Anmap(src)/examples
+
+# ... now the real setup
+  line 1 file nor20.o.final
+
+# add titles
+ # set text style to a roman font of twice the default size
+ # rendered as white with line width 1
+  set-text-style 2 2 white 1
+ # now alter the line style for pips etc on the graph
+  set-frame text-style 2 1.5 white 1
+  x-title Position 
+  y-title Intensity (Arbitrary Units)
+  title Example Graph 1
+
+# and we can plot it --- scaling is taken care or
+  plot all
+
+%%
+   proc Launch_example { } {
+     catch {send Xanmap Launch_ScratchPad}
+     after 1000
+     catch {send Xanmap clipboard_file_load \
+                /mrao/anmap_v7.5/examples/ex_graph1.tcl}
+   }
+   proc Display_example { } {
+     catch {send Xanmap source /mrao/anmap_v7.5/examples/ex_graph1.tcl}
+   }
+   label $blt_htext(widget).b1 \
+         -bitmap @/mrao/anmap_v7.5/help/bitmaps/ex_graph1.xbm \
+         -borderwidth 3 -relief sunken
+   set bw $blt_htext(widget)
+   frame $bw.f -relief flat
+   pack [button $bw.f.b1 -relief raised -borderwidth 2 \
+         -text "Edit Example" -command Launch_example] -side top -fill x
+   pack [button $bw.f.b2 -relief raised -borderwidth 2 \
+         -text "Display Example" -command Display_example] -side top -fill x
+   $blt_htext(widget) append $blt_htext(widget).b1
+   $blt_htext(widget) append $blt_htext(widget).f
+   $blt_htext(widget) configurechild $bw.b1 \
+                      -fill x -padx 2 -pady 6 -justify center
+   $blt_htext(widget) configurechild $bw.f \
+                      -side top -fill x -padx 2 -pady 6
+%%
+
+If you choose to edit or display this example then some of the things to 
+try include the following:
+
+  o   Try altering the line-style and colour of the line used
+      to draw the graph, you can change the line to red with the
+      following commands
+
+          line 1 line-style 1 1 red ; plot refresh
+
+      note that it is not necessary to completely re-specify the 
+      graph.  Alternatively you could change the line style to
+      a dash or dotted appearance:
+
+          line 1 line-style 1 2 white ; plot refresh
+
+  o   To alter the line style of the frame, or the text around the
+      frame use the set-frame-style command.  Try out the effect of
+      some of the following set-frame-style options:
+           reset ............ reset to default options
+           grid-option ...... turn grid on/off
+           rotate-labels .... rotate labels to frame
+           line-style ....... set line-style for frame
+           grid-style ....... set line-style for grid
+           text-style ....... set text style for labels
+           ticks ............ set tick options for X,Y axes
+           x-ticks .......... set tick options for X axis
+           y-ticks .......... set tick options for X axis
+           axes ............. turn axes on/off
+           x-axis ........... turn X-axis on/off
+           y-axis ........... turn Y-axis on/off
+           labels ........... options for labels
+           x-labels ......... options for x-labels
+           y-labels ......... options for y-labels
+           side ............. list sides to draw
+           x-side ........... list sides (top/bottom) to draw
+           y-side ........... list sides (left/right) to draw
+           log-labels ....... select logarithmic labelling
+           log-x-labels ..... select logarithmic X labelling
+           log-y-labels ..... select logarithmic Y labelling
+
+  o   The displayed ranges can be altered using the x-range and
+      y-range commands.  Try the following:
+
+           y-range -0.05,0.35 ; plot refresh
+
+  o   Finally for this example we can display a second line on this
+      same graph for comparison --- note how we must explcitly plot
+      the second line, if instead of typing "plot line 2" we had tried
+      "plot refresh" the second line would not have been plotted
+
+           line 2 file nor20.w.final
+           line 2 line-style 1 1 yellow
+           plot line 2
+
+Press this button to see the changes %% proc Do_extra { } {
+     catch {send Xanmap line 2 file nor20.w.final}
+     catch {send Xanmap line 2 line-style 1 1 yellow}
+     catch {send Xanmap plot line 2}
+   }
+   button $blt_htext(widget).b3 -relief raised -borderwidth 2 \
+         -text "Plot the second line" -command Do_extra 
+   $blt_htext(widget) append $blt_htext(widget).b3
+   $blt_htext(widget) configurechild $blt_htext(widget).b3 %%.
+
+*1 Many_Lines
+
+This example shows how we can use the data-display sub-system to compare
+data in multiple files, using line-styles, colour and symbols to display
+results and also how simple data manipulation can be applied.  We start
+with the basic example a simple graph with two lines
+
+#
+# Example Graph 2:  multiple lines for simple graphs
+# display a graph
+
+# start by initilialising the whole graphic.  We select graphic 1
+# using the graphic sub-system and set view ports on the display to
+# use --- this is only necessary to ensure we are not in some strange
+# state, if you have just started Anmap this is not necessary
+graphic select graph 1
+graphic view-port 0,1,0,1
+
+# initailise the graph itself in the data-display sub-system
+data-display
+initialise all ; initialise plot
+
+# now specify the file to plot and do the plotting (we first change
+# to the directory in which the data is stored, again this is not
+# necessary in the simplest case
+global Anmap ; cd $Anmap(src)/examples
+
+# ... now the real setup, two lines different line styles
+  line 1 file nor20.o.final ; line 1 line-style 1 1 white
+  line 2 file nor20.w.final ; line 2 line-style 2 1 red
+
+
+# now add a key: just turn the key options on:  the default will be
+# to use the file names and column numbers in the key.
+  set-key-options on
+  set-key-options text-style 1 1.54 white 1 1
+
+# add titles
+ # set text style to a roman font of twice the default size
+ # rendered as white with line width 1
+  set-text-style 2 2 white 1
+ # now alter the line style for pips etc on the graph
+  set-frame text-style 2 1.5 white 1
+  x-title Position 
+  y-title Intensity (Arbitrary Units)
+  title Example Graph 1
+
+# and we can plot it --- we specify the y-range for the plot
+  y-range -0.05,0.4
+  plot all
+
+%%
+   proc Launch_example { } {
+     catch {send Xanmap Launch_ScratchPad}
+     after 1000
+     catch {send Xanmap clipboard_file_load \
+                /mrao/anmap_v7.5/examples/ex_graph2.tcl}
+   }
+   proc Display_example { } {
+     catch {send Xanmap source /mrao/anmap_v7.5/examples/ex_graph2.tcl}
+   }
+   label $blt_htext(widget).b1 \
+         -bitmap @/mrao/anmap_v7.5/help/bitmaps/ex_graph2.xpm \
+         -borderwidth 3 -relief sunken
+   set bw $blt_htext(widget)
+   frame $bw.f -relief flat
+   pack [button $bw.f.b1 -relief raised -borderwidth 2 \
+         -text "Edit Example" -command Launch_example] -side top -fill x
+   pack [button $bw.f.b2 -relief raised -borderwidth 2 \
+         -text "Display Example" -command Display_example] -side top -fill x
+   $blt_htext(widget) append $blt_htext(widget).b1
+   $blt_htext(widget) append $blt_htext(widget).f
+   $blt_htext(widget) configurechild $bw.b1 \
+                      -fill x -padx 2 -pady 6 -justify center
+   $blt_htext(widget) configurechild $bw.f \
+                      -side top -fill x -padx 2 -pady 6
+%%
+
+*1 Multiple_Graphs
+
+The following example illustrates the use of multiple graphs to create
+a very complex graphic.  Seven files in total are plotted using three
+graphs.  The result of the following script can be seen at the end of
+this help section, you can also load and modify the script so that you
+can practice modifying the script.
+
+#
+#
+# Graph Example 3
+# ---------------
+#
+# Example script showing use of multiple graphs in data-display
+# This example all shows how to use the command language to automate
+# many tasks using loops and prompts to the user.  To run this example
+# you need only "source" this file, or load it into the scratch pad or
+# Anmap text editor and select "Execute All"
+
+# ------------ INITIALISATION ----------
+# prompt the user for postscript output or not
+ puts \r ; set postscript [iocmd geti 'Postscript output (1/0) : ' '0']
+ global Anmap
+
+# ensure we are in the correct working directory
+set dir [pwd]
+cd $Anmap(src)/examples
+
+# select output device for postscript output
+if $postscript then {
+  graphic 
+     device-select 3
+     output-device fig3.ps/ps
+     open-device
+  exit
+}
+
+# ------------ SETUP FOR ALL PLOTS ----------
+# start work in the data-display sub-system
+data-display
+
+ # set line width 
+  set lw 2
+
+ # setup for three graphs -- use the graphic sub-system to
+ # position the graphs on the page.
+ graphic
+   clear
+   select graph 1 ; view-port 0.31,0.69,0.775,0.975
+   select graph 2 ; view-port 0.1,0.48,0.1,0.65
+   select graph 3 ; view-port 0.52,0.9,0.1,0.65
+  data-display
+
+ # basic initialisation: many basic parameters for the plots are
+ # common to each therefore we use a loop to initialise each graph
+ # in exactly the same way
+  foreach n { 1 2 3 } {
+   # select the correct graph
+    graphic select graph $n
+   # start by re-initialising everything
+    init all ;  init plot ; view-port 0 1 0 1
+   # setup options for line-styles and text
+    set-frame line-style 1 $lw white
+    set-frame text-style 2 1.5 white $lw
+    set-text 2 1.5 white $lw
+    set-title x-title 1 2.4 0.5 0.5
+   # setup frame so that only an x-axis is displayed, somewhat
+   # unusual, but common in NMR from which this example is chosen
+    set-frame y-side 0 ; set-frame y-lab 0
+    set-frame x-side 1
+   # we also set the X-axis title for all the plots
+    x-title Position
+  }
+
+# ------------ PLOT LOWER LEFT GRAPH----------
+
+ # do all lines/spectra
+ # start with graph 2, define the files to plot and display them
+ # note how scaling and auto-scaling are used for comparing the spectral
+ # files
+  graphic select graph 2
+  line 1 file nor20.o.final  ; line 1 y-scale 1.75 
+  line 1 line-style 1 $lw white
+  line 1 y-auto on
+  line 1 x-offset -1
+  line 2 file nor20.18  ; line 2 line-style 2 $lw white 
+  line 2 y-auto on
+
+ # The spectrum looks like a new plot in fact it is plotted on
+ # the same axes, but an offset is applied to make it appear as a
+ # separate figure
+  line 3 file nor20.11  ; line 3 line-style 1 $lw white 
+  line 3 y-auto on
+  line 3 y-offset 0.6
+  line 3 x-scale 1.0
+
+ # y-range is important in this example as it is also used to effectively
+ # control the layout of the plot
+  y-range -0.05 1.2
+ # plot everything for graph 2
+  plot all
+
+
+# ------------ PLOT LOWER RIGHT GRAPH----------
+
+ # do the same thing for the bottom right plot --- not so much comment
+ # this time ...
+  graphic select graph 3
+  line 1 file nor20.w.final  ; line 1 y-scale 1.7
+  line 1 line-style 1 $lw white
+  line 1 y-auto on
+  line 1 x-offset 4
+  line 2 file nor20.15  ; line 2 line-style 2 $lw white 
+  line 2 y-auto on
+  line 3 file nor20.12  ; line 3 line-style 1 $lw white 
+  line 3 y-auto on
+  line 3 y-offset 0.6
+  y-range -0.05 1.2
+  line 3 x-scale 1.0
+  plot all
+
+
+# ------------ PLOT UPPER GRAPH----------
+
+  graphic select graph 1
+  line 1 file nor20.9  ; line 1 y-scale 1.0E-6 
+  line 1 line-style 1 $lw white 
+  plot all
+
+# ------------ ANNOTATE THE WHOLE PLOT ----------
+
+# here we use the annotation sub-system to annotate the whole plot
+# for convenience we just use the corrdinate system of the last
+# graph drawn
+  annotate
+    set-plot temp
+    set-text 2 1.5 white 2
+    text-draw -80 3.5 0 Spectrum
+    text-draw -150 -3.5 0 Oil
+    text-draw 20 -3.5 0 Water
+  exit
+
+# ------------ TIDY UP IF THE OUTPUT WAS TO A POSTSCRIPT FILE  ----------
+if $postscript then {
+  graphic 
+     close-device
+     device-select 1
+  exit
+}
+
+cd $dir
+
+%%
+   proc Launch_example { } {
+     catch {send Xanmap Launch_ScratchPad}
+     after 1000
+     catch {send Xanmap clipboard_file_load \
+                /mrao/anmap_v7.5/examples/ex_graph3.tcl}
+   }
+   proc Display_example { } {
+     catch {send Xanmap source /mrao/anmap_v7.5/examples/ex_graph3.tcl}
+   }
+   label $blt_htext(widget).b1 \
+         -bitmap @/mrao/anmap_v7.5/help/bitmaps/ex_graph3.xbm \
+         -borderwidth 3 -relief sunken
+   set bw $blt_htext(widget)
+   frame $bw.f -relief flat
+   pack [button $bw.f.b1 -relief raised -borderwidth 2 \
+         -text "Edit Example" -command Launch_example] -side top -fill x
+   pack [button $bw.f.b2 -relief raised -borderwidth 2 \
+         -text "Display Example" -command Display_example] -side top -fill x
+   $blt_htext(widget) append $blt_htext(widget).b1
+   $blt_htext(widget) append $blt_htext(widget).f
+   $blt_htext(widget) configurechild $bw.b1 \
+                      -fill x -padx 2 -pady 6 -justify center
+   $blt_htext(widget) configurechild $bw.f \
+                      -side top -fill x -padx 2 -pady 6
+%%
+
+
+*

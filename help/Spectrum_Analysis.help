@@ -1,0 +1,77 @@
+
+*1 Introduction
+*@$ANMHELP/Spectrum_Analysis/introduction.help
+
+*1 sp_combine
+*@$ANMHELP/Spectrum_Analysis/sp_combine.help
+
+*1 sp_display
+*@$ANMHELP/Spectrum_Analysis/sp_display.help
+
+
+*1 sp_header
+*@$ANMHELP/Spectrum_Analysis/sp_header.help
+
+*1 sp_noise
+*@$ANMHELP/Spectrum_Analysis/sp_noise.help
+
+*1 sp_pass
+*@$ANMHELP/Spectrum_Analysis/sp_pass.help
+
+*1 sp_gethd
+*@$ANMHELP/Spectrum_Analysis/sp_gethd.help
+
+*1 sp_integrate
+*@$ANMHELP/Spectrum_Analysis/sp_integrate.help
+
+*1 sp_rebin
+*@$ANMHELP/Spectrum_Analysis/sp_rebin.help
+
+*1 sp_scale
+*@$ANMHELP/Spectrum_Analysis/sp_scale.help
+
+*1 sp_log
+*@$ANMHELP/Spectrum_Analysis/sp_log.help
+
+*1 sp_print
+*@$ANMHELP/Spectrum_Analysis/sp_print.help
+
+*1 sp_smooth
+*@$ANMHELP/Spectrum_Analysis/sp_smooth.help
+
+*1 sp_statistics
+*@$ANMHELP/Spectrum_Analysis/sp_statistics.help
+
+*1 nmr_PSD
+*@$ANMHELP/Spectrum_Analysis/nmr_PSD.help
+
+*1 nmr_fitrelax
+*@$ANMHELP/Spectrum_Analysis/nmr_fitrelax.help
+
+*1 nmr_fitrelax
+*@$ANMHELP/Spectrum_Analysis/nmr_fit2T1.help
+
+*1 nmr_fitlinear
+*@$ANMHELP/Spectrum_Analysis/nmr_fitlinear.help
+
+*1 sp_fitlinear
+*@$ANMHELP/Spectrum_Analysis/sp_fitlinear.help
+
+*1 sp_fitgauss
+*@$ANMHELP/Spectrum_Analysis/sp_fitgauss.help
+
+*1 sp_baseline
+*@$ANMHELP/Spectrum_Analysis/sp_baseline.help
+
+*1 sp_make_histogram
+*@$ANMHELP/Spectrum_Analysis/sp_histogram.help
+
+*1 sp_reinterpolate
+*@$ANMHELP/Spectrum_Analysis/sp_reinterpolate.help
+
+*1 sp_register
+*@$ANMHELP/Spectrum_Analysis/sp_register.help
+
+*1 sp_fft
+*@$ANMHELP/Spectrum_Analysis/sp_fft.help
+*

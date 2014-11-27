@@ -1,0 +1,105 @@
+
+*1 image_show_marks
+
+Toggle the display of selections on the graphics display -- this effects
+routines described subsequently in this help entry.
+
+Synopsis:
+   image_show_marks
+                     opt          0 or 1  to turn marking on/off
+
+
+*1 image_position
+
+Display and return the cursor position in map coordinates as a list
+of map_u, map_v.
+
+Synopsis:
+   image_position
+
+Example:
+   set map_uv [image_position]
+
+
+*1 image_pixel
+
+Display and return the cursor position in map pixels as a list of u and v
+
+Synopsis:
+   image_pixel
+
+Example:
+   set uv [image_pixel]
+
+
+*1 image_value
+
+Display the cursor and return the image value at the cursor location
+
+Synopsis:
+   image_value
+
+Example:
+   set mapv [image_value]
+
+
+
+*1 image_length
+
+Display the cursor and allow the user to mark two points, the routine
+returns the length (in pixels) between them.  If image_show_marks has
+been set to true (image_show_marks 1) then a line will be drawn on the
+screen between the user selected positions.
+
+Synopsis:
+   image_length
+
+Example:
+   image_show_marks 0 ; set xl [image_length]
+
+
+
+*1 image_angle
+
+Display the cursor and allow the user to mark three points, the routine
+returns the angle (in degrees) between them.  If image_show_marks has
+been set to true (image_show_marks 1) then lines will be drawn on the
+screen between the user selected positions.
+
+Synopsis:
+   image_angle
+
+Example:
+   image_show_marks 1 ; set angle [image_angle]
+
+
+*1 image_draw_line
+
+Draw a line between the specified pixel locations
+
+Synopsis:
+   image_draw_line  
+                  u1 v1          Coordinates (UV pixels) for line start
+                  u2 v2          Coordinates (UV pixels) for line end
+
+Example:
+   image_draw_line 0 0 10 -30
+
+
+*1 image_enq
+
+Return information about the specified image
+
+Synopsis:
+   image_enq
+              image        catalogue entry for image
+              option
+                           uv-range    return uv-range for the image
+                           range       return uv-range for the image
+
+Example:
+
+   set uvr [image_enq 12 range
+
+
+*

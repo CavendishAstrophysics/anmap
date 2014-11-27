@@ -1,0 +1,43 @@
+%
+% Latex Macros for use with Anmap
+%
+% The Anmap Name
+\newcommand{\Anmap}{{\bf Anmap}}
+\newcommand{\Version}{{\bf X0.52}}
+%
+% Page layout suitable for an A4 printer
+\topmargin 0.1in
+\oddsidemargin 0.1in
+\evensidemargin 0.1in
+\textheight 9.0in
+\textwidth 6.25in
+\headheight 0in
+\headsep 0in
+\parindent 0in
+\parskip \bigskipamount
+%
+%
+%
+% Definition of Standard LATEX environments etc.
+%
+% Environment definitions for numbered paragraphs:
+%   npars:-      (1) ....
+%   rpars:-      (i) ....
+%   apars:-      (a) ....
+%
+\newcounter{ncount}
+\newcounter{rcount}
+\newcounter{acount}
+\newenvironment{npars}{
+   \begin{list}{(\arabic{ncount})}{\usecounter{ncount}}
+                      }{\end{list}}
+\newenvironment{rpars}{
+   \begin{list}{(\roman{rcount})}{\usecounter{rcount}}
+                      }{\end{list}}
+\newenvironment{apars}{
+   \begin{list}{(\alph{acount})}{\usecounter{acount}}
+                      }{\end{list}}
+%
+%
+%
+

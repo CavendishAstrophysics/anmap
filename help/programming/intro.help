@@ -1,0 +1,26 @@
+
+Programming in Anmap most often takes one of two forms (or perhaps a mixture
+of the two):
+
+  o    Adding new facilities using the command language tcl/tk,
+       this includes adding new window facilities to Xanmap.
+
+  o    Adding new self-contained programs written in a compiled
+       language (probably f77 or C).  You may also want to write some
+       tcl/tk procedures to support this new code.
+
+It is of course possible to modify the core of Anmap itself, however
+this is not usually done by general users.
+
+To help you write code in either of the above ways there are a number
+of tcl/tk tools, commands and procedures and f77 libraries.
+
+If you do write new routines for ANMAP please let us know so that
+we can incorporate them into the main ANMAP release and make them
+available for all users.
+
+*1 f77_programming
+*@$ANMHELP/programming/F77.help
+
+*1 tcl_programming
+*@$ANMHELP/programming/Tcl.help

@@ -1,0 +1,22 @@
+#
+# Anmap command-line editing startup script
+#
+# This is a "fep" startup file that allocates the cursor keys in
+# a manner similar to tcsh for simple command-line editing 
+#
+
+set savehist=100
+
+fep-bind delete-to-kill-buffer "\^X\^W"
+
+# cursor keys
+fep-bind backward-character "\^[[D"
+fep-bind forward-character "\^[[C"
+fep-bind previous-history "\^[[A"
+fep-bind next-history "\^[[B"
+
+# attention interupt -- this must be used instead of ESCAPE
+fep-bind insert-and-flush "\^Y"
+
+set history-file .anmap_history
+

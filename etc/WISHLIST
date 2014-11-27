@@ -1,0 +1,106 @@
+
+This is the current Anmap WISHLIST / BUGLIST
+--------------------------------------------
+
+The following list lists the requested facilities, known bugs etc. in
+Anmap.  It is divided into three, short medium sized and major jobs/
+future plans.  There are no guarantees that things on this list will
+ever get done! I have deliberately not put any dates on things.  The
+file CHANGES will list the CHANGES when they are applied to Anmap.  You
+should also consult Anmap news when changes are implemented for the
+manner in which they have been done/new commands etc.
+
+Bugs
+----
+o  stretch-map is broken; map not stretched (21/7/94).
+o  contouring in map-display does not support null values.  This
+   is a bug and not a feature in my opinion (26/10/94).
+o  there seems to a problem regarding which directory read-data-file
+   assumes it is reading from at least when accessing FITS maps (26/10/94).
+
+
+Required and unusual features
+-----------------------------
+
+o  A pack-catalogue command.
+o  A command for continuous reading of the cursor is needed.
+o  More control over RA/DEC pip labelling in map-display is needed
+   including controlling the number of decimal places displayed and
+   an improved format for the labels.  The size of ticks should be
+   controllable.
+o  Map-display should support automatic filter options for the data
+   so that it is easy to do logarithmic grey scales etc.
+o  The lookup table support should be extended to include new types:
+   HSB, CMY, more default types, system wide library of attractive
+   lookup tables.
+o  More options for plotting individual crosses.
+o  Better support for crosses file.
+o  Isometric plots should understand our map conventions better.
+o  Ability to display images which are currently being edited in
+   edit-image.
+o  In edit-redtape read-redtape should set the default map.
+o  An X-interface to importing data is needed.  It should also support
+   the "unpublicised" tools to read tiff gif images etc.  This will 
+   probably wait until the ppm library is properly installed.
+o  Additional options in edit-redtape: copy-astrometric-redtape
+o  Much better support for handling redtapes in edit-redtape and in
+   edit-image so complete applications can be built from these tools.
+   This is probably best handled by a tcl-level interface.
+
+Programmer Support
+------------------
+
+o  Better programmer interaction with the graphics sub-system.
+o  Make a uniform API (application programmer interface) which does
+   not required calls to MAPLIB; this will provide better upwards
+   compatability when the internal Anmap image format changes to
+   accomodate 3D and higher dimension data sets.
+o  Proper tcl-based programming support for manipulating data in
+   all Anmap suported formats.  This is a major upgrade plan and
+   would allow much of Anmap to be completely implemented in Tcl!
+o  A C, Tcl and F77 API.
+o  A proper documented API for handling spectral files.
+
+Medium Term Projects and Modifications
+--------------------------------------
+
+o  A trans-image sub-system similar to edit image as a tool for building
+   procedures which do image transformations.
+o  A spectrum-analysis sub-system to make it obvious how to use the
+   spectral-analysis tools (of which there are now about 35!); build
+   also a tcl-based spectral-analysis programmers tool with documented
+   API.
+o  Document spectral analysis stuff.
+
+Long Term Projects and Modifications
+------------------------------------
+o  Re-write the underlying stack and map-handling code to allow multiple
+   image formats to be handled without multiple translations.  Add at 
+   least FITS and my proposed DDF.
+o  Implement the Directory Data Format and add to Anmap.
+   Add support for 5D data sets.
+o  Implement proper visualization tools including links to rendering
+   packages.  Use PEX/OpenGL as basic tool for home written rendering 
+   and graphics tools.
+
+Graphics Overhaul
+-----------------
+All graphics needs re-writing and being based on the new tcl PGPLOT
+bindings.
+o  Implement all graphics systems in tcl:
+    -> data-display
+    -> map-display
+    -> drawing-system
+    -> graphic
+   All user input via an enhanced iocmd tcl command.
+o  Remove support for scratch graphics and add all scratch functionality
+   to proper tcl-based routines.
+o  Provide a fully documented programmers API to pg plot and vogle
+   graphics and the Anmap structured graphics system.
+o  X interface to the new map-display, data-display, draw-display and
+   graphic sub-systems.
+o  Provide access to Xgnuplot and other stand-alone X graphics tools.
+o  Better support for SAOimage --- perhaps use the input pipe facility.
+o  Support a graphics server model using Agraph as a programmers API,
+   (hackers may find it useful!).
+o  Provide some interface for rendering surface models of images.

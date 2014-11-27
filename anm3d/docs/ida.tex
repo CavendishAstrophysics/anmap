@@ -1,0 +1,622 @@
+\documentstyle[11pt]{article}
+\input{format}
+\input{pars_defn}
+\begin{document}
+\begin{center}
+{\large \bf IDA --- A Tcl Imaging and Data Analysis extension} \\
+\vspace{0.5cm}
+{\large \bf Version 0.5 12 April 1995} \\
+\vspace{0.5cm}
+{\large Paul Alexander, Cavendish Laboratory, Cambridge, UK}\\
+\end{center}
+
+\section{Introduction}
+
+{\bf IDA} is an image/data processing and analysis language based
+on Tcl (Ousterhout 1994).  The language is implemented as a Tcl
+extension and may be used with other extensions.  It provides the
+tools necessary for image/data analysis, but not for display although
+{\it hooks} are provided within the Tcl {\bf pgplot} extension to provide
+display functions.  
+
+This version provides support for {\em images} alone ---
+in this context we consider an image to be a set of gridded data values
+represented by a contnuous 4D volume.  Each element in this volume is referred
+to as a pixel (for 3D data the term voxel is often used).  At each pixel
+we may have a vector of data values --- therefore 5-dimensional data
+may be handled.  A normal representation would be to map the 4 dimensions
+of the data volume onto three spatial and one time dimension and to hold in
+the vector any number of {\em physical} quantities.  These may be for example
+density, pressure, temperature in a fluid-dynamical simulation, red, green
+and blue for a true-colour image or components of one or more complex
+quantities.  Future versions will include support for a second data format
+where the data consist of a vector of values on discrete points in an
+N-dimensional space and may include connectivities between the data ---
+such a format is more appropriate for representing say the output of N-body
+simulations or molecular data.
+
+The internal representation is as a 5-dimension array of
+4-byte floating point values; this is a necessary representation for the ---
+{\bf IDA} can also be used to analyse images more usually
+represented with less precision although at a cost in terms of memory usage
+and for some operations processing time (but not all).
+Fixing on one data type greatly simplifies
+the implementation and is aimed at providing functionality rather than
+the greatest efficiency.
+\footnote{
+It is the author's view that the power of
+modern workstations is so great that many issues which were until
+recently of concern --- memory usage, floating-point performance etc. --- 
+are no-longer overiding considerations in the design of 
+data-processing software.  Of much greater improtance is the time required
+for scientists to implement relatively efficient, and accurate code.
+}
+
+The remainder of this section introduces a number of terms and concepts used
+throughout the package.
+
+\subsection{Image identifiers -- imId}
+
+All commands acting on images take an image identifier --- in the
+documentation this is abreviated to {\bf imId}.  Commands will also
+return an {\bf imId} if they modify an image.
+In the current implementation of the package {\bf imId}s are simply
+an integer  value, in a future release this will change to be an integer
+prefixed by a short string (probably {\it img}) to make the behaviour consistent
+with other Tcl extensions.  You should not therefore {\it rely} on
+{\bf imId}s being integers.
+
+\subsection{Data formats}
+At present three image formats are supported and
+identified via a numerical {\it type}:
+\begin{npars}
+\item MRAO map format.
+\item DDF format --- this stands for {\it Directory Data Format} and is
+a very flexible format supported by the {\bf IDA} extension.  It is the
+prefered format for {\bf IDA} images.
+\item FITS --- Flexible image transport.
+\end{npars}
+
+Note that in the current release of the {\bf IDA} little
+attention is paid to image headers beyond those items needed to read and
+write data.  You should not therefore use the current implemntation to
+convert between image formats and only DDF format has been tested to
+any extent.  In future versions of the package there will be proper
+support for image headers and for image conversion.
+
+\subsection{Sub images}
+Various commands take as some of their optional arguments a subimage.
+A sub-image specifies a contiguous region of the image, for example
+a range of values from a 1D image or a rectangular region in a 2D image.  
+To specify the subimage you must indicate the bouding pixel in each dimension;
+a standard notation, common to all imaging commands, exists to specify the
+subimage by specify options in the standard Tcl manner:
+\begin{verbatim}
+   -x1 Ix1 -x2 Ix2 
+   -y1 Iy1 -y2 Iy2 
+   -z1 Iz1 -z2 Iz2 
+   -t1 It1 -t2 It2 
+   -v1 Iv1 -v2 Iv2
+\end{verbatim}
+throughout this text the term {\bf subimage} will refer to a region of the
+image specified using the above notation for a sub-image.
+Any optional parameters which are not supplied default to the full extent of the
+image.  It is legal to specify a subimage which extends beyond the
+boundary of the image --- only those pixels which are within the image
+will be used in processing.
+
+\subsection{Blanking}
+All imaging commands support the concept of a {\it blank} pixel.  This is
+a pixel which has been set to a particular value to indicate that it does
+not contain a physically realistic number.  The value is usually chosen to
+be completely out of the bounds of physically sensible values (usually
+a very large negative value such as 1.0E-30).  Commands exist to blank
+and un-blank regions of images.  The blanking value is usually set in the
+image header or definition record for an image stored on disc.
+
+\subsection{Normalization}
+Imaging commands which sum the image make use of a normalization parameter.
+The normalization parameter is usually defined in the
+image header or definition record for an image stored on disc.
+
+\section{Commands to perform basic functions on images}
+
+\subsection{The img\_image command}
+The {\bf img\_image} command is used to provide low-level access to images
+and to perform image I/O.  The synopsis for the command is:
+\begin{verbatim}
+   img_image option ?parameters?
+\end{verbatim}
+Table 1 provides a summary of the available options.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Options} & {\bf Notes} \\
+& \\ \hline
+read ?-file {\bf file}? ?-type {\bf type}? &
+\begin{minipage}[t]{11.0cm}
+Read a data file from {\bf file}.  The format of the data is specified
+by the parameter {\bf type} and has one of the values listed in Section 1.2.
+\end{minipage} \\
+& \\
+\begin{minipage}[t]{4.0cm}
+write ?-imid {\bf I}? ?-file {\bf file}? ?-type {\bf type}?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+Read a data file from {\bf file}.  The format of the data is specified
+by the parameter {\bf type} and has one of the values listed in Section 1.2.
+\end{minipage} \\
+& \\
+destroy {\bf imId} & destroy the data structure associated wtih {\bf imId}\\ 
+& \\ 
+create {\bf defn} &
+\begin{minipage}[t]{11.0cm}
+create a new image with dimensions given by {\bf defn} which is a
+normal Tcl array which should have all the elements required for a
+definition record.  One method of ensuring this would be to read the
+definition record from another {\bf imId} and modify it.
+\end{minipage} \\ 
+& \\ 
+collapse {\bf imId} & 
+\begin{minipage}[t]{11.0cm}
+reduce dimansionality of {\bf imId} by collapsing any dimension of unity.  
+This option sets range on dimensions of unity to 1.
+\end{minipage} \\ 
+& \\ 
+next & return next free image ID {\bf imId}\\ 
+& \\ 
+exists {\bf imId} &
+\begin{minipage}[t]{11.0cm}
+check whether {\bf imId} is valid and exists.  The command returns a
+boolean indicating true (1) if {\bf imId} exists.
+\end{minipage} \\
+& \\ 
+max & return maximum number of images that may be allocated.\\ 
+& \\ 
+defget {\bf imId} {\bf defn} &
+\begin{minipage}[t]{11.0cm}
+get the definition record, returned in array {\bf defn}
+\end{minipage} \\ 
+& \\ 
+defset {\bf imId} {\bf defn} &
+\begin{minipage}[t]{11.0cm}
+set the definition record for {\bf imId} from the array {\bf defn}.
+\end{minipage} \\ 
+& \\ 
+defread {\bf file} {\bf defn} & 
+\begin{minipage}[t]{11.0cm}
+read the definition record for file {\bf file};
+the definition record is returned in array {\bf defn}.
+\end{minipage} \\ 
+& \\ 
+defputs {\bf imId} & display the definition record for {\bf imId} on stdout\\ 
+& \\ 
+& \\ \hline
+\end{tabular}
+\caption{Options and return values for the {\bf img\_image} command.}
+\end{table}
+The most important use for the {\bf img\_image} command is to perform
+I/O for images. 
+An example illustrates the use of the {\bf img\_image} command to
+read in data and display it using the {\bf pgplot} extension which
+defines a new command {\bf pg}.
+\begin{verbatim}
+   set n [img_image read -file ex1.dat -type 1]
+   pg stream open 1 /xwindow
+   set st [img_anal $n statistics]
+   pg image $n [lindex $st 0] [lindex $st 1]
+\end{verbatim}
+In this example the {\bf img\_anal} command (Section 2.2) is used to annalyse 
+the image and obtain statistics which are needed for {\bf pg image} --- 
+this command takes arguments which are the 
+minimum and maximum of the range to display.
+
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Options} & {\bf Notes} \\
+& \\ \hline
+\begin{minipage}[t]{4.0cm}
+\flushleft 
+statistics 
+?-gate $g$? ?-agate $ag$?
+?-min $m1$? ?-max $m2$?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+obtain statistics for an image. Only pixels satisfying:
+\[
+val > g  \; \&\&  \; abs( val ) > ag \; \&\&  \; m1 \le val \le m2
+\]
+are analysed in the specified subimage.  
+A list of \{max min mean sd min-pixel max-pixel\}
+is returned.  The defaults are such as to analyse all pixels in the
+image.
+\end{minipage} \\
+& \\ 
+\begin{minipage}[t]{4.0cm}
+\flushleft 
+maxmin 
+?-gate $g$? ?-agate $ag$?
+?-min $m1$? ?-max $m2$?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+obtain the maximum and minimum for an image. Only pixels satisfying:
+\[
+val > g  \; \&\&  \; abs( val ) > ag \; \&\&  \; m1 \le val \le m2
+\]
+are analysed in the specified subimage.  
+A list of \{max min min-pixel max-pixel\}
+is returned.  The defaults are such as to analyse all pixels in the
+image.
+\end{minipage} \\
+& \\ 
+\begin{minipage}[t]{4.0cm}
+\flushleft 
+sum 
+?-gate $g$? ?-agate $ag$?
+?-min $m1$? ?-max $m2$?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+obtain the sum of pixel intensities for an image. Only pixels satisfying:
+\[
+val > g  \; \&\&  \; abs( val ) > ag \; \&\&  \; m1 \le val \le m2
+\]
+are summed.  The sum of pixel intensities satisfying the above
+constraints and within the specified subimage is returned scaled by the
+normalization parameter.  
+The defaults are such as to analyse all pixels in the image.
+\end{minipage} \\
+& \\ 
+\begin{minipage}[t]{4.0cm}
+\flushleft 
+histogram ?-ndata {\bf ndata}? 
+?-low {\bf low}? ?-high {\bf high}?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+Extract a 1D image which is a histogram of image data in the specified 
+sub-image of the image. The command returns the imId of the new image 
+which has xdim = {\bf ndata} and vdim=2; the first vector argument is 
+the value for the bin,
+the second is the number of pixels within the bin.  This format is appropriate
+for display using the {\bf pg} extension. The default for {\bf ndata} 
+is 100 and {\bf low/high} default to the min/max on the image.
+\end{minipage} \\
+& \\ 
+& \\ \hline
+\end{tabular}
+\caption{The {\bf img\_anal} command for basic image analysis.  
+The first argument to
+{\bf img\_anal} must be a valid {\bf imId} and the second one of the above 
+options.  All the options take as an additional argument a {\bf subimage}
+specification to limit the analysis to a specified sub-region of the
+image.  The {\bf subimage} specification should occur after all
+compulsary arrguments.}
+\end{table}
+
+\subsection{Image analysis with img\_anal}
+
+Analysis of images is performed using the {\bf img\_anal} command.
+The synopsis for the command is:
+\begin{verbatim}
+   img_anal imId option ?parameters? ?subimage?
+\end{verbatim}
+Options for the command are listed in Table 2.  For all forms of the command
+you may specify a {\bf subimage} (see section 1.2) which should appear
+after all compulsary arguments; only pixels within the specified subimage
+are analysed.
+The following example illustrates how the output of the {\bf statistics}
+option can be used to implement an algorithm which attempts an
+analysis of noise in an image by assuming highly discrepant points are in
+fact true signal.
+\begin{verbatim}
+   proc img_noise { imId nSD} {
+    # determine mean and SD of image data
+      set st [img_anal $imId statistics]
+    # discard points more than nSD standard deviations from the mean 
+    # and recalculate the statistcis for the image.
+    # Iterate three times
+      for {set n 0} {$n < 3} {incr n} {
+         set min [expr [lindex $st 2] - $nSD * [lindex $st 3]]
+         set max [expr [lindex $st 2] + $nSD * [lindex $st 3]]
+         set st [img_anal $imId statistics -min $min -max $max]
+      }
+      return [lindex $st 3]
+   }
+\end{verbatim}
+
+\subsection{Modifying images with img\_apply}
+
+The command {\bf img\_apply} takes an image and modifies it according to
+a series of options which are applied sequentially to the image.  The
+first agument to the command must be an {\bf imId} and subsequent arguments
+are modifier options which themselves may take additional arguments as
+either parameter values of other {\bf imId}s of other images.  The range
+of options available with the {\bf img\_apply} command is given in 
+Tables 3 and 4.
+\begin{verbatim}
+   img_apply imId ?subimage? ?option ?parameter?? ?option ?parameter?? ...
+\end{verbatim}
+A {\bf subimage} may be specified which limits the command to operate on the
+specified subimage --- the subimage may be specified anywhere on the
+command line provided it does not break up an option which has to be followed
+by a specified set of parameters; for clarity it is recommended that the
+sub-image specification follows directly after {\bf imId}.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Options} & {\bf Notes} \\
+& \\ \hline
+= {\bf imId1} & 
+\begin{minipage}[t]{11.0cm}
+set {\bf imId} equal to {\bf imId1}; the operation is applied
+only to the {\bf subimage} common to both images.
+\end{minipage} \\
+& \\
+== {\bf imId1} & 
+\begin{minipage}[t]{11.0cm}
+set {\bf imId} equal to {\bf imId1}; the operation is applied
+to the {\bf subimage} of {\bf imId}.  Values are taken sequentially
+from {\bf imId1} such that the first pixel in
+the subimage of {\bf imId} is set equal to the first value of {\bf imId1}.
+\end{minipage} \\
+& \\
++=, -=, *=, /=, {\bf imId1} &
+\begin{minipage}[t]{11.0cm}
+As for ``='' except:
+\newline
+{\bf imId} = {\bf imId} {\bf op} {\bf imId1}, where {\bf op} is +, -, *, / for
+addition subtraction multiplication and division respectivley.
+\end{minipage} \\
+& \\
++==, -==, *==, /==, imId1 &
+\begin{minipage}[t]{11.0cm}
+As for ``=='' except:
+\newline
+{\bf imId} == {\bf imId} {\bf op} {\bf imId1}, where {\bf op} is +, -, *, / for
+addition subtraction multiplication and division respectivley.
+\end{minipage} \\
+& \\
+atan2 {\bf imId1} {\bf imId2} & set {\bf imId} = atan2( {\bf imId1}, {\bf imId2} ) \\
+& \\
+& \\ \hline
+\end{tabular}
+\caption{Options for the img\_apply command which combine images.  
+The first argument to img\_apply must be a valid {\bf imId} and subsequent 
+arguments are options as specified in this and the next table applied 
+sequentially.}
+\end{table}
+
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Options} & {\bf Notes} \\
+& \\ \hline
+\begin{minipage}[t]{4.0cm}
+log, ln, log10, exp, sqrt
+sin, cos, tan, asin, acos, atan 
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+Apply specified function to imId:
+\newline
+set {\bf imId} = func( {\bf imId} )
+\end{minipage} \\
+& \\
+10 & set {\bf imId} = 10**{\bf imId} \\
+& \\
+raise {\bf x} & raise {\bf x} to power {\bf imId}; 
+set {\bf imId} = {\bf x}**{\bf imId} \\
+& \\
+pow {\bf x} & raise {\bf imId} to power {\bf x}; set {\bf imId} = {\bf imId}**{\bf x}\\
+& \\
+scale {\bf x} & scale {\bf imId} by {\bf x}; set {\bf imId} = {\bf x} * {\bf imId}\\
+& \\
+offset {\bf x} & offset {\bf imId} by {\bf x}; set {\bf imId} = {\bf imId} + {\bf x}\\
+& \\
+binary {\bf x} & force {\bf imId} to be a binary image:\\
+& if {\bf imId} $<$ {\bf x} then set {\bf imId} = 0.0, else set {\bf imId} = 1.0 \\
+& \\
+set {\bf x} & set {\bf imId} to the value {\bf x} \\
+& \\
+pass {\bf x1} {\bf x2} {\bf xI} & pass only values in interval {\bf x1} to {\bf x2}:\\
+& if  {\bf imId} $<$ {\bf x1} or {\bf imId} $>$ {\bf x2} then set {\bf imId} = {\bf xI} \\
+& \\
+range {\bf x1} {\bf x2} {\bf op} {\bf xI} &
+\begin{minipage}[t]{11.0cm}
+For values in the interval {\bf x1} to {\bf x2} apply the specified operation.
+{\bf op} should be one of =, +, $-$, * or /. Then:
+\newline
+if {\bf x1} $<$ {\bf imId} $<$ {\bf x2}  then set {\bf imId} = {\bf imId} {\bf op } {\bf xI} 
+\end{minipage} \\
+& \\
+quantize {\bf x1} {\bf x2} {\bf xI} & quantize image to values are multiples of\\
+& {\bf xI} in the range {\bf x1} to {\bf x2}\\
+& \\
+blank & set image to blank values\\
+& \\
+unblank {\bf x} & set all blank pixels to value {\bf x}\\
+& \\
+inv & invert the image; {\bf imId} = 1.0/{\bf imId}\\
+& \\
+& \\ \hline
+\end{tabular}
+\caption{The img\_apply command for modifying
+images.  The first argument to
+img\_apply must be a valid {\bf imId} and subsequent arguments are options
+as specified in this table applied sequentially.}
+\end{table}
+
+For example the following command averages four images:
+\begin{verbatim}
+   img_apply 0 += 1 += 2 += 3 scale 0.25
+\end{verbatim}
+
+In the following example we quantizes an image into a set of integer levels
+and then displays each level in turn.  To do this a temporary copy of the
+image is taken so that this can be used as work space:
+\begin{verbatim}
+   # quantize the image --- note the variable img1 just contains the the imId 0
+   set img1 [img_apply 0 quantize 0.0 100.0 1.0]
+
+   # make a copy for use as workspace
+   set img2 [img_geom $img1 subimage]
+
+   # loop and display all level using the img_display procedure
+   # note how img2 is constantly reset to img1
+   for {set n 0} {$n < 100} {incr n} {
+      set m [expr $n + 1]
+      img_apply $img2 = $img1 pass ${n}.0 ${m}.5
+      img_display $img2
+   }
+   img_image destroy $img2
+\end{verbatim}
+This loop in this example could have been written very compactly as:
+\begin{verbatim}
+   for {set n 0; set m 1} {$n < 100} {incr n; incr m} {
+      img_display [img_apply $img2 = $img1 pass ${n}.0 ${m}.5]
+   }
+\end{verbatim}
+Note that at the end of the operation we destroy the temporary image
+{\bf img2} --- in a long program without carefully destroying intermediate
+images the memory usage will rise quickly and you will eventually use up all
+the available image descriptors.
+
+\subsection{Geometrical transformations with img\_geom}
+
+The {\bf img\_geom} command is used to perform geometrical transformations
+on images.  Some of the operations result in new images others are
+performed ``in place'' --- if the operation is stricly reversible then the
+latter method is usually followed.
+
+Table 5 lists the options to the {\bf img\_geom} command --- the first
+argument to {\bf img\_geom} is the {\bf imId} of the image to transform
+the second is the tranformation option as listed in Table 5.
+
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Options} & {\bf Notes} \\
+& \\ \hline
+subimage {\bf subimage} &
+\begin{minipage}[t]{11.0cm}
+Extract a subimage for {\bf imId}.  The format of a subimage is described in
+section 1.3.  A new image is created by this command and the {\bf imId} of the
+new image is returned.
+\end{minipage} \\
+& \\
+project axis &
+\begin{minipage}[t]{11.0cm}
+Project the image along the specified axis.  The {\bf axis} argument
+should be one of {\bf x, y, z, t} or {\bf v}.  This reduces the
+dimensionality of the image by one.  The projection is accomplished
+by summing all pixels to be projected onto a given direction.  If
+any data selection is required (gating of the data for example) this
+should have already been performed.
+\end{minipage} \\
+& \\
+\begin{minipage}[t]{4.0cm}
+\flushleft
+bshift 
+?-dx {\bf x}?
+?-dy {\bf y}?
+?-dz {\bf z}?
+?-dt {\bf t}?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+Perform a barrel shift on the image with pixel offsets given
+x, y, z, t.  The defaults for the pixel offsets are 0 in all directions.
+A barrel shift shifts the image by an integer number of pixels in all
+dimensions and is performed using ``periodic boundary conditions'' so that
+pixels projected outside the image will be wrapped back onto the opposite
+side of the image.
+\end{minipage} \\
+& \\
+flip axis &
+\begin{minipage}[t]{11.0cm}
+Flip the image in the direction specified by axis.
+The {\bf axis} argument should be one of {\bf x, y, z, t}.
+\end{minipage} \\
+& \\
+transpose axis-list &
+\begin{minipage}[t]{11.0cm}
+Transpose the axes of the image.  The new order of the axes
+should be listed after the transpose option.  For example the
+following will transpose the x and y axes for an X-dimensional image:
+\begin{verbatim}
+   img_geom 0 transpose y x
+\end{verbatim}
+\end{minipage} \\
+& \\
+\begin{minipage}[t]{4.0cm}
+\flushleft
+slice {\bf subimage}
+\newline
+?-ndata {\bf ndata}?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+Extract a slice from the image.  The subimage format is used to
+specify the extent of the slice which is taken from (x1, y1, z1, t1, v1)
+to (x2, y2, z2, t2, v2).  The data are sampled along this slice to
+give {\bf ndata} points.  The slice is returned as a 1D image with
+vdim set to 2; the first vector argument is the length along the slice,
+the second is the interpolated image value.  This format is appropriate
+for display using the {\bf pg} extension.  {\bf ndata} defaults to 100.
+\end{minipage} \\
+& \\
+& \\ \hline
+\end{tabular}
+\caption{The img\_geom command for performing geometrical
+transformations to images.  The first argument to the command is
+the {\bf imId} of the image to transform, the second is the option
+as listed in this table.}
+\end{table}
+
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Options} & {\bf Notes} \\
+& \\ \hline
+\begin{minipage}[t]{4.0cm}
+\flushleft
+transform 
+\newline
+?-matrix \{{\bf matrix-elements}\}?
+\newline
+?-vector \{{\bf vector-elements}\}?
+\newline
+?-cvector \{{\bf cvector-elements}\}?
+\newline
+?-m11 {\bf m11}? ... ?-m44 {\bf m44}?
+\end{minipage} &
+\begin{minipage}[t]{11.0cm}
+Apply a generalised linear transform to the image.  The transform
+is specified in terms of a matrix and vector whose elements may be
+real, floating-point, values.  The transformation is applied to determine
+the mapping of the pixels of the new output image (the {\bf imId} of which is
+returned by this command) to those of the original image.  The number
+of elements supplied for the matrix must correspond to a square matrix
+and should form a propoer Tcl list.  The corresponding matrix is taken
+as the upper left sub-matrix of the full 4D tranformation matrix.
+If the matrix is $M$, the vector $V$ and the c-vector $C$, then
+pixels in the output image $po$ to the input image $pi$ are related by:
+\[
+po = V \; + M.(pi \; - \; C) \; + C
+\]
+therefore $V$ provides a linear translation and $M$ a general tranformation
+about a point $C$.
+\end{minipage} \\
+& \\
+& \\ \hline
+\end{tabular}
+\caption{The img\_geom command for performing generalised
+transformations to images.  The first argument to the command is
+the {\bf imId} of the image to transform, the second is the option
+as listed in this table.}
+\end{table}
+
+\end{document}

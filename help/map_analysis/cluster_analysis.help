@@ -1,0 +1,80 @@
+
+The command cluster-analysis can be used to create a data file containing
+the statistics of clusters of pixels in an image.  The analysis proceeds
+by firstly identifying clusters of pixels which fall within a sepcified
+range of pixel values from:
+
+     gate   to   gate + gate_width
+
+The clusters can be defined by identifying connected pixels as those either
+being nearest neighbours (edge-sharring, join-type 1) or as first + second
+nearest neighbours (edge- + corner-sharing, join type 2).  Two statistics are
+then calculated for these clusters:
+
+	i) A cluster-size distribution, i.e. the number of clusters of
+	a given size, where size is measured as the number of pixels in
+	a cluster, SIZE.
+	ii) The cluster second-moment distribution which gives the
+	root-mean second moment (RMSM)  of clusters of a given size.  For
+	circular clusters we expect SIZE to scale as RMSM**2.
+
+The analysis is performed for a range of gates between gate_min and gate_max
+in steps of gate_increment.  The parameter gate_width may be narrower or
+wider than gate_increment.
+
+Output is to a user specified file, not the anmap default file as the
+data are in a special format.  The format of the data file can be
+described as follows:
+
+   output a line giving: "number of gating levels"
+   foreach gate level 
+	output a line giving: 	"index" "gate" 
+				"gate+gate_width" "max_cluster_size"
+	for cluster_size from 1 to max_cluster_size
+		output a line giving:	"number of clusters of cluster_size"
+	for cluster_size from 1 to max_cluster_size
+		output a line giving:	"RMSM for clusters of cluster_size"
+
+Some F77 which would read the file is as follows:
+	integer   max_size, max_gates
+	parameter (max_size = 100, max_gates = 10)
+	integer   cl_dist(max_size,max_gates), cl_max(max_gates)
+	real*4    rmsm_dist(max_size,max_gates), gates(2,max_gates)
+	integer   ngates, n, i
+
+	read (iunit,*) ngates
+	do n=1,ngates
+	   read(iunit,*) i, gates(1,n), gates(2,n), cl_max(n)
+	   read(iunit,*) (cl_dist(i,n), i=1,cl_max(n))
+	   read(iunit,*) (rmsm_dist(i,n), i=1,cl_max(n))
+	enddo
+
+The parameters which must be supplied are as follows:
+
+Catalogue-entry
+	catalogue entry of image to analyse
+
+Join-type
+	type of join criteria to use for connected pixels:
+	1 == nearest neighbour
+	2 == nearest neighbour + second nearest neighbour
+
+Start-level, end-level, increment-level, width
+	The are the parameters:	gate_start, gate_end, 
+				gate_increment, gate_width
+	values to setup the gates so that on iteration n the gates
+	are from:
+		gate_1 = gate_start + (n-1) * gate_increment
+	to:
+		gate_2 = gate_1 + gate_width
+
+Results-file
+	file to which the output data in the format described above
+	is written.
+
+The are at present no standard tools for manipulating this results file.
+You can use either an editor, a simple tcl-script or youyr own program
+to extract relevant information in a form that you can display either
+in Anmap or some other application.
+
+*p

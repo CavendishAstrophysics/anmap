@@ -1,0 +1,21 @@
+#
+# Module: nmr-analysis
+#
+# This module defines NMR specific commands for Anmap.
+#
+#
+# add new global commands to Anmap
+command_create nmr-read-image -command $Anmap(src)/bin/nmr_read \
+               -global
+command_create nmr-image-read -command $Anmap(src)/bin/nmr_readImage\
+               -global
+command_create nmr-serial-read -command $Anmap(src)/bin/nmr_readSer\
+               -global
+command_create nmr-aphi-read -command $Anmap(src)/bin/nmr_readAmpPhase\
+               -global
+
+# add new analysis commands:
+map-analysis
+  command_create multi-slice-fit -command $Anmap(src)/bin/multi_slicefit
+exit
+

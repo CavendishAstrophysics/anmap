@@ -1,0 +1,19 @@
+
+There is a fairly detailed progammers guide in the file
+
+  /mrao/anmap_v7.5/examples/prog_guide.txt
+
+This programmers guide is also available on-line in this help section.
+There are in addition a number of example programs on which you can
+base new routines for Anmap in the directory:
+
+  /mrao/anmap_v7.5/examples
+
+please feel free to take copies of these examples and base your own
+code upon them.
+
+*1 programmers_guide
+*@$ANMSRC/examples/prog_guide.txt
+
+*1 libraries
+*@$ANMHELP/programming/f77_libraries.help

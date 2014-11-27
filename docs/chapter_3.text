@@ -1,0 +1,1574 @@
+                     1. THE ANMAP SYSTEM
+                     ___________________
+
+
+
+1.1 Introduction
+________________
+
+Anmap is a map analysis program currently available on the
+MRAO NORD cluster. This chapter describes the system features,
+filing system, map catalogue system and command
+interpretation.
+
+
+
+
+Sub-systems, Basic Commands and Utilities
+
+
+
+1.2 Command-Syntax
+__________________
+
+The command syntax follows NORD conventions. All commands are
+made up of separate components separated by dashes '--'. To
+specify a command you must supply a 'minimal match' to the
+command name and the string you type must be unambiguous. Each
+component between dashes is treated separately. For example
+suppose there are three commands:
+
+list-files, list-basic-commands, list-basic-files
+
+Clearly you can access each command by typing its full name,
+however the following are all valid abbreviations of the
+commands
+
+list-files              --   l-f,  list-f,  li-fi
+list-basic-commands     --   l-b-c,  list-b-c,  li-ba-co
+list-basic-files        --   l-b-f,  list-b-f,  li-ba-fi
+
+and are unambiguous. However, the following are ambiguous and
+will be faulted
+
+list  list-basic  l-b  li-ba  li
+
+After giving a command then you will be prompted for all the
+data needed. A default is always shown enclosed in square
+brackets '[ ]'. By typing return you will get this default.
+
+If you are using commands to which you know the input and the
+order in which you are asked it, you can specify all the data
+on the same line as the command (command-line) separated by
+commas ',' or spaces ' '. To take a default value just put two
+commas ',,'.
+
+
+
+1.3 The structure of Anmap
+__________________________
+
+
+
+
+
+1.3.1 Sub-Systems
+1.3.1 Sub-Systems
+
+Anmap is structured hierarchically into a number of sub-
+systems used to group together commands with similar
+functions. When you enter Anmap you are in the basic sub-
+system, other sub-systems are entered by typing the name of
+the sub-system -- having done this you will have a new list of
+commands specific to the sub-system you have entered. The sub-
+systems currently available are
+
+
+map-display                  -- display maps as contours etc.
+map-analysis                 -- analyse and manipulate maps
+clean                        -- run CLEAN
+results-analysis             -- analyse results file
+synchrotron-analysis         -- analysis of synchrotron spectra
+edit-redtape                 -- corrections to map redtapes
+map-catalogue                -- management of the map catalogue
+file-system                  -- file management command
+batch-monitor                -- batch monitor commands
+anmap-monitor                -- system utilities
+error-report                 -- suggestions utility
+
+
+To access a command in another sub-system and then return to
+the current sub-system you can type the sub-system name
+immediately followed by the command (and then optionally any
+associated data). For example, suppose we are in map-display
+and wish to invoke the scan-map map-utility, simply type:
+
+      map-analysis scan-map 1,,,,,
+
+to obtain statistics on the whole map. On completion, command
+will return to the map-display sub-system -- i.e. the Map-
+Display> prompt will be displayed.
+
+
+
+1.4 Basic-Commands
+__________________
+
+Basic commands are available in all sub-systems and are the
+only commands available in the main sub-system when you first
+enter Anmap and have the Anmap> prompt. The main sub-system
+differs from the other in the sense that the only way you can
+return to it is to exit from one of the other sub-systems. The
+basic-commands include commands for changing sub-system and
+additionally the following: [1]
+
+
+
+____________________
+
+[1]  In addition to basic commands some procedures are defined
+     to work in all sub-systems: these procedures appear to
+     the user exactly as basic commands and are included in
+     the following table although they are not listed with the
+     list-basic-commands command. These procedures emulate
+     functions of commands (with the same name) in other sub-
+     systems and the action of these commands are fully
+     described in the approriate sections of the manual.
+Basic Commands
+help                         -- obtain help on commands
+news                         -- find out about latest changes
+list-basic-commands          -- list the basic commands
+edit-file                    -- edit a text file
+display-version              -- display the current Anmap version
+redtape                      -- print the redtape of a map
+log-utility                  -- manage the log file
+quit                         -- leave the current sub-system
+exit                         -- leave the current sub-system
+
+Procedures Avaiable in All Sub-Systems
+cursor-position              -- read from a map using the cursor
+add-to-catalogue             -- add maps to the catalogue
+list-catalogue               -- list maps in the catalogue
+remove-from-catalogue        -- remove maps from the catalogue
+delete-catalogue-entry       -- delete a map from disc
+delete-temporary-map         -- delete-temporary-maps
+type-file                    -- type a disc file
+print-file                   -- print a disc file
+
+
+1.4.1 Help
+1.4.1 Help
+
+A help facility is provided to explain the various commands
+available. Just typing help will cause you to be prompted for
+the output file; press return to specify the terminal or
+printer for the line printer and you have now entered the help
+system. This is identical to the help system available at the
+nord "@" prompt and is very similar to news and the help on a
+VAX. A list of topics help knows about will appear on the
+screen followed by the prompt topic>. To find out more about a
+particular topic simply type the name of the topic required
+(as with news described above). Some information will now be
+printed on the terminal with possibly another set of options
+-- note how the prompt changes so that you know where you are
+in help. Help is organized in a hierarchical way, it is
+probably worth spending some time exploring help now before
+doing anything else. To exit help simply press return a number
+of times -- this moves you back up through the help tree, or
+type ESC to return immediately to the Anmap> prompt.
+
+In addition to using help you can obtain a list of all the
+current commands and a brief indication of what they do simply
+by typing a question mark '?', while
+
+      ? delete,,,
+
+will list all commands beginning delete.
+
+
+1.4.2 News
+1.4.2 News
+
+The news command is similar to the help command in the way it
+works, but provides information on the latest changes to Anmap
+and any new facilities etc. that are available -- you may
+often be directed to news when you first enter Anmap.
+
+
+
+1.4.3 List-Basic-Commands
+1.4.3 List-Basic-Commands
+
+This command will list the basic commands together with a
+short description of what they do and will work within any
+sub-system. For more information use help in the main sub-
+system.
+
+
+1.4.4 Display-Version
+1.4.4 Display-Version
+
+The title, version number and version date of Anmap are
+printed on the screen. This command is obeyed in the system
+initialisation file. If you have your own initialisation file
+you can avoid this message when starting Anmap.
+
+
+1.4.5 Log-Utility
+1.4.5 Log-Utility
+
+Parameters: option
+
+The log-file utility specifies a way of logging results from
+certain command -- see also the entry on the results file.
+
+
+Options:
+
+
+OPEN: <filename>
+
+Specify and begin output to a log file. If the filename is
+omitted then the default log file name is used. Output from
+certain routines will be sent to the log file when open.
+
+
+CLOSE:
+
+Close the current log file and terminate the spooling of
+output to it. The contents of the file may now be typed or
+printed.
+
+
+COMMENT: <text>
+
+Add the specified "text" to the open log file.
+
+
+TITLE:
+
+Add the map title to the log file for future reference. The
+log file must be open.
+
+
+1.4.6 Error-Report
+1.4.6 Error-Report
+
+Error-Report is a simple sub-system with commands to list old
+error reports or type and print them and of course to add to
+them. Please add you comments/gripes provided they are are
+clean!. Use HELP in error-report for more information.
+
+
+Commands:
+
+LIST-ENTRIES  list the current entries
+TYPE-ENTRY    type an entry
+PRINT-ENTRY   print an entry
+ADD-ENTRY     add an entry to the file
+
+When you add an entry to the file a '>' prompt will appear
+which signifies that textual input is required. Terminate the
+input with ESC.
+
+
+1.4.7 Redtape
+1.4.7 Redtape
+
+Parameters: map-entry, output-file
+
+The redtape command can be used to display the redtape from a
+map in the map catalogue. You will be prompted for the map to
+examine and the output file to which printout of the redtape
+is to be sent -- type return to get the output to appear on
+your terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Handling Images and Maps
+
+The map-catalogue is a machine independent map storage system
+used by Anmap. There is a separate sub-system with a simple
+and advanced mode -- once you become familiar with the map
+catalogue you may well wish to use some of the facilities of
+the advanced mode, perhaps in you initialisation file. You
+will have to use the simple mode commands of the map catalogue
+
+
+
+1.5 Introduction
+________________
+
+This section describes basic use of the map-catalogue system.
+A wide variety of commands exist to manipulate the catalogue,
+but in general you need only a very few commands the most
+important being:
+
+add-to-catalogue
+remove-from-catalogue
+list-catalogue
+
+These are available within the map-catalogue sub-system, they
+are also available as standard procedures and are therefore
+available also from any Anmap sub-system.
+
+To compile a catalogue of all the maps on your default map
+directory you should type:
+
+      add-to-catalogue ,,
+
+You will then be prompted to confirm each map in turn -- as
+the default is yes (i.e. include the map in your catalogue)
+simply typing carriage return (or more conveniently a series
+of commas ',,,,,,,') will speed this process up.
+
+Note that the catalogue is held in a file on your user
+directory and therefore you do NOT need to re-make the
+catalogue each time you enter Anmap as it is remembered by the
+system. You will find a number of files on your file space of
+type :MCTG these are in fact the files holding the catalogue
+and you should not delete them.
+
+The command list-catalogue will produce a listing on the
+terminal of all the maps in your catalogue. Each map is
+uniquely identified by its catalogue number, however you can
+also refer to a map in your catalogue by name. For example the
+output from list-catalogue may look something like the
+following:
+
+
+
+
+
+
+
+
+
+
+
+
+Catalogue entries for catalogue: map-catalogue:mctg
+Entry   Source                   Program         Size     Access
+----------------------------------------------------------------
+  1     NGC4045-F1P4-MAP         FITSREAD      128 x 128
+  2     NGC4045-F1P4-MAP         REPROJ        128 x 128   T
+  3     NGC4045-F1P4-MAP         SHRINK         30 x  30   T
+  4     NGC1002-F1P4-MAP         MAPPER        128 x 128
+  5     NGC1002-F1P4-BEAM        MAPPER        256 x 256
+  6     NGC1002-F1P4-CLN         CLEAN         128 x 128   T
+  7     NGC1002-F1P4-RESI        CLEAN         128 x 128   T
+  8     NGC500-F1P4-MAP          FITSREAD      128 x 128
+  9     NGC500-F1P4-BEAM         FITSREAD      256 x 256
+ 10     NGC500-F1P4-CLN          CLEAN         128 x 128   W
+ 11     NGC500-F1P4-RESI         CLEAN         128 x 128   W
+
+The first column is the catalogue entry number; the second is
+the map (usually source) name -- note the last element is the
+map type; the third column is the last program used to operate
+on a map; the fourth column is the map size and finally the
+access state.
+
+To refer to a particular catalogue entry you may do so by
+number, catalogue name or disc file name. For example suppose
+you want to contour map number 3. In map-display in Anmap you
+can set the map using any either of the following
+
+      set-map  3
+      set-map  ngc4045-f1p4-map-shrink
+      set-map (map-user:paul-a)ngc4045-f1p4:map
+
+note how the program name is used to distinguish maps with the
+same source name. Of course NGC4045-F14P4-MAP would be
+ambiguous. You may use the normal abbreviation rules for the
+map name. The third example assumes the associated disc file
+for the map is in the directory maps-user:paul-a. The rules on
+how your response to a prompt for a map-entry are interpreted
+are as follows:
+
+(i)  If the user types an integer which is a valid catalogue
+     entry number then it is assumed that this is the
+     intention. If the catalogue entry does not in fact
+     contain an entry for a valid map available for read/write
+     then an error is generated.
+
+(ii) If the user's response is not a valid catalogue entry and
+     does not begin with a bracket '(' or contain a ':' then a
+     check is made to see if the response is a valid
+     abreviation of a catalogue entry name (the concatenation
+     of the souce name and program name separated by a dash).
+     If a match is found then this is taken to be the
+     catalogue entry. If no match is found then the response
+     is interpreted as a disc file name and processing is as
+     in (iii). If the response matches more than one catalogue
+     entry then this is taken as an error.
+
+(iii)If no match is found to the user's response or the
+     respnse contains an explicit file-system character '(',
+     or ':', then the response is interpreted as a file name.
+     If one or more disc files are found matching the user's
+     response then a prompt is given requesting confirmation
+     that the named file should be used. If the response to
+     this last prompt is affirmative then the file is added to
+     the catalogue and that catalogue entry used. If more than
+     one disc file is found and selected by the user then all
+     files are added to the catalogue, and the last file to be
+     added taken as the required catalogue entry. If the file
+     name matches that of a file already in the catalogue then
+     the map is not added to the catalogue a second time, but
+     rather the user is informed that the specified map is in
+     the catalogue and that catalogue entry is used.
+
+When a new map is created (for example after SHRINKing) a new
+entry will appear in the catalogue with the same source name
+but updated program name -- it is therefore easy to keep track
+of data processing. The 'T' to the right hand side of
+catalogue entry 3 indicates that this is a Temporary map. This
+simply means that the map does not have a proper disc file
+name, but rather an anonymous name. For most purposes this
+need not concern you as you can access the map in Anmap in the
+way just described, however if for some reason you want to use
+the map outside the new MRAO software or allow other users
+access, or want to make a more permanent map entry on disc or
+magnetic tape, then you should use the export-permanent-map
+command in catalogue-system (in fact this just renames the
+disc file).
+
+The 'W' access state indicates the map has been opened for
+WRITE -- in our example by an offline CLEAN process, when
+complete the W will change to a T. Similarly the R indicates
+the map is open for READ. These maps (which are being accessed
+by other programs) are not available for you to use.
+
+The remove-from-catalogue command enables you to remove a
+catalogue entry -- it does not delete the corresponding disc
+file. It is not possible to remove a temporary map, in this
+case use export-permanent-map or the delete-catalogue-entry
+command.
+
+The delete-catalogue-entry command removes the entry from the
+catalogue and deletes the associated disc file thereby
+releasing disc space.
+
+In advanced mode in the catalogue-system you will find
+commands to change the default action of Anmap. For example
+the command report-mode on sets a flag which means that at the
+end of any command which creates a new catalogue entry a
+message appears on your terminal telling you where the new map
+is to be found. Similarly the command check-temporary-maps on
+will on exit from Anmap prompt you to see if you want to
+delete any temporary maps. This can be a very useful feature
+to avoid your disc space becoming clogged up. You may find it
+useful to put these options into your Anmap initialisation
+                                      Anmap initialisation
+file, to do this simply create a file called ANMAP-INIT:COM on
+file, to do this simply create a file called ANMAP-INIT:COM on
+your default file space using the editor and put in the
+your default file space using the editor and put in the
+following commands:
+following commands:
+
+display-version
+display-version
+catalogue-system report-mode on
+catalogue-system report-mode on
+catalogue-system check-temporary-maps on
+catalogue-system check-temporary-maps on
+and the two actions described above will happen each time you
+and the two actions described above will happen each time you
+use ANMAP.
+use ANMAP.
+
+
+
+1.6 Standard Mode Commands
+__________________________
+1.6 Standard Mode Commands
+
+
+1.6.1 list-catalogue
+1.6.1 list-catalogue
+
+Parameters: low-catalogue-limit, high-catalogue-limit
+
+This command lists the contents of the catalogue to the
+terminal. The output will have the following structure:
+
+
+Catalogue entries for catalogue: map-catalogue:mctg
+Entry   Source                   Program         Size     Access
+----------------------------------------------------------------
+  1     NGC4045-F1P4-MAP         FITSREAD      128 x 128
+  2     NGC4045-F1P4-MAP         REPROJ        128 x 128   T
+  3     NGC4045-F1P4-MAP         SHRINK         30 x  30   T
+  4     NGC1002-F1P4-MAP         MAPPER        128 x 128
+  5     NGC1002-F1P4-BEAM        MAPPER        256 x 256
+  6     NGC1002-F1P4-CLN         CLEAN         128 x 128   T
+  7     NGC1002-F1P4-RESI        CLEAN         128 x 128   T
+  8     NGC500-F1P4-MAP          FITSREAD      128 x 128
+  9     NGC500-F1P4-BEAM         FITSREAD      256 x 256
+ 10     NGC500-F1P4-CLN          CLEAN         128 x 128   W
+ 11     NGC500-F1P4-RESI         CLEAN         128 x 128   W
+
+Notes:
+Column  Meaning
+  1     The catalogue entry number.
+  2     This is the NAME of the catalogued map. The first
+        element is the source name, taken from the disc file
+        name. The last element is the map type again taken
+        from the disc file name.
+  3     The PROGRAM name is the last program or routine used
+        to create the data. It forms an intrinsic part of the
+        full name for the catalogue entry which is: SOURCE-
+        PROGRAM
+  4     The size of the map.
+  5     The access state:
+        T   --   Temporary map; this will have an anonymous
+        disc name.
+        V   --   Map stored on a VOLUME (e.g. Magnetic Tape)
+        R   --   Opened for READ
+        W   --   Opened for WRITE
+
+
+1.6.2 add-to-catalogue
+1.6.2 add-to-catalogue
+
+Parameters: file-description, check-on-each-file
+
+Add maps to your catalogue. You will be requested for a file
+description. By default your default maps directory will be
+assumed. All maps matching the file description you supply
+will be added to the catalogue using the lowest unused
+entries. You will be prompted to confirm each entry into the
+catalogue. Minimal matching of course applies. Only files with
+recognized map types will be matched. The recognized map types
+for disc files are as follows:
+
+
+                   map ,  imap, qmap, umap
+                   cln ,  icln, qcln, ucln
+                   beam,  bset, resi, ccmp
+                      mI  ,  pol , chi
+
+If the map is already in the catalogue it will not be added
+for a second time, but a message will be printed saying the
+map is already in the catalogue and reporting the
+corresponding catalogue entry number.
+
+It is possible to turn of the prompt requesting confirmation
+of each map; to do this use the advanced mode command prompt-
+state off. For example to add all the maps on your default map
+space to the catalogue type:
+
+      catalogue-system
+      advanced-mode on
+      prompt-state off
+      add-to-catalogue ,,,
+      exit
+
+This will take a little time to complete especially if you
+have a large number of maps on your file space.
+
+
+1.6.3 remove-from-catalogue
+1.6.3 remove-from-catalogue
+
+Parameters: catalogue-entry
+
+Remove the specified map catalogue entry from the catalogue.
+You may refer to the catalogue entry by name or catalogue
+number. This command simply removes the entry in the
+catalogue, it does not delete the disc file. It is not
+possible to remove entries to temporary maps as these do not
+have proper disc file names. You should use export-permanent-
+map followed by remove-catalogue-entry for such maps or
+delete-catalogue-entry if you do not wish to retain the data.
+
+
+1.6.4 export-permanent-file
+1.6.4 export-permanent-file
+
+Parameters: catalogue-entry, permanent-file-name
+
+A map created with Anmap is created as a temporary map and
+given an anonymous name on disc. To give the file a more
+permanent (and normal) file name use this command. You will be
+prompted for the catalogue entry and the new file name. Note
+that it is not possible to specify a directory to the name --
+the map already resides on your default maps directory.
+
+You should use this command if you want to keep the map
+(semi)-permanently or to allow other users access to it.
+
+On successful completion the command will report the new
+permanent disc file name.
+1.6.5 delete-catalogue-entry
+1.6.5 delete-catalogue-entry
+
+Parameters: catalogue-entry, confirmation-of-deletion
+
+This command removes a map from the catalogue and deletes the
+associated disc file. You should not use the delete-file
+command to delete a map which has a catalogue entry as this
+will lead to a misleading state of affairs. It is possible to
+delete temporary maps with this command.
+
+You will be prompted before the disc file is deleted (this is
+true also for the anonymous files associated with temporary
+maps). It is possible to turn this prompting off, use the
+advanced mode command prompt-state.
+
+
+1.6.6 rename-catalogue-entry
+1.6.6 rename-catalogue-entry
+
+Parameters: catalogue-entry, new-name
+
+You may change the source part of the catalogue entry name
+with this command. This does not change the name of any
+associated disc file, simply the name by which it is known in
+the catalogue system. This may be useful to rename maps
+created by Anmap etc, where the source name is taken (in
+general) from the input catalogue entry and is therefore left
+unchanged.
+
+
+1.6.7 set-default-map
+1.6.7 set-default-map
+
+Parameters: default-map
+
+Set the value of the default map. This will be displayed as
+the default in future prompts for a map or map-catalogue
+entry.
+
+
+
+1.7 Temporary Maps
+__________________
+
+New maps created by Anmap are written to disc and an entry
+made in the catalogue. Temporary catalogue entries are
+identified by an access state of T. These are permanent files
+and remain after exit from Anmap (or any other program) and
+after logging off. You may wish to give them more permanent
+names however and for this purpose you can use the export-
+permanent-map command. The delete-catalogue-entry command can
+also be used on temporary maps to remove their catalogue entry
+and the disc file.
+
+
+1.7.1 delete-temporary-maps
+1.7.1 delete-temporary-maps
+
+This command enables you to delete all temporary maps in your
+catalogue. Its action is identical to repeated use of the
+delete-catalogue-entry command applied to temporary maps. By
+default you will be prompted for each temporary map to delete,
+however you can turn this prompting off by using the advanced-
+mode command prompt-state off.
+
+1.8 Advanced Mode Features
+__________________________
+
+There are a number of commands available under advanced-mode
+in the catalogue-system. Some are concerned with debugging
+purposes and should not concern most users, however the re-
+initialise-catalogue command is a quick way to scrap all
+catalogue entries; it will leave temporary files on disc and
+should therefore be proceeded by a delete-temporary-files
+command. Three commands change the default state of affairs --
+prompt-state, report-mode, check-temporary-maps, while the
+command default-map-directory may be used to change the
+default map directory from the system default for the current
+user.
+
+
+1.8.1 report-mode
+1.8.1 report-mode
+
+Parameters: on/off
+
+Turn report mode on or off. When the report state is enabled
+the program will tell you when it creates a new map and where
+this is located, when it is turned off this information is
+suppressed but of course you can find out by using the list-
+catalogue command.
+
+
+1.8.2 prompt-state
+1.8.2 prompt-state
+
+Parameters: on/off
+
+Turn prompting on/off for certain commands. The following
+command sequence can be used to initialise your catalogue with
+all the maps on your default map directory:
+
+      catalogue-system
+      advanced-mode on
+      re-initialise-catalogue
+      file-manager maps-user:my-name delete-expired-files ,,,
+      re-initialise-stack
+      prompt-state off
+      add-to-catalogue ,,,
+      list-catalogue
+      prompt-state on
+      exit
+
+For details ofwhat each of the above commands is doing see
+appropriate entry in the section of the manual.
+
+
+1.8.3 check-temporary-maps
+1.8.3 check-temporary-maps
+
+Parameters: on/off
+
+This command enables you to check temporary maps on exit from
+Anmap prompting for which ones to delete. By default no
+checking is done and all temporary maps remain intact.
+
+
+
+
+1.8.4 default-map-directory
+1.8.4 default-map-directory
+
+Parameters: directory-name
+
+Change the default map directory from the system default. This
+has the effect that all temporary maps are written to this
+file space. It is therefore essential that:
+
+(1)  You are the only user of this space otherwise data
+     integrity cannot be guaranteed (in fact it won't work).
+
+(2)  You have create access to the file space.
+
+The most useful file space to redirect things to therefore is
+your normal default file space as opposed to your map space.
+
+
+1.8.5 re-initialise-catalogue
+1.8.5 re-initialise-catalogue
+
+Scrap all the catalogue entries. This command will leave
+temporary maps on disc without any catalogue entry. To list
+paged maps use the normal file system commands -- temporary
+maps have the file type :PMAP and are to be found on the
+normal maps directory. Note that it is also possible to delete
+the catalogue file itself as this will be re-created, the file
+is
+
+                      MAP-CATALOGUE:MCTG
+
+on your normal file space.
+
+If you wish to scrap completely all temporary maps in your
+catalogue and re-initialise it the following command procedure
+is recommended:
+
+      catalogue-system
+      advanced-mode on
+      prompt-state off
+      delete-temporary-maps
+      prompt-state on
+      re-initialise-catalogue
+      re-initialise-stack
+
+
+1.8.6 re-initialise-stack
+1.8.6 re-initialise-stack
+
+This command re-initialises the stack which is used to hold
+map data. The main effect is that all subsequent map accesses
+will have to read their data from disc. If for any reason
+there is a fear of an update anomaly or the internal store
+being corrupted this command may be useful. This command
+should not be needed (or used) by most users.
+
+
+1.8.7 edit-catalogue-entry
+1.8.7 edit-catalogue-entry
+
+Alter the numeric entries in the map status word for the
+                                    _      _
+specified catalogue entry. Consult the program source for the
+current meaning of each entry. The entry must be referred by
+number. If a catalogue entry appears to be unusable for some
+reason then simply set all the entries to zero (0). This
+command is for expert use only.
+
+
+1.8.8 edit-stack-entry
+1.8.8 edit-stack-entry
+
+Alter the numeric entries in the stack status word for the
+                                      _      _
+specified stack entry. Consult the program source for the
+current meaning of each entry. Note that the command re-
+initialise-stack is a safe and easy way to clear up any
+potential problems with the stack -- the catalogue is not
+affected in any way. This command is for expert use only.
+
+
+1.8.9 display-catalogue-entry
+1.8.9 display-catalogue-entry
+
+Display the full entry for the catalogue-entry including the
+map status word. The entry must be referred by number. Do not
+   _
+use this command unless you are aware of the meaning of the
+output (which is only of any interest to programmers), normal
+users may found the output confusing and worrying! This
+command is for expert use only.
+
+
+1.8.10 display-stack-entry
+1.8.10 display-stack-entry
+
+Display the full entry for the stack-entry including the
+stack status word. This command is for expert use only.
+     _
+
+
+1.8.11 clear-allocation
+1.8.11 clear-allocation
+
+This command clears any allocation (READ or WRITE) for a
+catalogue entry (referred by number). This command may be
+useful when a catalogue entry appears unusable: for example an
+R (read) or W (write) state are associated with the entry; a
+catalogue entry may not contain any data, but the program
+skips using it when choosing output map catalogue entries.
+Problems of the above kind can be caused by batch jobs
+crashing, bugs in the program, or perhaps Anmap or SINTRAN
+crashed during a procedure.
+
+
+1.8.12 define-directory
+1.8.12 define-directory
+
+Parameters: Catalogue file
+
+Define a new map-catalogue directory. If the map catalogue
+directory file does not exist (type :MCTG) it will be created
+and initialised when the command change-directory is given. A
+maximum of six directory files may currently be defined.
+
+
+1.8.13 list-directories
+1.8.13 list-directories
+
+List all the directories defined.
+
+
+
+
+1.8.14 change-directory
+1.8.14 change-directory
+
+Parameters: Catalogue file
+
+Select a new map-catalogue directory file. The directory must
+have already been defined using the define-directory command.
+This provides a mechanism for using a number of directories so
+as to organize your work in a more systematic manner.
+
+
+1.8.15 remove-directory
+1.8.15 remove-directory
+
+Parameters: Catalogue file
+
+Remove the previous definition to a map catalogue directory.
+It is not possible to remove the definition of the default map
+catalogue file (map-catalogue:mctg). This command does not
+delete the map catalogue file on disc (if you wish to do this
+simply use the delete-file command in the file-system sub-
+system).
+
+
+1.8.16 file-manager
+1.8.16 file-manager
+
+Parameters: file-space, option, data
+
+The file manager utility is a way of clearing up temporary
+maps. Two options exist -- one to list all temporary maps and
+their owners given a directory search expression (list-owners)
+and the other to delete temporary maps again using a directory
+search expression and an expiry date. (delete-expired-files).
+Managers of common user file spaces will periodically delete
+all temporary maps older than a few working days on the file
+spaces -- you are responsible for managing you own file space.
+The expiry date is defined so that all temporary maps created
+before the specified date will be deleted.
+
+
+1.8.17 verify-catalogue
+1.8.17 verify-catalogue
+
+After the deletion of disc files it is possible for you map
+catalogue to have update anomalies whereby files it thinks
+exists on disc no longer do so. The verify-catalogue command
+verifies the entries in you catalogue and removes such update
+anomalies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The NORD Filing System and File-System Commands
+
+
+
+1.9 Disc files
+______________
+
+Disc files are files stored on the permanent hard discs. On
+the NORD the filing system allows just one directory per user:
+you may or may not have some of your own disc space. The
+directory may be specified when you specify a file name by
+enclosing it in round brackets before the file name. At the
+SINTRAN command level the default directory will be something
+like:
+
+user-one:user-name
+
+where user-name is your user identifier. You may also have a
+separate directory for data (maps / images): on the the CLFST
+machine this is likely to be:
+
+maps-user:user-name
+
+There are also common user file spaces with names such as:
+
+maps-telescope:ryle
+maps-telescope:t151
+
+which you may also be allowed to use for images and maps. Maps
+produced from surveys etc. are stored on the 'maps-archive:'
+directory. The common filespaces are usually over loaded, you
+are asked to backup and delete your files as often as
+possible. From time to time we have very hard purges of files
+stored on these file spaces. By default Anmap will read from
+and write to your personal map-space although this can be
+changed within the map-catalogue sub-system.
+
+The next part of the filename is the name itself. This
+consists of a series of parts separated by dashes '--'. To
+specify a filename you only have to specify enough between
+each dash to make the name unique -- the machine uses minimal
+matching as for commands. It is a good idea to be systematic
+about naming files. We insist that on all the common user file
+spaces the first part of the file name should be the source or
+field name. This part of the file name must not exceed 16
+characters.
+
+The final part of the file name is the file type. This is
+appended to the name and is separated by a colon ':'. The file
+type may be up to four alphanumeric characters in length, but
+again we try to use a set of standard types, the ones you will
+need to know about are:
+
+
+
+
+
+
+
+
+
+
+:symb         --   text file which can be typed or printed
+:data         --   text file or formatted data file
+
+:mode         --   SINTRAN mode (command file)
+:com          --   command language command or procedure file
+
+:map          --   map / image data
+:imap         --   map / image data in Stokes parameter I
+:qmap         --   map / image data in Stokes parameter Q
+:umap         --   map / image data in Stokes parameter U
+:cln          --   CLEANed map / image data
+:icln         --   CLEANed map / image data in Stokes parameter I
+:qcln         --   CLEANed map / image data in Stokes parameter Q
+:ucln         --   CLEANed map / image data in Stokes parameter U
+:ccmp         --   CLEAN components image
+:resi         --   residual map
+:beam         --   beam map
+:bset         --   beam set map
+:mI           --   polarization intensity image
+:chi          --   position angle image
+:perc         --   percentage polarization image
+
+:samp         --   sample file for CLFST data
+:s5           --   sample file for RYLE telescope data at 5GHz
+:s15          --   sample file for RYLE telescope data at 15GHz
+:axy          --   old-style 5-km spacings
+
+:log          --   log file from batch job
+:out          --   log file from mode file (compilation / linking)
+:mode         --   a mode or batch file
+:bsub         --   batch file used for offline processes
+
+:ctlg         --   CAR system type catalogue (either text or binary)
+:dscf         --   CAR system description file for :ctlg file
+:mctg         --   map catalogue file
+
+:fort         --   FORTRAN source code
+:help         --   formatted help file
+:nrf          --   compiled source
+:dom          --   ND 500 program
+
+
+The formal definition is:
+
+remote.(volume:user)file-parts-thus:type
+
+where remote is the name of a remote NORD computer networked
+using the COSMOS networking system.
+
+
+Examples:
+
+(maps-telescope:ryle)3c61p1-f5-raw:map
+(user-one:paul-a)3c319-f5-raw:cln
+(anmap)anmap-load:mode
+
+
+
+
+1.10 The File-System Sub-System
+_______________________________
+
+This sub-system provides a number of file system commands and
+is preferable to use of SINTRAN commands. (Note that other
+programs can not be run from within Anmap as command will
+return to SINTRAN and not Anmap on completion. Many file-
+system utilities which are commonly used are in fact programs
+-- e.g. examine-files, type-file -- and may not be used. So
+that you do not have to remember the distinction we recomend
+always using the file-system sub-system commands.).
+
+
+1.10.1 List-Files
+1.10.1 List-Files
+
+Parameters: file-specification
+
+All the files matching the file-specification are listed on
+the terminal; this is considerably faster than examine-files
+as no formatting is performed. If a directory is not specified
+then the default directory (as set using default-directory)
+will be used.
+
+
+1.10.2 Print-File, Type-File
+1.10.2 Print-File, Type-File
+
+Parameters: file-name
+
+Print the specified file on the printer or type the file to
+the terminal using the commands print-file and type-file
+respectively. If the directory is not given then the default
+directory is assumed. The file name should be unique.
+
+
+1.10.3 Delete-Files
+1.10.3 Delete-Files
+
+Parameters: file-specification
+
+Delete (a) disc file(s). All files matching the specified text
+are deleted, the user is prompted before any deletion. If a
+directory is not specified then the default directory is used.
+You will be prompted in turn to confirm deletion -- the
+standard minimal matching criteria apply.
+
+
+1.10.4 Rename-File
+1.10.4 Rename-File
+
+Parameters: old-file-name, new-file-name
+
+Rename a disc file. The new filename must not include a
+directory, if a directory is not specified on the input
+filename then the default directory will be used.
+
+
+1.10.5 Examine-Files
+1.10.5 Examine-Files
+
+Examine-files produces a compact listing of file statistics
+information for files on disc, or files on magnetic tape.
+Various options are available for selecting and ordering the
+information produced. For files on disc, the program works by
+reading and analysing the object entries of all files matching
+a given filename. For files on tape, the program scans the
+volume listing files produced by the TAPEREAD or BACKUP-SYSTEM
+utilities, and prints the entries for matching files.
+
+
+Options:
+
+The options available for files on disc are:
+
+
+  LIST        order by file index number (default)
+  ALPHABETIC  alphabetic order by file name
+  TYPE        alphabetic order by file type
+  BYTES       order by file size, using the byte count
+  PAGES       order by file size, using the page count
+  CREATED     order by the date of file creation
+  READ        order by the date last opened for read
+  WRITE       order by the date last opened for write
+  DISC        order by the disc address
+  OBJECT      dump file object entry for each file
+  DELETE      delete the specified file(s)
+
+
+For files on magnetic tape, use the option:
+
+  TAPE        examine magnetic tape volume listings
+
+
+
+Notes:
+
+Note that if a (directory:user) component is included in the
+input filename, then all matching filespace will be scanned.
+If no user name is quoted, then the default filespace only
+will be examined.
+
+
+1.10.6 Examine-Maps
+1.10.6 Examine-Maps
+
+This is an interactive program for dealing with map files on
+disc. It will prompt for the following parameters :
+   <map filename>:
+          all files matching this name will be examined in
+          turn.
+
+   <option>:
+          one of the following options can be selected :
+
+   LIST
+          (the default) prints filename, file size and date
+          created.
+
+   TITLE
+          prints the redtape title for each map.
+
+   ASTRO
+          prints the astronomical redtape for each map.
+
+   COMPUTING
+          prints the computing redtape for each map.
+   MAPPING
+          prints the map making redtape for each map.
+
+   REDTAPE
+          prints the complete redtape for each map.
+
+   SAVE
+          adds the filename to a list of maps to be saved on
+          magnetic tape.
+
+   DELETE
+          deletes the map file (beware this option!).
+
+   CLEAR
+          deletes saved maps more than one month old.
+
+   TAPE
+          searches tape listings for a match to the filename.
+
+   QUIT
+          exits from this program.
+
+   INTERACTIVE
+          interactive mode. In this mode the program will
+          produce a prompt for each file in turn, and one of
+          the above options can be selected.
+
+   <tape volume>:
+          for the TAPE option, specify the tape volume to be
+          searched: tape listings for all volumes matching
+          this name will be searched in turn. The default is
+          to search the tape volume listings on files
+          (T151)MAPxxx:VOL. The tape listings are produced by
+          the TAPEREAD program (see below).
+
+   <output file>:
+          in non-interactive mode the output can be written to
+          a disc file a printer or the terminal (the default).
+
+<manual check>:
+          interactive mode is offered for the DELETE or CLEAR
+          options to the terminal.
+
+
+Examples:
+
+(1)  EXAMINE-MAPS (MAPS-TELESCOPE:T151)3C169,SAVE,,
+
+will add all files matching (MAPS:T151)3C169:MAP to the list
+of maps to be saved on tape.
+
+(2)  EXAMINE-MAPS (MAPS-TELESCOPE:RYLE)3C452,TITLE,3C452:LIST
+
+will write the redtape titles for all 3C452 maps on MAPS-
+TELESCOPE:5KM to the disc file 3C452:LIST.
+
+(3)  EXAMINE-MAPS,,TAPE,(38MHZ)MAP010,,
+
+will list all maps saved on tape volume MAP010, owned by user
+38MHZ.
+(4) The program is probably most useful in interactive mode :
+
+     EXAMINE-MAPS (MAPS-TELESCOPE:T151) INTERACTIVE
+
+will interactively examine all maps on disc belonging to user
+T151.
+
+
+
+Saving maps on tape:
+
+The SAVE option in EXAMINE-MAPS produces a list of maps to be
+copied to tape, on a file known as a save list. This file is
+(T151)SAVE-MAPS:LIST for 151MHz maps, (38MHZ)SAVE-MAPS:LIST
+for 38MHz maps, and for other frequencies a file called SAVE-
+MAPS:LIST owned by the current user will be created. The save
+list can then be used as input to the BACKUP-SYSTEM utility to
+dump all of these maps to tape.
+
+
+
+Example:
+
+(1) Log on as user T151 or 38MHZ, the owner of the archive
+tapes. The archive tapes are called MAPS01, etc: use the most
+recent tape.
+
+(2) If you have to start a new tape:
+
+  @BACKUP-SYSTEM
+  Ba-sy: CREATE-VOLUME
+     Volume name: MAPS10
+      Device name: MAG-TAPE-1
+      Device unit '0' :
+
+(3) Dump the maps on tape:
+
+  Ba-sy: COPY-USER-FILES
+     Destination type: VOLUME
+        Destination volume name: MAPS10
+        Destination device name: MAG-TAPE-1
+        Destination unit number '0' :
+        Destination file generation " : 1
+
+     Source type: PARAMETER-FILE
+        Parameter file name: SAVE-MAPS:LIST
+
+     Manual check: L
+
+  Ba-sy: EXIT
+
+(4) Produce a new listing for this tape:
+
+  @TAPEREAD
+
+  TAPEREAD magnetic tape utility program
+  Specify tape label format : ND
+
+  TAPE: LIST-VOLUME,,,(T151)MAPS10:VOL
+  TAPE: EXIT
+(5) Clear the save-file when all maps are successfully copied:
+
+  @DELETE-FILE (T151)SAVE-MAPS:LIST
+
+Note: disc files are marked when they are added to the list
+for saving, not when they are finally saved on tape - check
+the tape listings to make sure files have been saved before
+deleting them from disc.
+
+
+
+Recovering map files from tape
+
+Use the TAPE option in EXAMINE-MAPS to find which volumes
+contain the maps of interest, and try to copy maps to disc in
+the order in which they appear on tape, to avoid several
+passes through the tape.
+
+The best method of recovering map files from tape is by using
+the BACKUP-SYSTEM utility program. This will preserve file
+system dates and will restore contiguous files correctly
+(TAPEREAD will only copy to indexed files on disc).
+
+Use the SINGLE-SEARCH-MODE option within BACKUP-SYSTEM, so
+that the program doesn't continue scanning the tape after it
+has found each map. It is thus possible to copy several maps
+during one pass through the tape:
+
+ @BACKUP-SYSTEM
+ Ba-sy: SERVICE-PROGRAM
+    Cuf-serv: SINGLE-SEARCH ON
+    Cuf-serv: EXIT
+
+ Ba-sy: COPY-USER-FILES
+    Destination type: DIRECTORY
+       Destination directory name " : MAPS-TWO
+       Destination user name: T151
+
+    Source type: VOLUME
+       Source volume name: MAPS10
+       Source device name: MAG-TAPE-1
+       Source unit number '0' :
+       Source file generation " :
+       Source file name : 3C380-070484:MAP
+
+    Manual check: L
+
+ Ba-sy: EXIT
+
+
+
+1.11 The Command Language and Batch System
+__________________________________________
+
+The MRAO command language is fully implemented within Anmap
+and you are referred to the separate manuals for details of
+these utilities.
+
+
+
+
+1.12 The Initialisation File
+____________________________
+
+Anmap on starting up reads some commands from an
+initialisation file. The default file used is (ANMAP)ANMAP-
+INIT:COM. In addition to some setup options introduced by the
+prefix "ANMAP-MONITOR", the file also has some options to
+define various parameters and procedures. It is possible for
+each user to have their own copy of the initialisation file
+which will be read instead of the system file. To do this you
+should create a file on your own directory:
+
+(USER-NAME)ANMAP-INIT:COM
+
+You may like to call the system initialisation file as well,
+to do this insert the line:
+
+/\run-file (anmap)anmap-init:com
+
+in your own initialisation file. It is a good idea to load the
+standard procedures if you do not call the system
+initialisation file:
+
+/\run-file (anmap)standard-proc:com
+
+You can also use the system initialisation file as a model for
+your own initialisation file and change or add any other
+commands for the startup of the program. For instance you
+might like to request that all newly created maps are
+reported:
+
+! My personal initialisation file
+!
+display-version
+cc
+cc .. Hello Paul
+cc
+file-system type-file (anmap)anmap-banner:symb
+/\run-file (anmap)standard-proc:com
+cat-system report-mode on
+cat-system advanced-mode on
+
+Here the "!" introduce comment lines, while the "cc" lines
+will be reflected as text on the screen. Another option may be
+to suppress the usual ANMAP banner by removing the command
+"display-title".
+
+The system initialisation file at the time of writing is
+reproduced here. Note the use of parameter names beginning
+with the percent character. These are not special names, they
+have been chosen simply to reduce the possibility of name
+clashes with other user-defined parameters.
+
+       ! Initialisation file for ANMAP Version 6.2(f)
+       ! --------------------------------------------
+       !
+       ! P. Alexander MRAO, Cambridge
+       !
+       ! note of users of ANMAP
+       anmap-monit enquire user-name %user
+       anmap-monit enquire date %date
+       /\file open (test-anmap)anmap-useage unit-number
+       /\file write <unit-number> ANMAP used by <%user> on <%date>
+       /\file close <unit-number>
+       /\deassign %date
+       /\deassign %user
+       /\deassign unit-number
+
+       ! take action on initialisation flag being set
+       /\if %eq <%no-initialise!F> T /\jump no-init
+
+       ! display the current version number of ANMAP and banner
+       display-version
+       file-sys type-file (anmap)anmap-banner:symb
+
+       ! increment new user counter
+       /\calculate %newcomer <%newcomer!0> 1 +
+
+       ! define standard procedures
+       /\run (anmap)standard-proc:com
+
+       ! jump for for no initialisation
+       /\loop-marker no-init
+
+       ! print welcome message and help info for new users
+       /\if %eq <%newcomer> 1 type-file (anmap)welcome:symb
+       /\if %eq <%newcomer> 1
+         /\request '.. press return to enter HELP ' ' ' ANS
+       /\deassign ANS
+       /\if %eq <%newcomer> 1 help map-catalogue
+
+
+
+1.13 The Anmap Monitor
+______________________
+
+The system-monitor sub-system provides facilities specific to
+the ANMAP system and may be useful for (a) system supervisor
+debugging the program, (b) in command procedures.
+
+
+1.13.1 debug-mode
+1.13.1 debug-mode
+
+Parameters: debug-level
+
+Set the level at which debug information is printed:
+
+If level > 0 then debug mode corresponding to a severity <
+level will be printed, e.g. level=1 produces only minor
+information, level=100 will produce all debug information,
+some from the depths of the code. If debug < 0 then only
+information for a specified debug-level will be printed. If
+level = 0 then debug information is suppressed (default).
+
+
+1.13.2 abandon-anmap
+1.13.2 abandon-anmap
+
+Anmap is exited as quickly as possible (no checking of
+temporary files or exit to %exit-program is performed).
+
+
+
+1.13.3 escape-enabled
+1.13.3 escape-enabled
+
+Parameters: on-off
+
+The escape key can be enabled (ESC exits to SINTRAN) or
+disabled (ESC is treated internally). The default setting is
+off so that ESC does not return to SINTRAN.
+
+
+1.13.4 dump-redtape
+1.13.4 dump-redtape
+
+Parameters: map-entry
+
+Print the full redtape common blocks for the specified map --
+only minimal formatting is performed as this is intended for
+debugging purposes only.
+
+
+1.13.5 dump-map
+1.13.5 dump-map
+
+Parameters: map-entry, uv-range
+
+Print the map values in the given uv-range for the specified
+map -- only minimal formatting is performed as this is
+intended for debugging purposes only.
+
+
+1.13.6 enquire
+1.13.6 enquire
+
+Parameters: information-requested, command-language-parameter
+
+The enquire command is available to return information as a
+command language parameter. Currently the following
+information may be 'enquired':
+
+    DATE-TIME      --   current date and time
+    NEXT-MAP       --   next free catalogue entry
+    DEFAULT-MAP    --   current value of default map
+    USER-NAME      --   current user
+    EXECUTION-MODE --   execution mode:
+                             0=interactive
+                             1=batch
+                             2=mode
+                             3=RT
+    MAP-DIRECTORY  --   default map directory
+    USER-DIRECTORY --   default user directory
+    MAP-FILE-NAME  --   file name for catalogue entry
+
+The information is returned in the named parameter, for
+example
+
+      anmap-monitor enquire date date-param
+      cc <date-param>
+
+will print the date and time on the screen. The enquire
+command is useful in constructing command sequences.
+
+
+
+

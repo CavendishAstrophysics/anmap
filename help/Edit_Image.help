@@ -1,0 +1,590 @@
+
+*1 Introduction
+
+Information: on edit-image
+
+The edit-image sub-system provides means of editing an image.  This is a
+powerful system with many facilities to edit (in a very general sense) an
+image.  The basic facilities include:
+
+ *  setting regions of an image to defined values, noise, blanks or a
+    user specified function
+ *  apply scaling to parts of an image
+ *  changing the representation of blank values within an image
+ *  creating new images or updating existing ones
+ *  pixel-based copying within images or between images
+ *  using images as masks
+
+Three commands are available to setup an image to edit:
+
+   set-map      specify a map to edit, creating a new edited map
+   update-map   specify a map to edit, the edits are written into the
+                existing map -- BEWARE this option
+   create-map   create a new map of a specified size
+
+And two commands to save or discard edits:
+
+   save-edits
+   discard-edits
+
+To select the operations to perform on an image use one of the
+select commands to select between the various modes:
+
+   select-noise-mode      the region commands add noise to an image
+   select-value-mode      the region commands will replace data with
+                          a specified value
+   select-scale-mode      the region commands will apply a zero-level
+                          correction and a scaling
+   select-blanking-mode   the region commands will blank various regions
+                          of an image
+   select-filter-mode     the region commands will apply a filter such
+                          as log, exp etc.
+
+A typical editing session might look like the following:
+  edit-image
+  # specify image to edit
+    set-map 5
+
+  # select blanking (this is in fact the default, but ...)
+    select-blanking-mode
+
+  # now do some editing -- reset all pixels a lon way from the image centre
+  # in fact all pixels more than 100 pixels from the image centre
+    set-annulus 0,0, 100, 10000
+  # the first 0,0 specifies the centre of the annulus and the next two
+  # numbers givethe annuli between which values are reset (10000 is chosen
+  # to be larger than the size of the image)
+
+  # save the edit and exit
+    save-edits
+  exit
+
+
+As a second example we consider how to add noise to an image:
+   edit-image
+     set-map 1
+     select-noise 0.0,0.0025
+     set-region,,,,,
+     save-edits
+   exit
+
+Notice how the set- commands are needed to actually apply any changes to
+an image.  The various set- commands are:
+
+   set-pixel      to apply mode to a single pixel
+   set-region     to apply mode to a UV (rectangular) region
+   set-circle     to apply mode to a circular region
+   set-annulus    to apply mode to an annulus in the image
+   set-row        to apply mode to a single row
+   set-column     to apply mode to a single column
+   set-full-image to apply mode to a full image
+
+Other ways of editing the image include copying regions of the image:
+
+   copy-region
+   copy-row
+   copy-column
+
+are all supported, as if copying from a separate image:
+
+   copy-from-image
+
+Two commands allow for control of blanking in an image:
+
+   define-blank        will specify the value to use for magic blanking
+   reset-blank-values  will reset all pixels in an image with a specified
+                       blanking value to a new value.
+
+Finally two commands offer additional facilities which do not fall into
+the list given above:
+
+   mask-map            Use the current edited image as a mask to
+                       apply to another image.
+   function            Specify a function (as a function of x,y) to
+                       apply to the image either replacing, adding to
+                       of multiplying an existing image.
+
+One use of function is to help in the creating of "mock" images.  For
+example to create an image which includes a number of Gaussian-type
+sources on it the following could be used:
+
+   edit-image
+ # create a map and initialise it with zeros everywhere
+     create-map -100,100,100,-100
+     select-value-mode 0.0
+     set-region -100,100,100,-100
+
+ # add two gaussian sources
+     function '1.35*exp(-((x-20.0)**2)/10.0 -((y+20.0)**2)/30.0)'
+     function '2.00*exp(-((x+20.0)**2)/10.0 -((y-20.0)**2)/30.0)'
+
+ # save this new map
+     save-edits
+
+    exit
+
+*1 editing_modes
+
+Information: on the way the "set-" command work
+
+The "set-" command reset image values in a specific part of the map to
+a presribed value.  The way that value is chosen is controlled by the
+editing-mode -- three modes are defined:
+
+Mode      Command                 Description
+----      -------                 -----------
+value     select-value-mode       replace pixel values bu a specifed value
+noise     select-noise-mode       add noise to pixel values
+scale     select-scale-mode       apply zaro-level and sclaing
+blanking  select-blanking-mode    replace pixel values by blanks
+filter    select-filter-mode      replace pixel values by passing them
+                                  through a specified filter
+
+The modes are selected using the "select-" command and apply to all
+subsequent "set-" operations.  The editing modes are remembered between
+editing sessions.
+
+The blank value used in "blanking" mode (and stored in the map header/redtape)
+can be set using the define-blank command.
+
+The default editing mode is "blanking".
+
+
+*1 set_commands
+
+Information: on "set-" type commands
+
+The "set-" commands reset specified parts of the image to a selected
+value.
+
+The commands avalailable for editing are:
+
+Command          Description
+-------          -----------
+set-pixel        reset a single pixel value
+set-region       reset a UV-region
+set-circle       reset all values within a circle of specified radius
+set-annulus      reset all pixels between two specified radii
+set-row          reset all pixels in the specified row
+set-column       reset all pixels in the specifeid column
+set-full-image   reset all pixels in the image
+
+The value used in to reset the pixel values is specified by the editing-mode;
+see the help entry on editing_modes.
+
+*1 copy_commands
+
+Information: on "copy-" type commands
+
+The "copy-" commands enable you to copy portions of the image or copy a portion
+of another image into the current image being edited.
+
+The commands avalailable for editing are:
+
+Command          Description
+-------          -----------
+copy-pixel       copy a single pixel value
+copy-region      copy a UV-region
+copy-row         copy all pixels in the specified row
+copy-column      copy all pixels in the specifeid column
+copy-from-image  copy a region of another image into the current edited
+                 image.
+
+*1 set-map
+
+Command: specify the map to edit
+Parameters: map-entry
+
+Specify the map to edit.  If you have already been editing a map then the
+edits for that map are saved and a new editing session starts -- the defaults
+for editing-modes are retained between editing sessions.  This command
+will create a new catalogue entry for the edited map.
+
+*1 update-map
+
+Command: specify a map to update
+Parameters: map-entry
+
+WARNING: This command can cause you to make unrecoverable changes to
+         your data.
+
+Specify the map to edit.  If you have already been editing a map then the
+edits for that map are saved and a new editing session starts -- the defaults
+for editing-modes are retained between editing sessions.  This command
+will write the edited image back into the same catalogue entry.
+
+*1 create-map
+
+Command: create a new map
+Parameters: UV-range, source-name
+
+This command creates a new map and allows you to edit it.  Note that
+the header information is constructed in a minimal way and further
+editing may be needed (you may find it more useful to start with a map
+of the correct size and use set-map to edit it as this will create a
+new catalogue entry).  The commands set-source and set-program can be
+used to update these entries in the header.
+
+*1 set-source
+
+Command: set the source name for the edited image
+Parameters: source
+
+This will update the source-name in the map header and catalogue.  It is
+provided to help in creation of command sequences, more detailed editing
+of the header is available with the edit-redtape sub-system.
+
+*1 set-program
+
+Command: set the program name for the edited image
+Parameters: source
+
+This will update the preogram-name in the map header and catalogue.  It is
+provided to help in creation of command sequences, more detailed editing
+of the header is available with the edit-redtape sub-system.
+
+*1 save-edits
+
+Command: save the edits to a new map
+Parameters: none
+
+This command saves the current edits -- you must save the edits before
+you can access the edited map.  A new map is created by this command.
+Edits are also saved when you exit edit-image or set the map to be edited
+to a new map in the middle of an editing session.
+
+*1 discard-edits
+
+Commands: discard all edits
+Parameters: none
+
+This command will discard all current edits and will not save the output
+image.  Note if the image was opened for update this will have the side
+effect of deleting your disc image!!  Please be careful.
+
+*1 set-pixel
+
+Command: set a pixel value
+Parameters: UV-pixel
+
+Reset values in a single pixel.
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+*1 set-region
+
+Command: set values in a UV-region
+Parameters: UV-region
+
+Reset values in a UV-region.
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+
+*1 set-circle
+
+Command: set values in a circle
+Parameters: centre, radius
+
+Reset values in a circle centred at "centre" and of radius "radius"
+in pixels.
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+
+*1 set-annulus
+
+Command: set values in an annulus
+Parameters: centre, inner-radius, outer-radius
+
+Reset values in a annulus centred at "centre". All pixels between the inner
+and outer radii as specified (in pixels) are reset.
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+
+*1 set-row
+
+Command: set values in a row
+Parameters: row-(V)
+
+Reset all values in the specified row (V coordinate required).
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+
+*1 set-column
+
+Command: set values in a column
+Parameters: column-(U)
+
+Reset all values in the specified column (U coordinate required).
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+*1 set-full-image
+
+Command: set values in the complete image
+Parameters: None
+
+Reset all values in the image.
+The value used for replacement is set by the editing mode -- see editing_modes.
+
+*1 copy-pixel
+
+Command: copy values between pixels
+Parameters: from-pixel, to-pixel
+
+Copy the image value from the from-pixel to the to-pixel.
+
+
+*1 copy-region
+
+Command: copy values between UV-regions of the same size
+Parameters: from-region, BLC-of-to-region
+
+Copy the image values from the specified region to the new region of the
+image indicated by the bottom-left-corner of the new region (BLC).  The
+copying is done sequentially from the bottom-left corner of the region to
+copy; this means that copied values will be copied-again if the regions
+overlap.  This is a design feature to enable a "flood-fill" type effect,
+for example:
+
+copy-region -50,50,50,-50 -50,-49
+
+will fill the entire region from V=-50 to V=+51 with copies of the
+row at V=-50 from U=-50 to U=+50.
+
+To obtain a copy without this effect use the copy-from-image command
+with the from-image specified as the same image as you selected with
+the set-map command, e.g. if you are working on image number 5:
+
+set-map 5
+copy-from-image 5 -50,50,50,-50 -50,-49
+save-edits
+
+will have the desired effect.
+
+See also:  copy-from-image
+
+*1 copy-row
+
+Command: copy values between complete row
+Parameters: from-row, to-row
+
+Copy all the image values from the from-row to the to-row.
+
+*1 copy-column
+
+Command: copy values between complete column
+Parameters: from-column, to-column
+
+Copy all the image values from the from-column to the to-column.
+
+
+*1 copy-from-image
+
+Command: copy values between UV-regions of different images
+Parameters: map-entry-of-from, from-region, BLC-of-to-region
+
+Copy the image values from the specified region of the newly specified image
+to the new region of the image being edited -- the resulting location is
+indicated by the bottom-left-corner of the new region (BLC).
+
+For example to copy the central region of the image in map-entry number 6
+to the central region of map-entry number 5 use:
+
+set-map 5
+copy-from-image 6 -10,10,10,-10 -10,-10
+save-edits
+
+*1 select-value-mode
+
+Command: select editing mode "value" and specify replacement value
+Parameters: replacement-value
+
+This sets the editing mode for all subsequent "set-" command so that the
+replacement value is the specified value to this command.
+
+See also:  editing_modes
+
+*1 select-scale-mode
+
+Command: select editing mode "scale" and specify scale and zero level
+Parameters: scale, zero
+
+This sets the editing mode for all subsequent "set-" command so that the
+specified region is scaled and a zero-level correction applied.  The
+output image is given by:
+
+     output_image = scale * (input_image - zero)
+    
+See also:  editing_modes
+
+*1 select-blanking-mode
+
+Command: select editing mode "blanking"
+Parameters: none
+
+This sets the editing mode for all subsequent "set-" command so that the
+replacement value is the blank value on the image.  The blank value may
+be reset using the define-blank command.
+
+See also:  editing_modes, define-blank
+
+
+*1 select-noise-mode
+
+Command: select editing mode "noise" and specify mean and standard deviation
+Parameters: mean, SD
+
+This set the editing mode for all subsequent "set-" command so that 
+gaussian noise is added to the image.  The parameters of the noise gaussian
+(mean and SD) are also set with this command.
+
+See also:  editing_modes
+
+*1 select-filter-mode
+
+Command: select ab editing mode "filter" and specify filter and parameters
+Parameter: filter [filter-parameters]
+
+The following filters can be applied to the image regions:
+
+Filter           Notes
+------           -----
+linear           Linear filter, supply a scale and zero level
+                   output = scale * (input - zero)
+log or ln        Logarithmic filter (natural base):
+                   output = ln( input )
+                 if input is <= 0 then output = blank
+log10 or lg      Logarithmic filter (base 10):
+                   output = lg( input )
+                 if input is <= 0 then output = blank
+exp              Exponential filter:
+                   output = exp( input )
+                 If operation would lead to an overflow then output = blank
+10               power-of-ten filter:
+                   output = 10.0**( input )
+                 If operation would lead to an overflow then output = blank
+sqrt             Square root filter:
+                   output = sqrt( input )
+                 if input is <= 0 then output = blank
+x^2              Square filter:
+                   output = input * input
+1/x              Reciprocal filter:
+                   output = 1.0 / input
+                 if input is = 0 then output = blank
+binary           Binary filter, supply gate_1 and gate_2 (low and high
+                 gates respectively):
+                    output = 1.0 if ( gate_1 <= input <= gate_2 ) 
+                    output = 0.0 otherwise
+gate             Gateing filter, supply gate_1 and gate_2 (low and high
+                 gates respectively) and replacement value:
+                    output = input if ( gate_1 <= input <= gate_2 ) 
+                    output = replacement otherwise
+
+*1 define-blank
+
+Command: define the value to use for (magic) blanking
+Parameters: blank-value
+
+This re-defines the value on the image to interprete as blank and
+resets the value in the redtape that specifies the blank value.  All
+existing "blanks" are reset by this command.  Note that setting the
+"blank" value to a "sensible" number (such as 0) with this command may
+have unfortunate side effects as such values are ignored (correctly) by
+most anmap procedures.  The command reset-blank-values (available in the
+editing mode and in the map-analysis sub-system) may be what you really
+want.
+
+See also:  editing_modes, reset-blank-values, select-blanking
+
+*1 reset-blank-values
+
+Command: resets the values of all blanks in the image to the user-supplied
+         value
+Parameters: replacement-value
+
+This command resets the pixel value of all pixels currently defined as
+blank to the specifed value.  Note this does NOT re-define what value is
+to be used for magic-value blanking; the latter effect can be achieved
+using the command define-blank.
+
+See also: define-blank, select-blanking
+
+This command has the same effect as the map-analysis command of the same name.
+
+*1 function
+
+Command: apply a function to an image
+Parameters: function, UV-range, mode
+
+The specified function is applied to an image.  The function is specified
+as a function of x and y corresponding to pixel values in U and V.  
+The function is evaluated at each pixel and the pixel value either 
+replaced, added to or multipled by the function value depending on
+whether mode is 0, 1 or 2 respectively.  The function can be specified using
+a natural way of expressing formulae, but any F77 or C type expression will
+surfice.  The only variables in the expression should be x and y although
+these do not have to be present.  The function is "applied" only over the
+specified UV region (to reduce computatiuon time it is advised that you
+specify this region as closely as possible).  If there are spaces in
+your function description the function should be enclosed in single (')
+quotes.
+
+Examples of functions might be:
+
+    '0.03*x - 0.00274'
+
+To correct for a varying background in the image, or
+
+    '1.234 * exp( -((x-10.0)**2)/20.0 -((y-12.5)**2)/40.0 )'
+
+to add a gaussian source to an image. A final example might be to
+apply an appodization to a "image" before doing an image-fft:
+
+    'exp( -0.0345*(x**2 + y**2)**(0.5) )'
+
+*1 edit-options
+
+Command: specify various options to the edit-image sub-system
+Parameters: option [option-parameters]
+
+*2 auto-discard-on
+
+Option: set auto-discard option on
+
+If an error occurs in any edit-image command then the current 
+edited image is discarded (as if a discard-edits command had been
+given).  This is a useful mode to implement in command procedures.
+
+*2 auto-discard-off
+
+Option: set auto-discard option off
+
+Turn the auto-discard feature off.  This is the default state and
+the state most useful for interactive use of the edit-image sub-system,
+if an error occurs it is up to the user to correct the error or discard
+the edits.
+
+*2 set-map-prompt
+
+Option: specify a prompt for the set-map command
+
+This option allows the programmer to change the prompt for the set-map
+command, useful in commands procedures.
+
+*1 apply-ricean-correction
+
+Command: Apply a ricean correction to an image
+Parameters: noise
+
+This command corrects the values in a modulus image formed from 
+squaring and summing two other images to allow for the bias at low
+signal-to-noise levels.  In the low-signal regions the modulus
+image will have artificially high values as the error is always
+appearing squared (this is most important if you wish to integrate
+an image for any reason).  This routine will apply a statistical
+correction to the low-signal-to-noise pixels so that such integrations
+such (after correction) converge.
+
+*
+
+
+
+

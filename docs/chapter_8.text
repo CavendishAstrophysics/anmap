@@ -1,0 +1,376 @@
+                         1. UTILITIES
+                         ____________
+ 
+ 
+ 
+1.1 Analysing the Results File
+______________________________
+ 
+ 
+1.1.1 Introduction
+1.1.1 Introduction
+ 
+The results-analysis sub-system provides a means of analysing
+the results file. This file is written to automatically by
+certain commands:
+ 
+ strip-flux
+ ring-flux
+ noise-map
+ 
+At present three options exist in the sub-system:
+ 
+ 1) print      --  print the results file
+ 2) plot       --  plot the results file
+ 3) UV-overlay --  overlay results as UV regions
+ 
+The final option in the list only applies to certain commands,
+strip-flux, noise-map, at present, which work out results, one
+for each region of a map.
+ 
+The following sections describe the commands in more details
+ 
+ 
+1.1.2 Save-Results-File
+1.1.2 Save-Results-File
+ 
+Routines in Anmap write to, and the utilities in the results
+sub-system work on, the current results file. The net effect
+is that the file is continuously being over written. If you
+want a permanent copy of the results file use this command
+which will copy it to a permanent disc file. To work on a
+saved file you will need to make it current by using the
+recover-results-file command.
+ 
+ 
+1.1.3 Recover-Results-File
+1.1.3 Recover-Results-File
+ 
+If you have previously saved a results file to a permanent
+disc file you will need to recover the disc file and make it
+current once again in order to use the results sub-system
+utilities on it. The permanent disc file will be copied to the
+current results file overwriting anything that was in the
+file.
+ 
+ 
+1.1.4 Print
+1.1.4 Print
+ 
+Parameters: columns, format, title, output-device
+ 
+The current results file is printed in a number of formats.
+You may choose which columns in the results file to include in
+the output, for instance if there are 8 columns the following
+are all valid syntax for sub-sets of columns to print:
+ 
+ 
+    1,2,4,5,6 --   gives     --  1 2 3 5 6
+    1--4      --   gives     --  1 2 3 4
+    1--6,8    --   gives     --  1 2 3 4 5 6 8
+ 
+ 
+The actual columns present in the results file are listed when
+you type 'print' in response to the "Results>" prompt and
+before the routine prompts you for the list of columns to
+print.
+ 
+You will then be prompted for a FORTRAN format description to
+control the printing of the data. This should be enclosed in
+parentheses as you would do in a normal fortran write
+statement. Any text should be enclosed in double quotes. All
+numbers are treated in the program as real*4 numbers and the
+output format statement should be set appropriately. As
+examples:
+ 
+ 
+    (1X,1P8E10.1)    (1X,F12.6,''   +/-   '',F12.6)
+ 
+ 
+Note the double quotes which are necessary to introduce any
+text. You will then be prompted for an "additional-title" this
+will be added to the printed output as well as the title from
+the results file. The output may be sent to the terminal, a
+disc file or the line printer by replying appropriately to the
+"output-file" prompt.
+ 
+ 
+1.1.5 Plot
+1.1.5 Plot
+ 
+Parameters: x-axis, y-axis, x-range, y-range, single-point,
+symbol, title
+ 
+You may select two columns from the results file to plot
+against one another as a graph. You will initially be prompted
+for the columns in the results file to use as the "x-axis" and
+"y-axis" of the plot. As in the print utility, the columns in
+the results file will be listed on the screen.
+ 
+The range of the "x-data" and "y-data" will be displayed and
+you will be prompted for a range in "x" and one in "y" which
+will be the range on the plot.
+ 
+Two types of plot are possible -- as single points, or as a
+continuous line (graph). If you choose to plot the data as
+single points then you will be prompted for the symbol to use
+which requires a numeric code. The available symbols are those
+supported by PGPLOT and the most useful are indicated with the
+prompt and described in the Chapter 4 on the map-display sub-
+system. Finally, a title for the plot may be given, the
+default is the title of the results file.
+ 
+If an output device is not currently open, you will be
+prompted for the output device and the default will be
+sensible for your own terminal. If a plot device is open then
+either a fresh page will be started (essentially the screen
+will be cleared and the plot drawn) or if the graphics overlay
+facility is enabled then the plot will overlayed on the
+current plot in the normal way -- see graphics-overlay-mode
+command which is also described in Chapter 4.
+ 
+ 
+1.1.6 UV-Overlay
+1.1.6 UV-Overlay
+ 
+Parameters: column-to-plot, format-description
+ 
+Certain commands return results for UV-regions, for instance
+the strip-flux and noise-map commands in the map-analysis sub-
+system. The results from these commands may be printed and
+plotted in the usual ways using the results-analysis sub-
+system utilities described above. A third useful way of
+showing the data is by overlaying it on a contour map of the
+map data -- this command. For each UV-window, the window is
+drawn on the screen overlaying the map, then in each window,
+one value (appropriate to that UV-window) will be plotted in a
+user defined format.
+ 
+The routine will make as many checks as possible that the
+results file is of the format:
+ 
+ 
+     UV-range  (4 numbers),  other-columns-data
+ 
+ 
+but it is by no means full-proof and you should exercise as
+much care as possible. You will then be prompted for the
+column to use for output, which will normally be one of the
+columns beyond column 4. Finally you will have to specify a
+FORTRAN format description enclosed in parentheses to use as
+for the display of the relevant number. For example:
+ 
+ 
+     (1PE12.3)    (F6.4)
+ 
+ 
+This procedure requires a currently open plot on which to
+work. The map-display command set-style can be used to change
+the size and font of the text used to display the numbers, for
+example:
+ 
+set-style text 1.0,  2
+ 
+will set the text size to 1.0 (approximately 1/40th of the
+screen size) and the font to font-number 2 -- roman. The fonts
+are fully described in the chapter on the map-display (Chapter
+4) sub-system.
+ 
+ 
+ 
+1.2 Edit-Redtape Sub-system
+___________________________
+ 
+Warning   It is easy to seriously damage your map with this
+          utility. As many checks as possible are incorporated
+          to stop you, but these facilities have to be present
+          to enable you to correct pathological cases.
+ 
+ 
+1.2.1 Introduction
+1.2.1 Introduction
+ 
+Edit-Redtape is a redtape editor which can be used to modify
+the redtape of a map, either adding extra information or
+correcting existing information. It is also possible to copy
+the redtape from one map to another.
+ 
+The map redtape is the header information stored with your
+image -- it defines such things as the scaling from the units
+your map is stored in to the units of the quantity you have
+measured, the coordinate system, and data type. In addition
+there is some history and textual information which will be
+useful in just identifying the image.
+ 
+For maps made using the standard Cambridge software additional
+information may be present such as the map-making redtape used
+to define how the map was made, and information specific to
+such things as beam-sets in an appropriate case.
+ 
+Certain routines such as CLEAN add important information to
+the redtape, while all routines will update the history and
+maximum/minimum entries.
+ 
+The full definition of the redtape of the map is stored in the
+file:
+ 
+                 (LIBRARY)MAPLIB-REDTAPE:INCL
+ 
+Users intending to modify the redtape should be very careful,
+as the items defining the map size are crucial to the analysis
+routines' ability to read and write the data correctly -- if
+you suspect problems in these cases you should seek expert
+help.
+ 
+The editor works on the current redtape; on entering edit-
+redtape you should make the redtape of a particular map
+current by using the read-redtape command. For example:
+ 
+      read-redtape 1
+ 
+will read the redtape for catalogue entry number 1. To look at
+the redtape use the display-redtape command or the dump
+command to list every value present in the redtape header.
+ 
+      display-redtape
+ 
+will print a formatted output to the screen.
+ 
+To modify redtape entries use the set-redtape-item command, to
+see what you can change type a "?" in response to the Set-
+option : prompt. Things you can change are listed in the help
+entry on set-redtape-item.
+ 
+When you are happy with your new redtape use the write-redtape
+command to save it to a map in the catalogue, for example to
+catalogue entry number 1, then just type:
+ 
+      write-redtape 1
+ 
+there may be a short pause while the image is accessed.
+1.2.2 read-redtape
+1.2.2 read-redtape
+ 
+Parameters: catalogue-entry
+ 
+The redtape for the specified catalogue entry is made current
+and you may now edit it. Display-redtape will type this
+redtape to the screen at any time and show the currently
+modified form. The redtape for the map from which you copy the
+redtape will not be affected at this stage.
+ 
+ 
+1.2.3 write-redtape
+1.2.3 write-redtape
+ 
+Parameters: catalogue-entry
+ 
+The current redtape is written to the specified map. This
+command will overwrite the redtape presently associated with
+that map.
+ 
+To modify the redtape for, for example map number 4, the
+following is required:
+ 
+      edit-redtape
+      read-redtape 4
+          .
+          .
+      (combination of set/display commands)
+          .
+          .
+          .
+          .
+      write-redtape 4
+ 
+You may find it useful for the map you modify to be a copy of
+an existing map -- use copy-catalogue-entry in the map-
+catalogue sub-system.
+ 
+ 
+1.2.4 display-redtape
+1.2.4 display-redtape
+ 
+The current redtape is typed in a formatted form. Any
+modifications to the current redtape are shown by this
+command.
+ 
+ 
+1.2.5 dump-redtape
+1.2.5 dump-redtape
+ 
+The current redtape is dumped to the terminal (written in an
+unformatted form).
+ 
+ 
+1.2.6 set-redtape-item
+1.2.6 set-redtape-item
+ 
+Parameters: option, option value
+ 
+The specified redtape entry is modified. Only the current
+redtape is altered; you will need to use write-redtape to
+obtain a permanent result. The options currently available to
+you are:
+ 
+         map-centre
+         source-name
+         reference-date
+         observation-date
+         flux-normalization
+         clean-beam
+         frequency
+         polarization
+         name-data-type
+         unit-data-type
+         created
+         history
+         title
+         owner
+         user
+ 
+Press return to the prompt if you do not wish to alter the
+parameter. A "?" will supply the list of current options:
+ 
+      set-redtape-item ?
+ 
+or
+ 
+      set-redtape-item
+      Redtape-item : ?
+ 
+and you will be prompted again. Please request other options
+if you find there are items in the redtape you want to modify
+which are not covered by this list. For more details of the
+items in the redtape please see the file:
+ 
+                 (LIBRARY)MAPLIB-REDTAPE:INCL
+ 
+which is the definition file for the map redtape.
+ 
+ 
+1.2.7 Common Problems
+1.2.7 Common Problems
+ 
+Some problems are continually re-occurring.
+ 
+a) Incorrect Polarization information
+ 
+This redtape entry is often incorrectly filled in, especially
+for maps brought in using FITS or for images from telescopes
+where this quantity is not defined.
+ 
+b) Name of the units
+ 
+This is really just for display purposes, but is often
+incorrectly filled in, again especially for FITS images.
+ 
+c) Flux-Normalization
+ 
+There are some known problems with Anmap at present and
+certain routines, such as reproject, do not correctly
+calculate the flux-normalization parameter (initially set by
+CLEAN) if the sampling of the map is changed.
+ 
+ 
+ 

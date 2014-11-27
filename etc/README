@@ -1,0 +1,6 @@
+This directory contains files required by Anmap
+
+The directory ../tcl_lib contains essential scripts required by Anmap
+The directory ../bin     contains Anmap executables
+The directory ../help    contains Anmap help files
+The directory ../man     contains manual specific help files

@@ -1,0 +1,2 @@
+#!/bin/csh
+%ANMAP%/bin/Anmap_exec

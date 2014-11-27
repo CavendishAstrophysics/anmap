@@ -1,0 +1,393 @@
+Anmap has a versatile way of displaying your 2D image data -- the 
+map-display sub-system which is entered by typing map-display.
+This sub-system has its own set of commands and a help, try
+'?' within map-display and help map-display.
+
+Map-Display provides a powerful image-processing and contouring
+tool which can send its output to a variety of interactive and
+hardcopy devices. The program uses the PGPLOT package and
+therefore has access to all the supported characters and
+fonts. You can type commands to set various options, define
+contour levels and generally control the layout of the
+display. Additionally on interactive devices once you have
+displayed an image, information such as positions (UV, RA/DEC)
+can be read from the display at any time.
+
+*1 Getting_started
+
+On X-window systems Anmap supports additionally a separate
+TV device for quick, interactive display of images together with
+manipulation of the lookup table and transfer functions,
+zooming and simple image readout.  This facility is currently
+based on the SAOimage TV-device.  To use the TV-device all that
+you need to say is the command TV-load:
+
+    TV-load   catalogue-entry minimum-value maximum-value
+
+and then use the control buttons on the TV-device to manipulate
+the image.  Note the window may be re-sized in the usual way
+depending on the window-manager you are using.
+
+The remainder of this introduction concentrates on the other
+image display commands -- these have the advantage of being fully
+integrated with the rest of anmap, support extensive control of the
+format of the plot and also provide display facilities such as
+contours, histograms slices etc.
+
+When you enter map-display the prompt will change to 
+      Map-display> 
+The commands you will need to use most often when you are getting 
+started are:
+
+
+    set-map                  [catalogue-entry]
+    set-uv-range             [uv-range]
+    title-plot               [text]
+    grey-scale               [on min-range max-range]
+
+The ...-contours routines can be used to define the contour levels.
+Once everything is set up, just type
+
+      plot all
+
+This is exactly equivalent to the commands 
+
+  plot grey ; plot frame ; plot contours ; plot vectors 
+  plot symbol ; plot text 
+
+obeyed sequentially. The power of the command-line driven program 
+lies in the ability to change the options which control the style 
+of the plot, to do multiple plots or to send output to another device. 
+For instance, once you have drawn your contour plot you can add more 
+contours just by giving one of the ...-contour commands and the
+contours will be added to the current plot by typing plot contours. 
+
+To obtain a hard-copy (postscript output) of your plot you can type
+
+      postscript-dump
+
+followed by postscript-view to preview the postscript on an X-based
+screen or postscript-plot to send the plot to the laser printer.
+
+As a complete example consider the following. You have already
+added a map of size 128x128 onto the map-catalogue (entry 1)
+and have entered map-display; then type
+
+      set-map 1
+
+to specify the map to display and
+
+      set-uv-range -25,25,25,-25
+
+to set the UV-range to plot the central part of the map, (a
+128x128 image has coordinates from -64 to 63 in U and 64 to
+-63 in V)
+
+      title-plot NGC 3690; 5.0GHz (RT)
+      linear-contours 0.0005,0.0005,0.015
+      plot all
+
+This produces a contour plot with contour levels:
+    0.5,1.0,1.5,...15 mJy/Beam  
+(appropriate for a Radio Astronomy image) and a title above
+the plot. After seeing the plot we decide we need some
+negative contours so we specify them as dashed contours as
+follows
+
+      contours 2 -0.0005,-0.001,-0.0015,,,
+      plot contours
+
+the first "2" indicates these are contours of style 2 which is
+by default a dashed style of contour, while the extra ',,' terminates 
+the input list. Three dashed contours will now appear on the screen. 
+We could have achieved the same result by typing:
+
+      linear-contours -0.0015,0.0005,0.015,no
+      plot contours
+
+where the last argument, 'no', specifies that the zero contour
+should not be included. The default is to plot negative
+contours as dashed. Logarithmically spaced contour levels can
+be specified with log-contours -- for each positive level a
+negative level will be plotted automatically.
+
+There are five styles of contours, contours of style 1 are by default
+solid, those of style 2 (used by default for negative contours) are
+dashed and those of style 3 (used for the "zero" contour by default)
+are dotted.  The default appearance of these different styles can
+be changed with the set-style command.  For example to change the
+style of the negative contours to be dashed yellow type
+
+      set-style contours line-style 2 1 yellow
+      plot refresh
+
+The plot refresh will update the current plot incorporating the
+changes you have specified.  Note that plot all here would not
+incorporate the changes; plot all plots any outstanding graphics
+whereas plot refresh re-plots existing graphics, but applying any
+changes of style you have requested.  Don;t wworry about trying to
+remember the complicated options to the set-style command, try
+typing set-style by itself, you will be prompted for an option
+and at this stage a "?" will list the available options --- this
+is in general true of all Anmap commands, therefore don't be afraid
+to experiment to see what effects you can produce.
+
+Having drawn the plot on the screen you decide that you would like 
+to know the position of the peak on the map, simply give the command
+
+      cursor-position
+
+At an X-terminal/workstation move the pointer over the plot and
+when you are at the required position click with the left mouse
+button -- on terminal-type devices you will need to position the
+cursor using the arrow keys on the terminal. On your terminal or 
+Anmap window will appear the cursor position, the nearest pixel 
+(IU, IV) and the image value at the cursor location (interpolated 
+if not exactly at a grid point).
+
+Grey-scales are an excellent way of displaying certain types
+of data, for instance spectral index plots, and make full use
+of the TV-type displays. They are very easy in Anmap, the following
+will produce a grey-scale plot
+
+      set-map 1
+      set-uv-range -20,20,20,-20
+      grey-scale on 0.0, 1.5
+      plot grey
+
+where black = 0.0 and white = 1.5. Note that the lowest level will
+be white on a hard copy device whereas is is black on the TV-type device.
+The default is to display the plot with a scale bar; as a further
+example of using set-style we can turn off the style bar completely
+by typing:
+
+      set-style scale-bar off
+
+or turn off the annotation on the scale bar by typing
+    
+      set-style scale-bat text-off
+
+again the command 
+
+      set-style scale-bar ?
+
+will list all the options you can apply to the scale bar.
+To overlay contours on top of a grey-scale we need to define and
+plot some contours
+
+      set-map 1
+      grey-scale on 0.4, 1.5
+      plot grey
+      linear-contours 0.4, 1.5, 0.1
+      plot contours
+
+
+False colour representations are possible after setting up a
+grey-scale plot simply by using the modify-lookup-table command
+to change the lookup table -- try using standard-colour or 
+enhanced-colour options.
+
+Notice how in the above examples we have used the plot command
+with separate options to plot grey-scales and contours, this
+is a useful feature to avoid producing frames and annotations
+on a plot; another way of achieving the same effect is by using
+the set-style frame and set-style annotations commands to
+turn off these options.
+
+In addition to control options with the set-style command one
+or two specific options have their own command:
+
+   set-pips     will turn on/off the display of pips (whether
+                marking UV points or astronomical coordinates).
+   set-grid    similarly controls the plotting of a grid
+
+There are set-style options to go with these to control the style
+of pips and the grid when plotted.
+
+In addition to the annotations you get when you say plot all (i.e.
+the title, date and list of contours), you can also use the 
+annotate command to enter the annotate sub-system which enables you
+to add labels, text arrows etc. to the plot to annotate features
+etc. --- see the help entry on annotate for more details, it is in
+fact a fairly fully-featured drawing tool.
+
+
+*1 grey_scales_and_false_colour
+
+Grey scales of maps are possible in Anmap. You have to specify that a
+grey scale is required and what the low and high (black and white or
+vice versa) should be. The commands you will need are:
+
+   grey-scale           --       setup grey scale
+   plot all             --       complete plot including frame,
+                                 contours and grey scale
+   plot grey-scale      --       plot a grey-scale alone
+   set-style scale-bar  --       control plotting of scale bars on
+                                 grey-scale plots.
+   modify-lookup-table  --       to get false colour
+
+
+One use of grey-scales is to be able to overlay contours and a grey-scale
+of different maps on the same graphics plot. This is possible by using
+the "overlay-map" command to specify the second map: by using grey-scale
+and perhaps reset-contour-levels followed by -contours, commands you can 
+achieve a useful effect. For more information see the entry on overlay-map.
+
+If you are using Xanmap then a convenient way to alter the lookup
+table / colour map is the Colour Table tool which you can start from
+the Analysis menu in the tool bar above the Anmap window.  This will
+start up a new window which provides a point and click way of
+selecting various options to define the colours used to represent
+the image together with sliders to set particualr values.  Additionally
+you may save a colour-map definition taht you particularly like and
+indeed you can save all of your definitions to a file and recall them
+in a later Anmap session.
+
+*1 Vector_Plots
+
+A map of position angles (measured North through East), such
+as the one produced by chi-map can be displayed as a vector
+map with the length of the vectors either fixed or
+proportional to the intensity of a second map. A sub-system
+vector-plot is available to define the options for a vector
+plot which is then drawn with the go-plot or plot vectors
+commands. For example, to produce a plot of vectors where
+length is proportional to mI and superimposed on a contour map
+of I:
+
+       set-map 3C61p1-I-map
+       logarithmic-contours 0.0025,2,,,,
+       set-uv-range -60,60,120,-120
+
+Now define options for the vector plot so that the longest
+vector is 10 pixels and the vectors are plotted every third
+pixel. Only pixels with mI > 2.5 mJy will have a vector
+plotted.
+
+       vector
+       on
+       chi-map 3c61p1-chi
+       intensity-map 3c61p1-mI
+       scaled-vectors -10
+       sampling 3,3
+       gate 0.0025
+       exit
+
+To plot everything 
+
+       plot all 
+
+
+*1 Symbol_plots
+
+Symbol plots can be used to mark specific pixels on an image.
+For example suppose we wish to identify all pixels in the
+image which are in fact equal to the "blank" value. This can
+be achieved by setting options to symbol plot:
+
+       symbol-plot
+       on
+       mark-blank-pixels
+       exit
+
+and all blank pixels in the plot will be marked with a dot
+when the next go-plot or plot symbol command is given.
+
+*1 Complicated_plots
+
+The facilities in the map-display sub-system allow you to create
+single plots of an image or of two images overlayed together with
+vectors and perhaps specific symbols.  However, it is possible to
+create much more complicated graphics, perhaps for use in publications.
+
+The map-display system is part of the general object-oriented 
+graphics system in Anmap and you can define many plots of
+images and combine them with one-another or with other graphical
+objects (e.g. graphs, scratch plots or drawings).  To create such
+compositions you can use the graphic sub-system.  The graphic suib-system
+provides many facilities for deinfing graphic objects and their
+layout on the screen etc.  The map-display sub-system defines objects
+of type image.  At any one time in map-display you work with an image 
+object which is identified by a specific index number; by default you
+will work with image number 1.  To define a new image object you
+can use the graphic sub-system command select.  To illustrate the
+use consider the following example.
+
+First define an image object as in the main examples discussed above,
+in fact a grey-scale of map number 1
+
+    map-display
+    set-map 1 ; grey on 0.0 1.34 ; plot grey
+
+Now let us produce a contour map of map number 2, but instead of
+simply loosing the information about the plot we have just created
+let us define a new graphic object of type image:
+
+    graphic select image 2
+    set-map 2 ; linear-contours 0.025,0.025,1.75 
+    plot contours ; plot frame
+
+This will overwrite the display.  The "2" in the graphic select
+command is just an index chosen by us to label our new object.
+
+Now let us position both graphical objects on the page together,
+we can do this using the graphic sub-system and the view-port command
+to specify where the graphic is to be plotted:
+
+Start by entering the graphic sub-system and clearing the screen
+    graphic
+    clear
+
+Now go back to image one position it and re-plot is
+    select image 1
+    view-port 0.1,0.6,0.4,0.9
+    map-display plot refresh
+
+Note the use of prefixing the plot refrsh command with map-display,
+we are now in the graphic sub-system.  Now position image 2 so that
+there is some slight overlap, we will also make image 2 transparent
+so they grey-scale "shows through":
+    select image 2
+    view-port 0.4,0.9,0.0,0.5
+    transparent
+    map-display plot refresh
+
+and you will have both the grey-scale and contour plot displayed.
+To alter options in one or the other you simply need to select that
+object, go into map-display, change the options and the refresh the
+plot.  You can refresh each image plot seprately using the plot refresh
+command in map-display or refresh all graphics at once using the
+refresh-all command.
+
+*1 hard_copy
+
+To get hard copy you can get Anmap to write a postscript graphics file.
+To do this simply give the command:
+
+    postscript-dump
+
+and Anmap will write out ALL graphics to a postscript file called
+~/mrao/anmap.ps.  This may plot more than you have on the screen,
+in fact what you get is the same as what you would have from
+doing a refresh-all command, so you may like to try this first.
+
+Once you have your postscript file you can preview it (on an
+X-windows device) using the postscript-view command (this in
+fact just runs ghostview) or send it to the laser printer using
+the postscript-plot command (if you are happy with UNIX you could
+use the normal UNIX commands to do this direct from the Anmap prompt:
+
+    lpr -Plaser /home/pa/mrao/anmap.ps
+
+to send it to the printer "laser" --- note the postscript file is
+put in your ~/mrao directory).  You can explicitly write graphics
+to a postscript file as the graphic sub-system provides the means
+to have up to three graphics devices active at once, by default
+device 3 is used for postscript output.  You can use the commands
+in the graphic sub-system to select a new output device and then
+just simple "refresh" any graphics you want to appear in the 
+hard copy postscript file.
+
+*
+
+

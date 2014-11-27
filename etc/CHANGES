@@ -1,0 +1,183 @@
+
+Changes file to Anmap version X....
+-----------------------------------
+
+---------
+19/11/95:
+o minor bug fixes to paths; defined env(SPECTRUM).
+o updated help for fractal calculation and cluster analysis and properly
+  defined the commands
+o re-instated initialisation of synchrotron analysis code.
+
+--------
+20/7/95:
+o new command angular-flux in map-analysis.
+o general small improvements to the help and help sub-directory (one item
+  removed from wishlist). (X0.53g)
+  
+--------
+13/7/95:
+o Added a number of command-line options to startup scripts for Anmap.  This
+  greatly improves the way users can startup anmap.  Scripts anmap and
+  Xanmap are now the same except for the default options.  Users can
+  select anmap, Xanmap, Xanmap without a new window, working directory,
+  mapsize (very useful), number of maps. (X0.53f)
+
+-------
+6/7/95:
+o Multi-fit in mapanalysis broken.  Opportunity taken to rework external program so
+  that it uses the catalogue and not maplib directly and also does not use the
+  extra redtape.  User interface reworked in tcl completely. (X0.53e)
+
+--------
+25/6/95:
+o Bugs fixed in CLEAN and write-data-file; CLEAN_PROGRAM reworked and spawning of
+  the clean process moved to tcl level (X0.53c)
+o Bug in plotting of RA/DEC grid fixed --- applied Dave T. patch.
+o released version X0.53d
+
+--------
+23/2/95:
+o Finished imcat routine to provide access to catalogue functions as an
+  inteligent wrapper to iclPriv.  Implemented prrocedures which cover all
+  the functionality of mapcat_sys and removed call to mapcat_sys.
+o Map-catalogue module updated to implement all of the sub-system in tcl;
+  many commands improved by this change.
+o New documented, supported mechanism to handle multiple catalogues via a
+  single load-catalogue command --- older commands removed.
+o Help on map-catalogue, imcat, iclPriv written/updated.
+o Help on iolib.tcl written
+o Help updated on tcl programming generally.
+o New information on last written maps now available via imcat result option.
+o Read-data-file Write-data file implemented as external programs for ease
+  of maintenance.
+o Switched to new PGPLOT version 5.0 (no new code just re-linked).
+o Released version X0.53.
+o Initial bugs take version to X0.53b
+
+--------
+16/2/95:
+o DJT fixed bug in FITS code, incorporated in Anmap.
+o New tcl command iclPriv added to access the map-catalogue and a tcl
+  wrapper procedure imcat was written to support most map-catalogue
+  operations.
+o Tcl code generally tidied, internal change to "?" help system to
+  reduce the number of global variables (no *.info globals now).
+o New modules added map-catalogue, edit-redtape and all modules moved
+  to Anmap(src)/etc.
+o New options list and loaded added to the module command.
+o Version incremented to X0.52e and released.
+
+--------
+11/2/95:
+o Changed set-map in map-display to reset the title of the plot.
+o Changed initialisation to load ra module by default.
+o Removed obsolete (and dangerous) catalogue-system "directory" commands.
+o Removed obsolete advanced-mode command from catalogue-system
+
+--------
+24/7/94:
+o Finally tidied up directories so that the old anmap directory could
+  be removed (in fact moves to test/dump/old_anmap for safety). map*
+  include files moved to include and re_lib re-built.
+
+--------
+15/7/94:
+o Added command to correct CAT primary beam in ra_lib --- needs documenting.
+
+---------
+26/06/94:
+o Fixed bug in vectors rotation.
+
+---------
+==> Advertised Release is at this stage X0.52d
+---------
+30/04/94:
+o Added new nmr tools nmr_readSerial nmr_readImage nmr_readAmpPhase
+  and moved all to nmr_tools.  Updated module nmr.
+o New tool Aphi_RealImag in tools.  Converts to/from Amp/Phase and
+  Real/Imaginary images.
+o Created a module map-analysis for ALL map-analysis commands and added
+  Aphi_RealImag as a new command.  Modified standard_init, standard_info
+  and the default init_anmap.tcl to reflect the new module.
+
+---------
+==> Advertised Release is at this stage X0.52c
+---------
+12/04/94:
+o Fixed the bug in CLEAN which was making it impoossible for people to
+  use CLEAN.  Not the working image directory is now exported using the
+  MAPSDIR environment variable.  This is set to a default value in 
+  etc/init_anmap.tcl
+
+---------
+==> Advertised Release is at this stage X0.52b
+---------
+29/03/94:
+o Added inverted scale-bar option by modifying use of sclae_bar_opt.
+  Also changed scale_bar_text so both are now integers. Advertise this
+  in the next release!!
+
+---------
+==> Advertised Release is at this stage X0.52a
+---------
+11/03/94:
+
+1) Implemented changes to the sycnhrotron analysis system ready for
+   version X0.52; ra_lib now used and not synch_sys.  Module ra now
+   contains deifnitions of all the synchrotron-analysis routines
+2) Added error output to multi-slice-fit and added this command to
+   nmr.module.
+3) Made a number of nmr.module command globals commands.
+4) Altered redtape command to use edit-redtape sub-system
+5) Moved much code to anm_lib and introduced anm_dispatch as the
+   command dispatching routine.
+6) Installed an X-windows interface to the synchrotron analysis tools
+   and updated help
+7) Eliminated alpha-map in synchrotron analysis in favour of using fit-maps,
+   but introduced an alpha-map procedure.
+8) Released version X0.52a.
+
+---------
+04/03/94:
+
+1) Updated help for data-display and map-display, now up to date
+2) Fixed bug in grid plotting by importing old routine from the NORD
+ o Released version 0.51h
+
+---------
+03/03/94:
+
+1) Added support for limits in data display
+2) Added ability to execute code from a ted session launched from Anmap
+   to aid in developping procedures -- see tcllib/Anmap_Ted.tcl
+3) Updated help: command-line editing
+4) Removed debugging statements in plot_sys : plot_doframe ...
+5) Modified do_smooth to remove annoying limits, unecessary output and
+   extra prompt at end of session; bug fixed using wrong data type for
+   beam widths
+6) Eliminated extra text in delete-catalogue-entry
+7) Fixed bu in use of crosses file so that user is now NOT prompted
+   for "one-extra" cross.
+8) Added hypertext help
+ o Released version 0.51g
+
+---------
+25/02/94:
+
+1) Updated anm_lib to group basic Anmap subroutines, will now eventually
+   hold all non-analysis code.  Added standard routines to startup a
+   f77 routine with tcl support.  Updated tcl support routines, updated
+   iocmd routines.
+2) New synchrotron analysis system, moved code to ra_lib with intenstion
+   of removing synch_sys.  Code made tcl compliant.
+3) Changed basic operation of Xanmap to use Desktop environment and
+   menu system.  Removed non Anmap specific items from menus.
+4) Serious bug fixed in stack allocation routine which failed to update
+   all of the interlock flags correctly.  Moved stack and mapcat under
+   the Anmap tree.
+5) Changed SAOIMAGE path to the full path to avoid problems with
+   user aliases.
+
+
+

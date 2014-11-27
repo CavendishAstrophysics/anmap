@@ -1,0 +1,18 @@
+Spectrum-analysis-program: pass specified columns to the output 
+
+Keys:
+   xc                           X-column in data [1]
+   cols                         list of columns to pass [ALL]
+   title                        title for outfile
+   comment                      user comment for outfile
+   infile      nokeyok          input file name [-]
+   outfile     nokeyok          output file name [-]
+
+All specified columns are sent to the output, all other columns are
+rejected.
+
+Examples:
+Output just columns 1,2 and 3
+%    sp_pass in.dat out.dat xc 1 cols 1,2,3
+
+

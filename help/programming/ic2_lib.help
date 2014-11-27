@@ -1,0 +1,594 @@
+*1 IC2_ALLOC_AREA      
+
+      SUBROUTINE IC2_ALLOC_AREA(IMAP,UV_RANGE,MAP_ARRAY,IP_MAP,STATUS)
+      ----------------------------------------------------------------
+
+ Allocate a region of a map for input
+
+ Input:
+    Map to allocate for input
+      integer           imap
+    Range of map to read
+      integer           uv_range(4)
+ Updated:
+    Map data
+      real*4            map_array(*)
+ Returned:
+    Pointer to map_array and start of IMAP data
+      integer           ip_map
+    Status
+      integer           status
+
+ The map IMAP is allocated for READ.  Only the specified region of the
+ map is read into core.  If the region corresponds to the whole map
+ then the action of the routine is idential to IC2_ALLOC_IN with
+ access = 'DIRECT'.  The pointer to the map data is returned in
+ IP_MAP -- this pointer is to the start of the COMPLETE map although
+ only the specified region will contain sensible data.
+
+ The following rules are used to determine the action of this
+ routine:
+    1) only the V bounds of UV_RANGE are important as the structure
+       of the data files insists complete rows are read
+    2) if UV_RANGE exceeds the range of the map the whole map is read
+    3) if the region exceeds AREA_MAX_READ then the whole map is read
+ if the whole map is read this routine is identical to IC2_ALLOC_IN
+ with access='DIRECT'
+
+*1 IC2_ALLOC_IN        
+
+      SUBROUTINE IC2_ALLOC_IN(IMAP,ACCESS,MAP_ARRAY,IP_MAP,STATUS)
+      ------------------------------------------------------------
+
+ Allocate a map for input
+
+ Input:
+    Map to allocate for input
+      integer           imap
+    Access mode -- icp_DIRECT or icp_SEQUENTIAL
+      integer           access
+ Updated:
+    Map data
+      real*4            map_array(*)
+ Returned:
+    Pointer to map_array and start of IMAP data
+      integer           ip_map
+    Status
+      integer           status
+
+ The map IMAP is allocated for READ.  If the access requested is DIRECT
+ then space is allocated in CORE and the map is read in (if not already)
+ in core.  If the acces requested is SEQUENTIAL then no direct access to
+ the map data is performed, but an allocation is made for subsequent
+ calls to IC2_ROW_READ and IC2_ROW_WRITE.
+
+
+*1 IC2_ALLOC_NEW       
+
+      SUBROUTINE IC2_ALLOC_NEW(SIZEU,SIZEV,IMAP,FILENAME,STATUS)
+      ----------------------------------------------------------
+
+ Allocate and create output map, but do not provide access to it
+
+ Given:
+   Size of output map in U and V
+      integer        sizeu, sizev
+ Returned:
+   Map catalogue entry
+      integer        imap
+   File name associated with this map
+      character*(*)  filename
+   Status word
+      integer        status
+
+ An output map for a routine is created and an entry added to the
+ map catalogue.  No space is allocated in the stack and no pointer
+ to the map is returned, the map file name is returned by this
+ routine.   The primary use of this routine is to create a map
+ so that it may be accessed by an OFFLINE process.
+
+ SIZEU, SIZEV are the sizes of the image in the U and V direction.  If
+ either is zero then the values are obtained from the current redtape.
+
+ On completion a call to IC2_END_ALLOC is required to tidy the output
+ and update the redtape as far as possible.
+
+
+*1 IC2_ALLOC_OUT       
+
+      SUBROUTINE IC2_ALLOC_OUT(USIZE,VSIZE,ACCESS,IMAP,IP_MAP,STATUS)
+      ---------------------------------------------------------------
+
+ Allocate output maps required in the remainder of a routine
+
+ Given:
+   Size of output map in U and V
+      integer        usize, vsize
+   Access mode required -- DIRECT or SEQUENTIAL
+      integer        access
+ Returned:
+   Map catalogue entry
+      integer        imap
+   Map pointer
+      integer        ip_map
+   Status word
+      integer        status
+
+ Output maps for a routine are allocated.
+
+ Two access modes are supported:
+    SEQUENTIAL -- line by line; the entire image is not needed at once
+    DIRECT     -- full image in core
+
+ If DIRECT access is specified then the pointer to the start of the
+ allocated space is returned in ip_map, if the access mode is
+ SEQUENTIAL calls to IC2_ROW_READ and IC2_ROW_WRITE will be required
+ nested in the sequential access loop.
+
+ SIZEU, SIZEV are the sizes of the image in the U and V direction.  If
+ either is zero then the values are obtained from the current redtape.
+
+ On completion a call to IC2_END_ALLOC is required to tidy the output
+ and indeed write out the image if the access requested is DIRECT.
+
+
+*1 IC2_ALLOC_SCR       
+
+      SUBROUTINE IC2_ALLOC_SCR(SIZEU,SIZEV,ACCESS,IMAP,IP_MAP,STATUS)
+      ---------------------------------------------------------------
+
+ Allocate scratch maps required in the remainder of a routine
+
+ Given:
+   Size of scratch map in U and V
+      integer        sizeu, sizev
+   Access mode required -- DIRECT
+      integer        access
+ Returned:
+   Map catalogue entry
+      integer        imap
+   Map pointer
+      integer        ip_map
+   Status word
+      integer        status
+
+ Scratch maps for a routine are allocated.
+
+ Two access modes are supported in general:
+    SEQUENTIAL -- line by line; the entire image is not needed at once
+    DIRECT     -- full image in core
+ HOWEVER, only DIRECT access is sensible for scratch files and
+ SEQUENTIAL mode is therefore faulted.
+
+ If DIRECT access is specified then the pointer to the start of the
+ allocated space is returned in ip_map, if the access mode is
+ SEQUENTIAL calls to IC2_ROW_READ and IC2_ROW_WRITE will be required
+ nested in the sequential access loop.
+
+ SIZEU, SIZEV are the sizes of the image in the U and V direction.  If
+ either is zero then the values are obtained from the current redtape.
+
+ On completion a call to IC2_END_ALLOC is required to tidy access state.
+
+
+*1 IC2_ALLOC_TOOUT     
+
+      SUBROUTINE IC2_ALLOC_TOOUT(IMAP,ACCESS,MAP_ARRAY,
+    *                             imapo,ip_mapo,status)
+      -------------------------------------------------
+
+ Allocate map data IMAP to the new output map imapo
+
+ Given:
+   Input map entry
+      integer        imap
+   Access mode required -- DIRECT or SEQUENTIAL
+      integer        access
+ Updated:
+   Map data array
+      real*4         map_array(*)
+ Returned:
+   Map catalogue entry to output map
+      integer        imapo
+   Map pointer to output map
+      integer        ip_mapo
+   Status word
+      integer        status
+
+ Input map data is allocated to a new output map.
+
+ The only access mode currently supported is:
+    DIRECT     -- full image in core
+
+ The pointer to the start of the allocated space is returned in ip_mapo.
+ The map data for map IMAP will have been read into this space.
+
+ On completion a call to MAP_END_ALLOC is required to tidy the output
+ and write out the image.
+
+
+*1 IC2_CHCKUV          
+
+      SUBROUTINE IC2_CHCKUV (UV_MAP, IUV, STATUS)
+      -------------------------------------------
+
+  Checks U,V window for validity.
+
+  Given:
+   map U,V coordinate window
+      integer   uv_map(4)
+   U,V coordinate window
+      integer   iuv(4)
+
+  Updated:
+   status value
+      integer   status
+
+  Checks a given U,V coordinate window IUV(IU1,IU2,IV1,IV2) for validity,
+  with respect to the given map uv range.
+
+  The STATUS value should be zero on entry.  Possible error values are:
+
+      - invalid U,V window (ILL_UVWIND)
+      - window outside map (UV_OUTMAP)
+
+
+
+*1 IC2_END_ALLOC       
+
+      SUBROUTINE IC2_END_ALLOC(IMAP,MAP_ARRAY,STATUS)
+      -----------------------------------------------
+
+ End the allocation made to map IMAP
+
+ Input:
+    Map entry
+      integer       imap
+    Map data
+      real*4        map_array(*)
+ Returned
+    Status word
+      integer       status
+
+ End the allocation to map IMAP.  If the map was opened for write
+ explicit IO is now performed.  This routine should always be called
+ to end the access requested to a particular map whatever the requested
+ access state.
+
+*1 IC2_ENQ_MINIRT      
+
+      SUBROUTINE IC2_ENQ_MINIRT( MINIRT, STATUS )
+      -------------------------------------------
+
+ Return the minimal header information for the current image header
+
+ Returned:
+   minimal header information
+      integer    minirt(*)
+ Updated:
+   error status
+      integer    status
+
+ The minimal header information for the current header is returned.  The
+ header information is loaded using ic2_head_load.
+
+ The minirt Has the following structure
+
+   minirt entry       meaning
+        1               u1                {  Image range
+        2               u2                {    u1 <= u  <= u2
+        3               v1                {    v1 >= v  >= v2
+        4               v2                {
+        5               nx                {  Image size
+        6               ny                {
+        7               data_type
+        8               blank_value
+
+ You need to equivalence the final item to a real variable before use.
+
+
+*1 IC2_GETMAP          
+
+      SUBROUTINE IC2_GETMAP(PROMPT,DEFAULT,IMAP,STATUS)
+      -------------------------------------------------
+
+ Prompt the user for a valid map identifier
+
+ Given:
+   Prompt
+      character*(*)      prompt
+   Default response
+      character*(*)      default
+ Returned:
+   Map entry
+      integer            imap
+   Status word
+      integer            status
+
+ The user is prompted for a map. A default value may be specified and
+ DEFAULT_MAP may be given as the default string. If the value
+ given is not a valid map then the routine returns a non-zero value of
+ STATUS.
+
+
+*1 IC2_HEAD_LOAD       
+
+      SUBROUTINE IC2_HEAD_LOAD(IMAP,STATUS)
+      -------------------------------------
+
+ Load header for IMAP and make it current
+
+ Given:
+    Map entry
+      integer      imap
+ Returned:
+    Status word
+      integer      status
+
+ Load the header for map IMAP and make it the current header.
+ Accessing header items is then possible provided the.
+ MAPLIB common blocks are included in the user subprogram.
+ Standard projection parameters are set by calling STPROJ.
+
+
+*1 IC2_IUVMAP          
+
+      INTEGER FUNCTION IC2_IUVMAP( UV_MAP, UV_PIX )
+      ---------------------------------------------
+
+  Finds the index of a U,V point within a map.
+
+  Given:
+    U, V window of map.
+      integer   uv_map(4)
+    U, V coordinate of a pixel
+      integer   uv_pix(2)
+
+  Returns the index of the point UV_PIX within the map represented
+  by the given abbreviated U,V window.  If the point UV_PIX lies
+  outside the map, the returned value is zero.
+
+
+
+*1 IC2_IUVVAL          
+
+      SUBROUTINE IC2_IUVVAL(REDTAPE, DATA, IUV, VALUE, STATUS)
+      --------------------------------------------------------
+
+  Returns the map value at a given, integral u, v point.
+
+  Given:
+   Abbreviated version of map redtape.
+      integer   redtape(*)
+   map data
+      real*4    data(*)
+   U and V coordinate on map.
+      integer   iuv(2)
+
+  Returned:
+   real or complex map value
+      real*4    value
+   status value - should be unchanged.
+      integer   status
+
+  Returns the value in external units of the data point IUV from
+  map data held by rows in array DATA.  The abbreviated redtape is
+  assumed to be set up appropriately for the data array.  If the point
+  IUV lies outside the data array, the 'undefined data' value is
+  returned. If the data type of the map is complex, then the value
+  returned is complex.
+
+
+
+*1 IC2_RUVDUV          
+
+      SUBROUTINE IC2_RUVDUV( REDTAPE, DATA, UV, PDUV, S )
+      ---------------------------------------------------
+
+     Returns the map partial derivatives at a given, real u, v point.
+
+     Given:
+         Abbreviated map redtape - see (library)maplib-minirt:incl
+             INTEGER     REDTAPE(*)
+         Map data
+             REAL        DATA(*)
+         U, V position to find partial derivatives at.
+             REAL*8      UV(2)
+
+     Returned:
+         Returned values - two C*8 if an aperture,  two R*4's if a map.
+             REAL        PDUV(*)
+         Status - must be zero on entry.
+             INTEGER     S
+
+     Degrids the map partial derivatives for a given, non-integral,
+     uv point in a map or aperture.  At present, the degridding is
+     done using a tabulated gaussian-sinc degridding function. The
+     first zero of the function is at a radius of 1 and the standard
+     deviation of the gaussian is sqrt(0.5/0.275). The tabulation is
+     oversampled by a factor of 128 (so the ideal of a continuous map
+     is approximated by a map with a grid size 128  times finer than
+     the real map) and has a halfwidth of 3 pixels. U, V values too
+     near the edge of the map return an error of UV_OUTMAP.
+
+     N.B. Does not use current map redtape.
+
+
+
+*1 IC2_RUVMAX          
+
+      SUBROUTINE IC2_RUVMAX( REDTAPE, DATA, IUV, RUV, MAX, S )
+      --------------------------------------------------------
+
+     Returns the real valued u and v of a local map maximum.
+
+     Given:
+         Minimal redtape
+             INTEGER     REDTAPE(*)
+         Map data
+             REAL        DATA(*)
+         U-V coordinates of local pixel maximum
+             INTEGER     IUV(2)
+
+     Returned:
+         Position of map maximum.
+             REAL*8      RUV(2)
+         Value of map at this position
+             REAL        MAX
+         Status - must be zero on entry.
+             INTEGER     S
+
+
+
+*1 IC2_RUVMAX          
+
+      SUBROUTINE IC2_RUVMAX( REDTAPE, DATA, IUV, RUV, MAX, S )
+      --------------------------------------------------------
+
+     Returns the real valued u and v of a local map maximum.
+
+     Given:
+         Abbreviated map redtape - see (library)maplib-minirt:incl
+             INTEGER     REDTAPE(*)
+         Map data
+             REAL        DATA(*)
+         U-V coordinates of local pixel maximum
+             INTEGER     IUV(2)
+
+     Returned:
+         Position of map maximum.
+             REAL*8      RUV(2)
+         Value of map at this position
+             REAL        MAX
+         Status - must be zero on entry.
+             INTEGER     S
+
+
+
+*1 IC2_RUVVAL          
+
+      SUBROUTINE IC2_RUVVAL(REDTAPE, DATA, UV, DEGRID_TYPE, RESULT, S)
+      ----------------------------------------------------------------
+
+     Returns the map value at a given, real u, v point.
+
+     Given:
+         Abbreviated map redtape - see (library)maplib-minirt:incl
+             INTEGER     REDTAPE(*)
+         Map data
+             REAL        DATA(*)
+         U, V position to find value of.
+             REAL*8      UV(2)
+         Function to use for degridding.
+             INTEGER     DEGRID_TYPE
+
+     Returned:
+         Returned value - complex if an aperture, real if a map.
+             REAL        RESULT(*)
+         Status - must be zero on entry.
+             INTEGER     S
+
+     Degrids the map data to a given, non-integral uv point in a map
+     or aperture.  At present, there are two types of degridding
+     function available :
+
+     degrid_type 1 - linear degridding from the four nearest pixels.
+     degrid_type 2 - degridding using a tabulated gaussian-sinc
+                     degridding function. The first zero of the
+                     function is at a radius of 1 and the standard
+                     deviation of the gaussian is sqrt(0.5/0.275). The
+                     tabulation is oversampled by a factor of 100 and
+                     has a halfwidth of 3 pixels. U, V near the edge
+                     of the map are interpolated linearly and any
+                     undefined pixels are ignored.
+
+
+
+*1 IC2_SCNMAP          
+
+      SUBROUTINE IC2_SCNMAP(REDTAPE, DATA, IUV, ZMNX, IZMNX, STATUS)
+      --------------------------------------------------------------
+
+  Scans a map area for data maximum and minimum.
+
+  Given:
+   Abbreviated version of map redtape.
+      integer   redtape(*)
+   map data
+      real*4    data(*)
+   U,V coordinate window
+      integer   iuv(4)
+
+  Returned:
+   maximum, minimum data values
+      real*4    zmnx(4)
+   U,V coordinates of max, min points
+      integer   izmnx(4)
+   status value
+      integer   status
+
+  Scans the map data held by rows in array DATA, within the U,V window
+  specified by the array IUV (IU1,IU2,IV1,IV2) and finds the maximum and
+  minimum data values and their U,V coordinates.  The mean and standard
+  deviation of the data within the specified window are also returned:
+
+      ZMNX(1)  maximum data value
+      ZMNX(2)  minimum data value
+      ZMNX(3)  mean data value
+      ZMNX(4)  standard deviation
+      IZMNX(1,2)  U,V coordinates of data maximum
+      IZMNX(3,4)  U,V coordinates of data minimum
+
+  The redtape parameter is assumed to be set up appropriately for
+  the input data array.
+
+  For aperture data, the map array should be set up to provide complex
+  data values:  the routine returns the max, min, etc amplitude values.
+
+  The STATUS values should be zero on entry, and is normally unchanged
+  on exit.  Possible error conditions are:
+
+      - invalid u,v window (ILL_UVWIND)
+      - u,v window outside map (UV_OUTMAP)
+
+
+*1 IC2_SCNSRC          
+
+      SUBROUTINE IC2_SCNSRC( REDTAPE, MAP, UV, STATS, POSNS, S )
+      ----------------------------------------------------------
+
+     Returns statistics for a source region
+
+     Given
+         Abbreviated form of map redtape
+             integer     redtape(*)
+         Map data and uv window
+             real        map(*)
+             integer     uv(4)
+
+     Returned
+         Map statistics
+             real        stats(6)
+             integer     posns(4)
+         Status - must be zero on entry
+             integer     s
+
+     Exactly the same as the maplib routine scnmap except there
+     are an additional two statistics returned - stats(5) contains
+     the zero level and stats(6) the map noise.
+
+     These are evaluated using one of two methods:
+     1.  If there are greater than 1000 points a standard iterative
+         technique is used where points are clipped if they are greater
+         than n times the noise in the previous iteration. The value
+         of n used is 4, and termination occurs when the noise from
+         succesive iterates differs by less than 10%.
+     2.  If there are less than 1000 points then the zero is determined
+         via a mode calculation. The points are sorted, and the zero
+         is the average of the maximum number of points which occur
+         in a flux range equal to the noise calculated from two
+         iterations of method 1. The noise is then recalculated using
+         only points less than this zero.
+
+
+

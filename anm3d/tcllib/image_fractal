@@ -1,0 +1,63 @@
+#!/mrao/anmap/anm3d/ida
+
+# parse the input data
+set from image.dat ; set to fractal.data
+set x1 0.0; set x2 1.0; set xinc 1.0 ; set near -near1
+for {set n 0} {$n < [llength $argv]} {incr n} {
+	switch -- [lindex $argv $n] {
+	{-from}		{incr n ; set from [lindex $argv $n]}
+	{-to}		{incr n ; set to [lindex $argv $n]}
+	{-low}		{incr n ; set x1 [lindex $argv $n]}
+	{-x1}		{incr n ; set x1 [lindex $argv $n]}
+	{-high}		{incr n ; set x2 [lindex $argv $n]}
+	{-x2}		{incr n ; set x2 [lindex $argv $n]}
+	{-incr}		{incr n ; set xinc [lindex $argv $n]}
+	{-near1}	{set near "-near1"}
+	{-near2}	{set near "-near2"}
+	{-near3}	{set near "-near3"}
+	}
+}
+
+# define procedures
+proc frac1 { im val near} {
+   global A V itot
+
+ # form appropriate binary image
+   set id [img_geom $im subimage]
+   img_apply $id binary $val
+
+ # identify and analyse image
+   img_region identify $id -report $near
+   set nreg [expr round( [lindex [img_anal $id maxmin] 1] ) ]
+   puts ".. found $nreg"
+   img_region classify $id 0.5 ${nreg}.5 1.0 $near
+
+   for {set i 0} {$i <= $nreg} {incr i} {
+	set res [img_region enqshape $id $i]
+	if {[lindex $res 0] > 0} then {
+	   incr itot
+	   set V($itot) [lindex $res 0]
+	   set A($itot) [lindex $res 1]
+	}
+   }
+
+# delete workspace
+   imgPriv destroy $id
+}
+
+# read in image
+set im [img_image read -file $from -type 1]
+
+# loop over levels
+set itot 0
+for {set x $x1} {$x <= $x2} {set x [expr $x + $xinc]} {
+   puts ".. looping $x $x1 $x2 $xinc"
+   frac1 $im $x $near
+}
+
+# output results
+set f [open $to w]
+for {set i 1} {$i <= $itot} {incr i} {
+    puts $f "[expr log10($V($i))/3.0] [expr log10($A($i))]"
+}
+close $f

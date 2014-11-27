@@ -1,0 +1,153 @@
+\bfEQNTOOL(1)\rm	\bfUni Liv Pure Math Sing Group\rm		\bfEQNTOOL(1)\rm
+
+\bfNAME\rm
+	eqntool - tool for handling equations
+
+\bfSYNOPSIS\rm
+	\bfeqntool\rm [\itfilename\rm|\itequation\rm|\it\bf-\rm|\bf-c\rm|\bf-d\rm \itname\rm|\bf-e\rm|\bf-f\rm|\bf-i\rm|\bf-A\rm|\bf-D\rm|\bf-F\rm] ...
+
+\bfDESCRIPTION\rm
+	\iteqntool\rm reads equations either from a file or strings
+	specified on the command line or from the standard input.
+	These equations can be differentiated, expanded, clean,
+	and are normally printed on the standard output.
+
+\bfOPTIONS\rm
+	Each argument of the program is read in turn and immediately
+	acted upon. Hence the order they appear is important. The
+	possible options are:-
+
+	\itfilename\rm	All the equations in the file are read in.
+
+	\bf-\rm		Equations are read in from the standard input
+			until EOF (control-D) is encountered.
+
+	\itequation\rm	A set of equations is read in from the command
+			line. Normally its best if the equations are
+			enclosed in single quotes,
+			e.g. \bfeqntool\rm \bf'\rmx+y\bf'\rm
+			Note if the equation is a valid filename then
+			the equations will be read in from that file instead.
+
+	\bf-c\rm		Flip the clean flag. If the clean flag is set
+			then all equations read in so far and all the
+			following equations will be cleaned up. For example
+			If the clean flag is set the equation 'sin(Pi/6)'
+			becomes '0.5'. The clean flag is ON by default.
+
+	\bf-d\rm \itname\rm		Differentiate all the equations with respect
+			to \itname\rm.
+
+	\bf-e\rm		Flip the expand flag. If the expand flag is set
+			then all equations read in so far and all the
+			following equations will be expanded. For example
+			If the expand flag is set the equation '(x+y)^2'
+			becomes 'x*x+x*y+y*x+y*y'.
+			The expand flag is OFF by default.
+
+	\bf-f\rm		Flip the function flag. If the function flag is set
+			then the standard list of functions will be
+			used in all the equations read in so far and all the
+			following equations. If the function flag is set
+			'cos(x)' will be recognised as a function, otherwise
+			'cos' will be treated as a variable and 'cos(x)'
+			becomes 'cos * x'. The function flag is ON by default.
+
+	\bf-i\rm		Input a single equation from the standard input.
+
+	\bf-s\rm		Flip the substitute flag. If the substitute
+			flag is set attempts will be made to substitute
+			the equations which follow into the current set
+			of equations. Substitution equations should be
+			of the form 'f = ....;' or 'f(x,y) = ....;'.
+ 
+	\bf-A\rm		Enters a loop repeatedly \bfA\rmsking for
+			the values of the variables and then printing the
+			results of all the equations. Repeats until
+			EOF (control-D) is entered.
+
+	\bf-D\rm		Display all the equations.
+
+	\bf-F\rm		Print out the definitions of the standard function.
+
+	\bf-P\rm		Convert the equations into polynomials, and
+			print out the polynomials. The equations (after
+			substitution) should contain 2 or 3 variables
+			and the expansion will be in terms of these. If
+			we have a an equation in 'x', 'y', 'z' with orders
+			a,b,c
+
+	\bf-T\rm		Types out all the equations.
+
+	If no filenames or equations are specified on the command line
+	then the equations will be read in from the standard input. If
+	there has been no output then all the equations will be printed
+	out.
+
+\bfSYNTAX OF EQUATIONS\rm
+        Equations are made up of variable names, numbers and the
+        standard operations (+ - * / ^ =) as well as bracketing with
+        '(' and ')'. The '*' for multiplication is optional and the
+        product of two variables can be indicated by 'x y' but note
+        that if the space was omitted here then it would be treated
+        like the single variable 'xy'. The equation must contain one
+        '=' and be terminated by a ';'.
+
+        The names of variables must start with a letter but and can
+        contain numbers and the underscore '_'. Case is significant.
+        Comments are allowed and start with a '#' and continue to the
+        end of the line. Newline are not significant and are treated
+        like white space.
+
+        The following functions are included in the standard list,
+        cos(x),sin(x),tan(x), acos(x),asin(x),atan(x), sec(x),cosec(x),cot(x),
+        cosh(x),sinh(x),tanh(x), acosh(x),asinh(x),atanh(x),
+        sqrt(x),exp(x),pow(x,n),ln(x), abs(x), sgn(x), max(x,y), min(x,y)
+	if(x,y,z)
+        as well as the constant Pi. Most functions correspond to the
+        the function with the same name in the maths library math(3).
+        The function sgn(x) returns -1 if x < 0; 0 if x = 0 and +1 if x > 0.
+        A single operator diff(eqn,x) is also defined which gives the
+        derivative of eqn with respect to x, x must be a name.
+
+\bfEXAMPLES\rm
+	In the follow bold type indicates the user input, and
+	normal type indicates the program output.
+
+	% \bfeqntool 'cos(Pi x)'\rm
+	cos(3.141593*x);
+	% \bfeqntool 'cos(Pi x)' -A\rm
+	x ?
+	\bf0\rm
+	1.00000
+	x ?
+	\bf0.5\rm
+	0.00000
+	x ?
+	\bf<control-D>\rm
+	% \bfeqntool 'cos(x)' -d x\rm
+	0-sin(x);
+	% \bfeqntool '(x+y)^2' -e\rm
+	x*x+x*y+y*x+y*y;
+	% \bfeqntool -\rm
+	\bf2+3\rm
+	\bf<control-D>\rm
+	5;
+	% \bfeqntool '(x+2y)^2' -P\rm
+	0.000000        0.000000        1.000000        
+	0.000000        4.000000        0.000000        
+	4.000000        0.000000        0.000000        
+	
+\bfSEE ALSO\rm
+	eqn(3), eqn(5).
+
+\bfBUGS\rm
+	Using the '-' and '-A' options together causes conflicts when
+	EOF (control-D) is entered. Instead the '-i' option can be used
+	to input one equation.
+
+\bfAUTHOR\rm
+	Richard Morris 3/5/93
+	Liverpool University, Department of Pure Mathematics,
+	P.O. Box 147, Liverpool L69 3BX
+	email - rmorris@liverpool.ac.uk

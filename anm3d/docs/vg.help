@@ -1,0 +1,741 @@
+
+
+*1 stream
+
+vg stream option [device]
+
+Manage the output stream.
+
+     open device
+        Initialise the device.
+
+        Current available devices are:
+          o tek - tektronix 4010 and compatibles
+          o  hpgl - HP Graphics language and compatibles
+          o  hpgt - HP Graphics Terminals and compatibles
+          o  postscript - mono postscript devices
+          o  ppostscript - mono postscript devices (portrait mode)
+          o  cps - colour postscript devices
+          o  pcps - colour postscript devices (portrait mode)
+          o  X11 - X windows (SUN's OPenwindows etc etc)
+
+     close
+        Close the current deivie
+
+
+
+
+ 
+
+*1 position
+
+vg position x y
+
+    Specify the preferred position of the window opened  by
+    the Next stream open command.
+
+*1 size
+
+vg size width height
+
+   Specify the preferred width and height  of  the  window
+   opened by the Next stream open command.
+
+
+*1 clear
+
+vg clear
+   Clears the screen.
+
+*1 buffer
+
+vg buffer yesno
+vg flush yesno
+vg update
+
+     On some devices (particularly X11) considerable speedups  in
+     display can be achieved by not flushing each graphics primi-
+     tive call to  the  actual  display  until  necessary.  VG
+     automatically delays flushing under in following cases:
+
+          - Within an object plot call
+          - Within curves and patches.
+          - Within Hershey software text.
+          - When double buffering (the flush is only done within swapbuffers).
+
+     There are two commands  that  can  be  used  to  control
+     flushing.
+
+     vg buffer yesno
+     vg flush yesno
+          Set global flushing status. If yesno = 0 (.false.) then
+          don't  do  any  flushing  (except  in vg swapbuffers, or
+          vg update). If yesno = 1 (.true.) then do  the  flushing
+          as described above.
+
+     vg update
+          Cause the device flush or syncronisation  routine.  This
+          forces a flush.
+
+
+*1 update
+
+vg update
+     Cause the device flush or syncronisation  routine.  This
+     forces a flush.
+
+*1 viewport commands
+
+Viewpoint routines alter the current tranformation matrix.
+
+   vg viewport left right bottom top
+   vg vport left right bottom top
+
+          Specify which part of the  screen  to  draw  in.  Left, right,  
+          bottom, and top are real values in screen coordinates (-1.0 to 1.0).
+
+
+   vg pushviewport
+          Save current viewport.
+
+   vg  popviewport
+          Retrieve last viewport.
+
+
+   vg enquire viewport
+          Returns the left, right, bottom and top limits  of  the
+          current viewport in screen coordinates (-1.0 to 1.0).
+
+
+   vg polarview dist azim inc twist
+          Specify the viewer's position in polar  coordinates  by
+          giving  the  distance  from  the viewpoint to the world
+          origin, the azimuthal angle in the x-y plane,  measured
+          from  the y-axis, the incidence angle in the y-z plane,
+          measured from the z-axis, and the twist angle about the
+          line of sight.
+
+
+    vg up x y z
+          Specify the world up.  This  can  be  used  to  prevent
+          lookat's sometimes annoying habit of turning everything
+          upside down due to  the  line  of  sight  crossing  the
+          appropriate axis.
+
+ 
+    vg lookat vx vy vz px py pz twist
+          Specify the viewer's position by giving a viewpoint and
+          a  reference  point in world coordinates. A twist about
+          the line of sight may also be given.
+
+
+*1 projection commands
+
+All the projection  routines  define  a  new  transformation
+matrix,  and  consequently the world units. Parallel projections are 
+defined by ortho or  ortho2.  Perspective  projections can be defined 
+by perspective and window.
+
+
+    vg orthogonal left right bottom top [near far]
+          Define x (left, right), y (bottom, top), and  z  (near,
+          far)  clipping planes. The near and far clipping planes
+          are actually specified as distances along the  line  of
+          sight.  These  distances  can  also  be  negative.  The
+          actual location of the clipping planes is z  =  -near_d
+          and z = -far_d.  If you do not set the near and far clipping
+          planes the drawing dimensionality is set to 2D.
+
+
+     vg perspective fov aspect near far
+          Specify a perspective viewing pyramid in world  coordi-
+          nates  by  giving a field of view, aspect ratio and the
+          distance from the eye of  the  near  and  far  clipping
+          plane.
+
+     vg window left right bot top near far
+          Specify a perspective viewing pyramid in world coordinates by
+          give the rectangle closest to the eye (ie. at the near clipping
+          plane) and the distances to the near and far clipping planes.
+
+
+*1 matrix commands
+
+     vg pushmatrix
+          Save the current transformation matrix  on  the  matrix
+          stack.
+
+     popmatrix
+          Retrieve the last matrix pushed and make it the current
+          transformation matrix.
+
+
+
+*1 move commands
+
+    vg move x y [z]
+          Move current graphics position to (x, y, [z]). (x, y,  z)
+          is a point in world coordinates.  If the dimensionality
+          is 2D only x and y need be specified.
+
+
+    vg rmove deltax deltay deltaz
+          Relative move. deltax, deltay, and deltaz  are  offsets
+          in world units. If the dimensionality is 2D only deltax and 
+          deltay need be specified.
+
+    vg smove2 sx sy
+          Move current graphics position  in  screen  coordinates
+          (-1.0 to 1.0) to (sx sy).
+
+    vg rsmove2 sdeltax sdeltay
+          Relative smove2. deltax,  and  deltay  are  offsets  in
+          screen units (-1.0 to 1.0) by (sdeltax, deltay)
+
+  
+*1 draw commands
+
+    vg draw [x y z]
+          Draw from current graphics position to (x, y,  z).  (x,
+          y, z) is a point in world coordinates.  If the dimensionality 
+          is 2D only x and y need be specified.
+
+    vg rdraw deltax deltay [deltaz]
+          Relative draw. deltax, deltay, and deltaz  are  offsets
+          in world units. If the dimensionality is 2D only deltax and 
+          deltay need be specified
+
+    vg sdraw2 x y
+          Draw in screen coordinates (-1.0 to 1.0).
+
+    vg rsdraw2 deltax deltay
+          Relative sdraw2. delatx and deltay are in screen  units
+          (-1.0 to 1.0).
+
+*1 arcs and circles
+
+
+    vg style -circleprecision nsegs
+          Set the number of line segments  making  up  a  circle.
+          Default  is  currently 32. The number of segments in an
+          arc or sector is calculated from  nsegs  according  the
+          span  of  the arc or sector.
+
+    vg arc x y radius startang endang
+          Draw an arc. x, y,  and  radius  are  values  in  world
+          units.
+
+    vg sector x y radius startang endang
+          Draw a sector. x, y, and radius  are  values  in  world
+          units.  Note:  sectors  are regarded as polygons, so if
+          polyfill or polyhatch has been called with 1, the  sec-
+          tors will be filled or hatched accordingly.
+
+    vg circle x y radius
+          Draw a circle. x, y, and radius  are  values  in  world
+          units.  Note:  circles  are regarded as polygons, so if
+          polyfill or polyhatch has been called with 1, the  cir-
+          cle will be filled or hatched accordingly.
+
+*1 curve
+
+vg curve options [values]
+
+   Where option is one of:
+     curvebasis basis
+          Define a basis matrix for a curve.
+
+     curveprecision nsegs
+          Define the number of  line  segments  used  to  draw  a
+          curve.
+
+     rational geom
+          Draw a rational curve where geom if a 4x4 matrix:
+                         float     geom[4][4];
+
+
+     curve geom
+          Draw a curve where geom if a 4x3 matrix:
+                         float     geom[4][3];
+
+*1 rectangles and polygons
+
+Routines to deal with polygons and rectangles apply attributes of
+fill and hatching as well as line-style colour etc.
+
+
+    vg rectangle x1 y1 x2 y2)
+          Draw a rectangle.
+
+    vg style -fill onoff
+          Set the polygon fill flag. This will  always  turn  off
+          hatching. A non-zero turns polygon fill on.
+
+    vg style -hatching onoff
+          Set the polygon hatch flag. This will always  turn  off
+          fill. A non-zero onoff value turns hatching  on.  Note   
+          that hatched polygons must initially be defined parrallel 
+          to the X-Y plane.
+
+    vg style -angle angle
+          Set the angle of the hatch lines.
+
+    vg style -hatch pitch
+          Set the distance between hatch lines.
+
+    vg poly2d n points
+          Construct an (x, y) polygon from  an  array  of  points
+          provided.  Currently n should be <= 100.
+                         float     points[n][2];
+
+
+    vg polygon n points
+          Construct a polygon from an array of points provided by
+          the user.  Currently n should be <= 100.
+                         float     points[n][3];
+    vg makepoly
+          makepoly opens up a polygon which  will  then  be  con-
+          structed  by  a  series  of  move-draws and closed by a
+          closepoly.
+
+    vg closepoly
+          Terminates a polygon opened by makepoly.
+
+    vg style -backface onoff
+          Turns on culling of backfacing polygons. A  polygon  is
+          backfacing  if  it's  orientation in *screen* coords is
+          clockwise, unless a call to backfacedir is made.
+
+    vg style -sense clockwise
+          Sets the backfacing direction  to  clockwise  or  anti-
+          clockwise depending on whether clockwise is 1 or 0.
+
+
+*1 text commands
+
+Vg drawing supports hardware and  software  fonts.  The  software
+fonts  are  based on the character set digitized by Dr Allen
+V. Hershey while working at the U.  S.  National  Bureau  of
+Standards. Exactly what hardware fonts are supported depends
+on the device, but it is guaranteed that the  names  "large"
+and  "small"  will  result  in  something  readable. For X11
+displays the default large and small fonts used by the  pro-
+gram  can be overridden by placing the following defaults in
+the ~/.Xdefaults file:
+
+        vogle.smallfont: <font name>
+        vogle.largefont: <font name>
+
+It is noted here that text is always  assumed  to  be  drawn
+parallel  to  the (x, y) plane, using whatever the current z
+coordinate is. The following software fonts are supported:
+
+     astrology       cursive         cyrillic        futura.l
+     futura.m        gothic.eng      gothic.ger      gothic.ita
+     greek           markers         math.low        math.upp
+     meteorology     music           script          symbolic
+     times.g         times.i         times.ib        times.r
+     times.rb        japanese
+
+A markers font "markers" is also provided for doing  markers
+-  you  need to have centertext on for this to give sensible
+results - with the markers starting at 'A' and 'a'.
+
+If the environment variable "VFONTLIB" is  set  VOGLE  looks
+for the software fonts in the directory given by this value.
+
+Options for text can be specified on any command line drawing text;
+options include:
+
+     -font fontname
+          Set the current font
+
+
+     -size width height
+          Set the maximum size of  a  character  in  the  current
+          font.  Width and height are values in world units. This
+          only applies to software text. This must be done  after
+          the font being scaled is loaded.
+
+     -angle angle
+          Set the text angle. This angles strings and chars. This
+          routine only affects software text.
+
+     -fixedwidth onoff
+          Turns fixedwidth text on or off. Non-zero  (.true.)  is
+          on. Causes all text to be printed fixedwidth. This rou-
+          tine only affects software text.
+
+     -centred onoff
+          Turns centertext text on or off. Non-zero  (.true.)  is
+          on.  This  centres strings and chars. This routine only
+          affects  software  text.  All  other  justification  is
+          turned  off.  The  text is centered in both the x and y
+          directions.
+
+
+     -justify val
+          General (direct) control  of  text  justification.  The
+          value  of  val is made up of the logical OR of the fol-
+          lowing predefines constants in vogle.h  (FOR  C  only).
+          LEFT, RIGHT, XCENTERED, TOP, BOTTOM, YCENTERED. Center-
+          ing takes priority, as does RIGHT and TOP justification
+          (if  you  were silly enough to set it to LEFT|RIGHT for
+          example  that  is).  A  value  of  0  (zero)  (in   all
+          languages) resets the textjustification to the default.
+
+
+     -leftjustify
+          Left justifies text. The text string will begin at  the
+          current  position  and  extend  to  the notional right.
+          Right justifcation and X centering are turned off.
+
+
+     -rightjustify
+          Right justifies text. The text string will begin  at  a
+          point  to the notional left of the current position and
+          finish at the current position. Left justification  and
+          X centering are turned off.
+
+     -xcentred
+          Centers text in the X direction. The text  string  will
+          begin  at  a  point to the notional left of the current
+          position and finish at a point  to  the  right  of  the
+          current position. Left justification and Right justifi-
+          cation are turned off.
+
+
+     -topjustify
+          Top justifies text. The text string will be drawn  with
+          it's  upper  edge  aligned with the current Y position.
+          Bottom justification and Y centering are turned off.
+
+
+     -bottomjustify
+          Bottom justifies text. The text string  will  be  drawn
+          with  it's  lower edge aligned with the current Y posi-
+          tion.  Top justification and  Y  centering  are  turned
+          off.
+
+
+     -ycentred
+          Centers text in the Y direction. The text  string  will
+          so  that it's center line is aligned with the current y
+          position.  Top justification and  Bottom  justification
+          are turned off.
+
+
+     vg character c [text options]
+          Draw the character c.  The  current  graphics  position
+          represents the bottom left hand corner of the character
+          space, unless centertext has  been  enabled,  where  it
+          represents the "centre" of the character.
+
+
+     vg text string [text options]
+          Draw the text in  str  at  the  current  position.  The
+          current  graphics  position  represents the bottom left
+          hand corner of the character space,  unless  centertext
+          has  been  enabled, where it represents the "centre" of
+          the string.
+
+
+     vg boxtext string x y l h [text options]
+          Draw the string s so that it fits in the imaginary  box
+          defined  with bottom left hand corner at (x, y), length
+          l, and hieght h. This only applies to software text.
+
+*1 transformations command
+
+All transformations are cumulative, so if you  rotate  some-
+thing  and  then do a translate you are translating relative
+to the rotated axes. If you need  to  preserve  the  current
+transformation  matrix use pushmatrix(), do the drawing, and
+then call popmatrix() to get back where you were before.
+
+    vg translate x y z
+          Set up a translation.
+
+
+    vg scale x y z
+          Set up scaling factors in x, y, and z axis.
+
+    vg rotate axis angle
+          Set up a rotation in axis axis. Where axis  is  one  of
+          'x', 'y', or 'z'.
+
+
+*1 patch commands
+
+
+vg patch option
+
+Where option is one of:
+
+     basis tbasis ubasis
+          Define the t and u basis matrices of a patch.
+                         float     tbasis[4][4], ubasis[4][4];
+
+     precision tseg useg
+          Set the minimum  number  of  line  segments  making  up
+          curves in a patch.
+
+
+     curves nt nu
+          Set the number of curves making up a patch.
+
+
+
+     rational gx gy gz gw
+          Draws a rational patch in the current basis,  according
+          to the geometry matrices gx, gy, gz, and gw.
+                        float  gx[4][4], gy[4][4], gz[4][4], gw[4][4];
+
+     patch gx gy gz
+          Draws a patch in the current basis,  according  to  the
+          geometry matrices gx, gy, and gz.
+                         float  gx[4][4], gy[4][4], gz[4][4];
+
+*1 point
+
+vg point x, y z
+
+   Draw a point at x, y, z; if the drawing dimensionality is 2D then
+   the z coordinate need not be specified.
+
+*1 object commands
+
+Objects are graphical entities created by the  drawing  rou-
+tines  called  between  makeobj and closeobj. Objects may be
+called from within other objects. When an object is  created
+most  of  the  calculations required by the drawing routines
+called within it are  done  up  to  where  the  calculations
+involve the current transformation matrix. So if you need to
+draw the same thing several times on the screen but in  dif-
+ferent  places  it is faster to use objects than to call the
+appropriate drawing routines each time.  Objects  also  have
+the  advantage  of being saveable to a file, from where they
+can be reloaded for later reuse. Routines which draw or move
+in  screen coordinates, or change device, cannot be included
+in objects.
+
+vg object option [values]
+
+where option is one of:
+
+     open n
+          Commence the object number n.
+
+     close
+          Close the current object.
+
+     next
+          Returns a unique object identifier.
+
+     current
+          Return the number of the current object.
+
+     draw n
+     plot n
+          Draw object number n.
+
+     exists n
+          Returns non-zero if there is an object of number n.
+
+     delete n
+     remove n
+          Delete the object number n.
+
+     load n, filename
+          Load the object in the file filename a object number n.
+
+
+     save n filename
+          Save the object number n into the file  filename.  This
+          call does not save objects called inside object n.
+
+
+*1 double buffering
+
+Where possible VG allows for front and  back  buffers  to
+enable  things  like  animation  and  smooth updating of the
+screen. The routine backbuffer is used to initialise  double
+buffering.
+
+    vg backbuffer
+          Make VG draw in the backbuffer. Returns  -1  if  the
+          device is not up to it.
+
+    vg frontbuffer
+          Make VG draw in the front buffer. This  will  always
+          work.
+
+    vg swapbuffers
+          Swap the front and back buffers.
+
+*1 enquire
+
+vg enquire option
+
+Where option is one of:
+
+   device
+          Returns the name of the current  device. 
+
+   depth
+          Returns the number of bit planes (or color planes)  for
+          a  particular  device. The number of colors displayable
+          by the device is then 2**(nplanes-1)
+
+   key
+          Return the ascii ordinal of the next key typed  at  the
+          keyboard.  If the device has no keyboard getkey returns
+          -1.
+
+   locator
+          Find out where the cursor is. xaddr and yaddr  are  set
+          to the current location in world coordinates. The func-
+          tion returns a bit pattern which indicates  which  but-
+          tons  are  being held down eg. if mouse buttons 1 and 3
+          are down locator returns binary 101  (decimal  7).  The
+          function  returns -1 if the device has no locator capa-
+          bility. Note: if you have  been  doing  a  lot  of  3-D
+          transformations  xaddr  and yaddr may not make a lot of
+          sense. In this case use slocator.
+
+   slocator
+          Find out where the cursor is. xaddr and yaddr  are  set
+          to  the  current  location  in  screen coordinates. The
+          return value of the function is set up in the same  way
+          as  with  locator.  If the device has no locator device
+          slocator returns -1.
+
+    viewport
+          Returns the left, right, bottom and top limits  of  the
+          current viewport in screen coordinates (-1.0 to 1.0).
+
+
+    aspect
+          Returns the ratio height over width of the display device.
+
+    factors
+          Returns wfact as the width over  min(width  of  device,
+          height   of  device)  and  hfact  as  the  height  over
+          min(width of device, height of device).
+
+    display
+          Returns the width and height of the device in pixels in
+          w and h respectively.
+
+    pos3
+          Gets the current graphics position in world coords
+          as x y z.
+
+    pos2
+          Gets the current graphics position in world coords
+          as x y.
+
+    spos2
+          Gets the current graphics position in screen coords (-1 to 1)
+          as sx, sy.
+
+
+*1 style or set
+
+vg style option [values]
+vg set option [values]
+
+
+Set various style options for vg drawing where option is one of:
+
+   -color | -colour index
+          Set the current colour index. The standard colours are:
+             black = 0       red = 1         green = 2       yellow = 3
+             blue = 4        magenta = 5     cyan = 6        white = 7.
+
+   -rgb index red green blue
+          Set the color map index indx to the  color  represented
+          by  (red, green, blue).  If the device has no color map
+          this call does nothing.
+
+   -clipping  boolean
+          Turn clipping on or off.  Non-zero  is  considered  on.
+          Note: on some devices turning clipping off may not be a
+          good idea.
+
+   -save
+          Save the current attributes on the attribute stack.
+
+   -restore
+          Restore the attributes to what they were  at  the  last
+          vg style -save command.
+
+   -dash dashlen
+          Set the current dash length  (in  world  units)  to  be
+          dashlen.
+
+   -line style
+          Set the current linestyle to style.
+
+   -circleprecision nsegs
+          Set the number of line segments  making  up  a  circle.
+          Default  is  currently 32. The number of segments in an
+          arc or sector is calculated from  nsegs  according  the
+          span  of  the arc or sector.
+
+   -curveprecision nsegs
+          Define the number of  line  segments  used  to  draw  a
+          curve.
+
+   -backface onoff
+          Turns on culling of backfacing polygons. A  polygon  is
+          backfacing  if  it's  orientation in *screen* coords is
+          clockwise, unless a call to backfacedir is made.
+
+   -sense clockwise
+          Sets the backfacing direction  to  clockwise  or  anti-
+          clockwise depending on whether clockwise is 1 or 0.
+
+
+   -fill onoff
+          Set the polygon fill flag. This will  always  turn  off
+          hatching. A non-zero turns polygon fill on.
+
+   -hatching onoff
+          Set the polygon hatch flag. This will always  turn  off
+          fill. A non-zero onoff value turns hatching  on.  Note   
+          that hatched polygons must initially be defined parrallel 
+          to the X-Y plane.
+
+   -angle angle
+          Set the angle of the hatch lines.
+
+   -hatch pitch
+          Set the distance between hatch lines.
+
+
+Notes.
+
+  o Attribute stack
+     The attribute stack contains details such as current  color,
+     filling,  hatching,  text  justification,  fixedwidth,  text
+     height, text width, and the current font.  If  you  need  to
+     prevent object calls form changing these, use vg style -save
+     before the call and vg style -restore after.
+
+ o Linestyles.
+     Linestyles are specified by giving a  nominal  length  of  a
+     single dash and a character string consisting of 1's and 0's
+     (zeros) that specify when to draw a dash  and  when  not  to
+     draw  a  dash. Linestyles will follow curves and "go around"
+     corners. If a linestyle is set  or  reset,  the  accumulated
+     information  as  to where on a curve or line a dash is to be
+     draw is also reset.
+
+     For example, setting the dash length to 0.5, and the  lines-
+     tyle  to '11010' would draw a line(or curve) with a 1.0 unit
+     solid part, followed by a 0.5 unit blank part followed by  a
+     0.5  unit  solid part followed by a 0.5 unit blank part. The
+     linestyle would then repeat itself.
+
+*

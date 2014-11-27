@@ -1,0 +1,308 @@
+
+*1 global_data
+
+Two global arrays hold information for the map catalogue:
+
+   iclPriv     This array holds slowly changing data relevant to the
+               catalogue and numerical representation of access modes etc.
+
+               Most programmers will only be interested in:
+
+                    iclProv(report)     boolean
+
+               which is set to True or False depending on whether
+               report mode is On or Off.
+
+   iclRec      The record structure is updated whenever a record is
+               read from / written to the catalogue.  It is used
+               internally to implement most of the actions of the
+               imcat command. It is suggested that you do not modify
+               this array directly, but rather use the imcat get and
+               imcat put routines.  Array members are:
+
+               ce                current catalogue entry
+               data              boolean indicating a catalogue entry
+                                 holds data
+               accesss           access state as defined by iclPriv
+               unit              unit number for an open CE
+               open              boolean indicating an open CE
+               type              flag indicating data type
+               page              boolean indicating whether CE is temporary (1)
+               file              file name associated with CE
+               source            source name associated with CE
+               program           program associated with CE
+               u1 u2 v1 v2       UV range of image
+               xdim ydim         Dimensions of image
+               dtype             data-type flag for image
+               blank             blank value for image data
+
+*1 imcat
+
+The principal command to manipulate the catalogue is imcat:
+
+   imcat
+
+      option ?ce? ?data?
+
+In all the descriptions which follow "ce" refers to a numeric catalogue
+entry number and ceRec to an array which contains the catalogue record
+structure.
+
+This is the main command to manipulate the catalogue.  Option is one of:
+
+   o maxce                   Return the maximum # of catalogue entries.
+
+   o open                    Open the map catalogue
+
+   o close                   Close the map catalogue
+
+   o initialise              Initialise the map catalogue.  This will
+                             reset all entries in the catalogue as if
+                             a "remove" had been performed for every
+                             entry.  If there are many temporary maps
+                             in the catalogue this will have the effect of
+                             leaving the maps on disc without a pointer
+                             from a valid catalogue entry.
+
+   o setdef                  Set the default map working directory. This
+                             is the directory into which temporary maps
+                             are written.
+
+   o enqdef                  Enquire the default map working directory. This
+                             is the directory into which temporary maps
+                             are written.
+
+   o get  ce  ceRec          Read from the catalogue catalogue entry ce.
+                             ceRec returns the data structure for a record
+                             (see below).
+
+   o put ce  ceRec           Write ceRec to catalogue entry ce.
+
+   o delete ce               Delete entry ce and associated file
+
+   o remove ce               Remove entry ce from the catalogue, the
+                             map file associated with this entry (if any)
+                             is not effected.
+
+   o rename ce ?st1? ?st2?   Entry ce is renamed.  st1 is a string which
+                             replaces the "source" name element and st2
+                             a string replacing the "program" element.
+                             Changes are only applied if st1 or st2 is
+                             a non-zero length string.  The following therefore
+                             changes just the program name:
+
+                                imcat rename 10 {} EX-MAP1
+
+   o export                  Exporting a catalogue entry makes the image (map)
+                             data available outside of Anmap.  In fact the
+                             effect is to simply rename the disc file from
+                             a coded name to a user-selected name.  The
+                             entry in the catalogue is updated appropriately.
+
+   o clear                   Clear an access flag for a catalogue entry.
+                             Access flags may be incorrectly left on a
+                             catalogue entry after, say, a routine fails in
+                             some unexpected fashion.
+
+   o move fromCe toCe        Move the description in ce fromCe to toCe
+                             provided entry toCe contains no data.
+
+   o next                    Return next free CE
+
+   o match pattern           Return a list of all matching catalogue
+                             entries or a numeric entry if the specification
+                             is numeric.  The result is a Tcl list.
+                             For example "imcat match 5" will return "5"
+                             "imcat match 1000000" will return 0 as 1000000
+                             is not a valid CE, and "imcat match NGC" will
+                             return a list of all CE whose source name begins
+                             NGC.  The matching for the last form of the
+                             command uses standard Anmap minimal matching
+                             criteria as used in user-friendly command names.
+
+   o list fromCe toCe ?out?  Produce a listing of the catalogue on file unit
+                             out for ce from fromCe to toCe.  "out" defaults
+                             to stdout, but can be any open file descriptor.
+
+   o temp-delete             Delete all temporary maps in the catalogue.
+                             All files on disc are removed and the catalogue
+                             updated.
+
+   o verify                  Verify the catalogue; remove all catalogue
+                             entries which do not refer to a file which
+                             exists on disc.
+
+   o displayCE fromCe toCe ?out?
+                             Display all catalogue entries in the range
+                             fromCE to toCE.  All relevant information is
+                             displayed on the output stream out which 
+                             defaults to stdout.  If specific information
+                             is required then access the records of 
+                             iclRec explicitly.
+
+   o stack  ?option?         Perform various operations on the data stack:
+                                initialise       initialise the stack
+                                display-stack    display the stack
+                                display-maps     display pagin information
+                                display-size     display sizes of constants
+
+   o result  ?option?        Perform various operations on the list of results
+                             maps.  These are accumulated as new maps are
+                             created and added to the catalogue.  This
+                             information can then be used to access maps
+                             in a creation sequence.
+                                initialise       initialise the result list
+                                set i            set the last result map to "i"
+                                last             return the last created map
+                                list             return a list of the last 10
+                                                 created maps.  A 0 in this
+                                                 list indicated a blank entry
+                                                 in the list.
+
+
+*1 iclPriv
+
+The command iclProv provides a low-level interface between the map-catalogue
+and the tcl programmer.  Generally you should not use this routine directly
+but use instead the imcat command which provides for more error checking.
+If you browse the definitions of the various commands you will however
+see this procedure in use.
+
+*1 examples
+
+For examples of writing procedures to use the map-catalogue access functions
+available you should consult the tcl code which implements the basic
+functionality in the following file:
+
+    $Anmap(src)/tcl_lib/imcat.tcl
+
+*1 procedures
+
+*2 imcat_list
+
+Procedure to implement the list-catalogue command.  User will be promted
+for a range of CE to display or they may be supplied as arguments to the
+procedure.
+
+*2 imcat_remove
+
+Procedure to implement the remove-from-catalogue command.  
+User will be prompted for a CE to remove or it may be supplied as 
+arguments to the procedure.
+
+
+*2 imcat_delete
+
+Procedure to implement the delete-catalogue-entry command.  User will be 
+prompted for a CE to delete or it may be supplied as arguments to the procedure.
+
+*2 imcat_rename
+
+Procedure to implement the rename-catalogue-entry command.  
+User will be promted for a CE to rename or it may be supplied as arguments
+to the procedure.
+
+*2 imcat_clear
+
+Procedure to implement the clear-catalogue-entry command.  
+User will be promted for a CE to clear or it may be supplied as arguments
+to the procedure.
+
+*2 imcat_displayCE
+
+Procedure to implement the display-catalogue-entry command.  
+User will be promted for range of CE to display or they may be supplied 
+as arguments to the procedure.
+
+*2 imcat_export
+
+Procedure to implement the export-permanent-map command.  
+User will be promted for a CE to export and file name or it may be supplied
+as arguments to the procedure.
+
+*2 imcat_defmap
+
+Procedure to implement the default-map command.  
+User will be promted for a CE to set as default map or it may be supplied
+as arguments to the procedure.
+
+*2 imcat_loadCat
+
+Procedure to implement the load-catalogue command.  
+User will be promted for a file name which is a valid map-catalogue file.
+The file will be created if it does not exist.  The file name may be supplied
+as an argument to the routine --- this is the best method for defining
+a new catalogue file or selecting an existing one.
+
+*2 imcat_reportMode
+
+Procedure to implement the report-mode command.  
+The user will be prompted to turn the report mode on/off.  Any valid
+boolean response is acceptable; the value may be supplied as an argument
+to the routine.
+
+This routine sets iclProv(report) to a boolean value depending on the
+input to this routine.  Scripts may use this value to determine what
+level of reporting to the user is desired.
+
+*2 imcat_maxArea
+
+Procedure to implement the set-max-area-read command.  
+The user will be prompted for the  maximum area to be read before reading
+the whole map as a fraction of the map area.   The value may be supplied
+as an argument to this routine.
+
+*2 imcat_setdef
+
+Proceudre to implement the set-default-directory command.
+The user will be prompted for the default directory which may be supplied
+as an argument to the routine.
+
+*2 imcat_setdef
+
+Proceudre to return the default directory.
+
+*2 imcat_addToCat
+
+Proceudre to implement the add-to-catalogue command.
+The user will be prompted for a file pattern which may be supplied
+as an argument to the routine.  All files matching the supplied pattern
+will be added to the catalogue if they are valid map files.  If reporting
+is enabled then the user will be informed of all additions to the catalogue.
+
+*1 editing tools
+
+Three precedures are available to help in editing the catalogue
+
+  o   imcat_edit  fromCe toCe script
+
+	The tcl script is applied to each catalogue entry in the range
+	fromCe to toCe.  For example to list all the file names associated
+	with all CEs in a catalogue use:
+
+		imcat_edit 1 256 {puts "$iclRec(file)"}
+
+  o   imcat_editSetDir   fromCe toCe directory
+
+	Sets the directory name for all catalogue entries in the range
+	fromCe to toCe to directory.
+
+  o   imcat_editChangeDir   fromCe toCe fromDir toDir
+    
+	Sets the directory name for all catalogue entries in the range
+	fromCe to toCe wish match fromDir to toDir.
+
+The directory editing procedures are useful if you wish to move your data
+on disc.  For example the following will move all your temporary maps
+in your images directory (/home/pa/images for example):
+
+	# create a new directory
+	set imgdir /home/pa/images ; cd $imgdir ; mkdir temp_maps
+
+	# move all files
+	mv *.pmap temp_maps
+
+	# edit the catalogue
+	imcat_editChangeDir 1 256 $imgdir $imgdir/temp_maps
+
+*

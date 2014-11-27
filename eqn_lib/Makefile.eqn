@@ -1,0 +1,47 @@
+# This file contains the directorys for installed thing to go in.
+# Please use full path-names.
+
+# Binarys
+BINDIR = /usr/local/dist/bin
+
+# Library function
+LIBDIR = /usr/local/dist/lib
+
+# Include files
+INCDIR = /usr/local/dist/include
+
+# Program manual pages
+MAN1DIR = /usr/local/dist/cat1
+
+# Subroutine manual pages
+MAN3DIR = /usr/local/dist/cat3
+
+# Data format manual pages
+MAN5DIR = /usr/local/dist/cat5
+
+# Name of the install program
+INSTALL = /etc/install
+
+CFLAGS  = -O -cckr
+YFLAGS  = -d
+OBJ = eqnbase.o eqnexpand.o eqnnames.o eqnfunct.o eqndiff.o eqnrpe.o \
+	eqnpoly.o eqnsubst.o yacc.o lex.o eqnvrpe.o
+
+all: libeqn.a eqntool
+eqntool: eqntool.o $(OBJ)
+	cc eqntool.o $(OBJ) -lm -o eqntool
+install: libeqn.a
+	$(INSTALL) -F $(BINDIR) eqntool
+	$(INSTALL) -F $(INCDIR) eqn.h
+	$(INSTALL) -F $(LIBDIR) libeqn.a
+	$(INSTALL) -F $(MAN1DIR) eqntool.doc
+	$(INSTALL) -F $(MAN3DIR) eqn.cat3
+	$(INSTALL) -F $(MAN5DIR) eqn.cat5
+
+libeqn.a: $(OBJ) 
+	$(AR) rv $(ARFLAGS) $@ $(OBJ)
+
+clean:
+	rm -f $(OBJ) eqntool.o
+distclean: clean
+	rm -f libeqn.a eqntool y.tab.h

@@ -1,0 +1,529 @@
+\!   SPECLIB Utilities (TOOLS) command definitions
+\!   ---------------------------------------------
+\!
+\!   Last upadetd 10/11/91
+\!
+\!
+\! header: prints the spectrum header on the standard output
+\*START header
+\ infile    \ nokeyok            \ INFILE    \ -
+\*END
+\!
+\!
+\! gethd: prints a specified header item on the standard output
+\*START gethd
+\ infile    \ nokeyok            \ INFILE    \ -
+\ parameter \ nokeyok            \ PARAMETER \ ndata
+\*END
+\!
+\!
+\! statistics: produce statistics on a spectrum
+\*START statistics
+\ col       \                    \ COL       \
+\ option    \                    \ OPTION    \
+\ infile    \ nokeyok            \ INFILE    \ -
+\*END
+\!
+\!
+\! integrate: integrate a region of a spectral file
+\*START integrate
+\ xc        \                    \ XC        \ 1
+\ yc        \                    \ YC        \ 2
+\ xmin      \                    \ XMIN      \ 0.0
+\ xmax      \                    \ XMAX      \ 1.0E30
+\ infile    \ nokeyok            \ INFILE    \ -
+\*END
+\!
+\!
+\! noise: find noise on a spectrum
+\*START noise
+\ xc        \                    \ XC        \ 1
+\ yc        \                    \ YC        \ 2
+\ window1   \                    \ WINDOW1   \
+\ window2   \                    \ WINDOW2   \
+\ window3   \                    \ WINDOW3   \
+\ window4   \                    \ WINDOW4   \
+\ window5   \                    \ WINDOW5   \
+\ window6   \                    \ WINDOW6   \
+\ window7   \                    \ WINDOW7   \
+\ window8   \                    \ WINDOW8   \
+\ window9   \                    \ WINDOW9   \
+\ infile    \ nokeyok            \ INFILE    \ -
+\*END
+\!
+\! display: display spectra graphically
+\*START display
+\ title    \                     \ TITLE       \
+\ xtitle   \                     \ XTITLE      \
+\ ytitle   \                     \ YTITLE      \
+\ xrange   \                     \ XRANGE      \
+\ yrange   \                     \ YRANGE      \
+\ xc       \                     \ XC          \ 1
+\ yc       \                     \ YC          \ 2
+\ logx             \ nodata      \ LOGX        \
+\ logy             \ nodata      \ LOGY        \
+\ device_size      \             \ DEVICE_SIZE      \
+\ plot_device      \             \ PLOT_DEVICE      \ /xwindow
+\ character_size   \             \ CHARACTER_SIZE   \ 1.5
+\ symbol_size      \             \ SYMBOL_SIZE      \ 1.5
+\ character_font   \             \ CHARACTER_FONT   \ 2
+\ multi_plot       \             \ MULTI_PLOT       \ 1,1
+\ plot_size        \             \ PLOT_SIZE        \ 0.15,0.85,0.15,0.85
+\ offset           \             \ OFFSET           \ 0.0
+\ key_opts         \             \ KEY_OPTS         \ 0,1,1,1,1,0
+\ yl_off           \             \ YL_OFF           \ 3.0
+\ plot_frame       \ nodata      \ PLOT_FRAME       \
+\ plot_axes        \ nodata      \ PLOT_AXES        \
+\ plot_xaxis       \ nodata      \ PLOT_XAXIS       \
+\ plot_grid        \ nodata      \ PLOT_GRID        \
+\ plot_ticks       \ nodata      \ PLOT_TICKS       \
+\ plot_histogram   \ nodata      \ PLOT_HISTOGRAM   \
+\ plot_key         \ nodata      \ PLOT_KEY         \
+\ rescale          \ nodata      \ RESCALE          \
+\ label_horizontal \ nodata      \ LABEL_HORIZONTAL \
+\ lopt1    \                     \ LOPT1       \ 1,1,0
+\ lopt2    \                     \ LOPT2       \ 1,2,0
+\ lopt3    \                     \ LOPT3       \ 1,3,0
+\ lopt4    \                     \ LOPT4       \ 1,4,0
+\ lopt5    \                     \ LOPT5       \ 1,5,0
+\ lopt6    \                     \ LOPT6       \ 1,6,0
+\ lopt7    \                     \ LOPT7       \ 1,7,0
+\ lopt8    \                     \ LOPT8       \ 1,8,0
+\ lopt9    \                     \ LOPT9       \ 1,9,0
+\ lopt10   \                     \ LOPT10      \ 1,9,0
+\ lopt11   \                     \ LOPT11      \ 1,9,0
+\ lopt12   \                     \ LOPT12      \ 1,9,0
+\ key1     \                     \ KEY1        \
+\ key2     \                     \ KEY2        \
+\ key3     \                     \ KEY3        \
+\ key4     \                     \ KEY4        \
+\ key5     \                     \ KEY5        \
+\ key6     \                     \ KEY6        \
+\ key7     \                     \ KEY7        \
+\ key8     \                     \ KEY8        \
+\ key9     \                     \ KEY9        \
+\ key10    \                     \ KEY10       \
+\ key11    \                     \ KEY11       \
+\ key12    \                     \ KEY12       \
+\ offset1  \                     \ OFFSET1     \ 0.0
+\ offset2  \                     \ OFFSET2     \ 0.0
+\ offset3  \                     \ OFFSET3     \ 0.0
+\ offset4  \                     \ OFFSET4     \ 0.0
+\ offset5  \                     \ OFFSET5     \ 0.0
+\ offset6  \                     \ OFFSET6     \ 0.0
+\ offset7  \                     \ OFFSET7     \ 0.0
+\ offset8  \                     \ OFFSET8     \ 0.0
+\ offset9  \                     \ OFFSET9     \ 0.0
+\ offset10 \                     \ OFFSET10    \ 0.0
+\ offset11 \                     \ OFFSET11    \ 0.0
+\ offset12 \                     \ OFFSET12    \ 0.0
+\ file1    \ nokeyok             \             \ -
+\ file2    \ nokeyok             \             \
+\ file3    \ nokeyok             \             \
+\ file4    \ nokeyok             \             \
+\ file5    \ nokeyok             \             \
+\ file6    \ nokeyok             \             \
+\ file7    \ nokeyok             \             \
+\ file8    \ nokeyok             \             \
+\ file9    \ nokeyok             \             \
+\ file10   \ nokeyok             \             \
+\ file11   \ nokeyok             \             \
+\ file12   \ nokeyok             \             \
+\*END
+\!
+\!
+\! combine: combines two spectra
+\*START combine
+\ scale1     \                    \ SCALE1     \ 1.0
+\ scale2     \                    \ SCALE2     \ 1.0
+\ zero1      \                    \ ZERO1      \ 0.0
+\ zero2      \                    \ ZERO2      \ 0.0
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ option     \                    \ OPTION     \ ADD
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile1    \ nokeyok,needed     \ INFILE1    \
+\ infile2    \ nokeyok,needed     \ INFILE2    \
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! rebin: rebin spectrum to different sampling
+\*START rebin
+\ xc         \                    \ XC         \ 1
+\ width      \                    \ WIDTH      \ 1
+\ binsize    \                    \ BINSIZE    \
+\ title      \                    \            \
+\ comment    \                    \            \
+\ average    \ nodata             \ AVERAGE    \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\!
+\! shrink: shrink a data file
+\*START shrink
+\ xc         \                    \ XC         \ 1
+\ xmin       \                    \ XMIN       \ -1.0E+30
+\ xmax       \                    \ XMAX       \ 1.0E+30
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! smooth: smooth an input data set
+\*START smooth
+\ stype      \                    \ STYPE      \ BOXCAR
+\ width      \                    \ WIDTH      \ 1
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! scale: apply scale and offset to columns in a spectrum
+\*START scale
+\ scale      \                    \ SCALE      \ 1.0
+\ zero       \                    \ ZERO       \ 0.0
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ ymin       \                    \ YMIN       \ -1.0E+30
+\ ymax       \                    \ YMAX       \ 1.0E+30
+\ replace    \                    \ REPLACE    \ 0.0
+\ title      \                    \            \
+\ comment    \                    \            \
+\ inverse    \ nodata             \ INVERSE    \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\!
+\!
+\!
+\! filter: apply one or more filters
+\*START filter
+\ scale      \                    \ SCALE      \ 1.0
+\ zero       \                    \ ZERO       \ 0.0
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ ymin       \                    \ YMIN       \ -1.0E+30
+\ ymax       \                    \ YMAX       \ 1.0E+30
+\ replace    \                    \ REPLACE    \ 0.0
+\ log        \ nodata             \ LOG        \
+\ ln         \ nodata             \ LN         \
+\ exp        \ nodata             \ EXP        \
+\ abs        \ nodata             \ ABS        \
+\ inverse    \ nodata             \ INVERSE    \
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! pass: pass columns to the output
+\*START pass
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\! make_histogram: construct a histogram from supplied data
+\*START make_histogram
+\ low        \                    \ LOW        \ 0.0
+\ high       \                    \ HIGH       \ 0.0
+\ col        \                    \ COL        \ 2
+\ bins       \                    \ BINS       \ 10
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! log: take logarithm  of data axes
+\*START log
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! print: print selected columns
+\*START print
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ xrange     \                    \ XRANGE     \
+\ title      \                    \ TITLE      \
+\ format     \                    \ FORMAT     \
+\ infile     \ nokeyok            \ INFILE     \ -
+\*END
+\!
+\! baseline: fit and remove a quadratic baseline
+\*START baseline
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ a0         \ nodata             \ A0         \
+\ a1         \ nodata             \ A1         \
+\ a2         \ nodata             \ A2         \
+\ window1    \                    \ WINDOW1    \
+\ window2    \                    \ WINDOW2    \
+\ window3    \                    \ WINDOW3    \
+\ window4    \                    \ WINDOW4    \
+\ window5    \                    \ WINDOW5    \
+\ window6    \                    \ WINDOW6    \
+\ window7    \                    \ WINDOW7    \
+\ window8    \                    \ WINDOW8    \
+\ window9    \                    \ WINDOW9    \
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! reinterpolate
+\*START reinterpolate
+\ xc         \                    \ XC         \ 1
+\ xcm        \                    \ XCM        \ 
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok,needed     \ INFILE     \
+\ model      \ nokeyok,needed     \ MODEL      \
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! register
+\*START register
+\ xc         \                    \ XC         \ 1
+\ xcm        \                    \ XCM        \ 
+\ yc         \                    \ YC         \ 2
+\ ycm        \                    \ YCM        \
+\ logx       \ nodata             \            \
+\ logy       \ nodata             \            \
+\ shift      \ nodata             \            \
+\ scale      \ nodata             \            \
+\ mode       \                    \ MODE       \ 0
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok,needed     \ INFILE     \
+\ model      \ nokeyok,needed     \ MODEL      \
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\! fitlinear
+\*START fitlinear 
+\ fit      \                     \ FIT       \ fit_output.dat
+\ x1       \                     \ X1        \
+\ x2       \                     \ X2        \
+\ file     \ nokeyok             \ FILE      \ -
+\*END
+\!
+\! fitgauss
+\*START fitgauss 
+\ file     \ nokeyok             \ FILE      \ -
+\ fit      \                     \ FIT       \ fit_output.dat
+\ x1       \                     \ X1        \
+\ x2       \                     \ X2        \
+\ xc       \                     \ XC        \ 1
+\ yc       \                     \ YC        \ 2
+\ ngauss   \                     \ NGAUSS    \ 1
+\ a1       \                     \ A1        \ 1.0
+\ s1       \                     \ S1        \ 1.0
+\ x01      \                     \ X01       \ 0.0
+\ a2       \                     \ A2        \ 1.0
+\ s2       \                     \ S2        \ 1.0
+\ x02      \                     \ X02       \ 0.0
+\ a3       \                     \ A3        \ 1.0
+\ s3       \                     \ S3        \ 1.0
+\ x03      \                     \ X03       \ 0.0
+\ a4       \                     \ A4        \ 1.0
+\ s4       \                     \ S4        \ 1.0
+\ x04      \                     \ X04       \ 0.0
+\ a5       \                     \ A5        \ 1.0
+\ s5       \                     \ S5        \ 1.0
+\ x05      \                     \ X05       \ 0.0
+\ a6       \                     \ A6        \ 1.0
+\ s6       \                     \ S6        \ 1.0
+\ x06      \                     \ X06       \ 0.0
+\ fix_a1   \ nodata              \ FIX_A1    \
+\ fix_s1   \ nodata              \ FIX_S1    \
+\ fix_X01   \ nodata             \ FIX_X01   \
+\ fix_a2   \ nodata              \ FIX_A2    \
+\ fix_s2   \ nodata              \ FIX_S2    \
+\ fix_X02   \ nodata             \ FIX_X02   \
+\ fix_a3   \ nodata              \ FIX_A3    \
+\ fix_s3   \ nodata              \ FIX_S3    \
+\ fix_X03   \ nodata             \ FIX_X03   \
+\ fix_a4   \ nodata              \ FIX_A4    \
+\ fix_s4   \ nodata              \ FIX_S4    \
+\ fix_X04   \ nodata             \ FIX_X04   \
+\ fix_a5   \ nodata              \ FIX_A5    \
+\ fix_s5   \ nodata              \ FIX_S5    \
+\ fix_X05   \ nodata             \ FIX_X05   \
+\ fix_a6   \ nodata              \ FIX_A6    \
+\ fix_s6   \ nodata              \ FIX_S6    \
+\ fix_X06   \ nodata             \ FIX_X06   \
+\*END
+\!
+\!
+\! fft: take fft of data
+\*START fft
+\ xc         \                    \ XC         \ 1
+\ xfftc      \                    \ XFFTC      \ 4
+\ real       \                    \ REAL       \ 2
+\ imag       \                    \ IMAG       \ 3
+\ forward    \ nodata             \ FORWARD    \
+\ backward   \ nodata             \ BACKWARD   \
+\ inverse    \ nodata             \ INVERSE    \
+\ new_axis   \ nodata             \ NEW_AXIS   \
+\ same_axis  \ nodata             \ SAME_AXIS  \
+\ wrap       \ nodata             \ WRAP       \
+\ amp        \ nodata             \ AMP        \
+\ ntrans     \                    \ NTRANS     \ 2
+\ fill       \                    \ FILL       \ 0
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! flip: flip a spectrum
+\*START flip
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ wrap       \                    \ WRAP       \ 0
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! wrap: wrap a spectrum
+\*START wrap
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ wrap       \                    \ WRAP       \ 0
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! clean: clean one spectrum with another
+\*START clean
+\ col        \                    \ COL        \ 2
+\ psfcol     \                    \ PSFCOL     \ 2
+\ niter      \                    \ NITER      \ 1000
+\ frac       \                    \ FRAC       \ 0.1
+\ dmin       \                    \ DMIN       \ 0.0
+\ cs_clean   \ nodata             \ CS_CLEAN   \ 
+\ positive   \ nodata             \ POSITIVE   \ 
+\ zero       \                    \ ZERO       \ 0
+\ nlist      \                    \ NLIST      \ 1
+\ nvar       \                    \ NVAR       \ 1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ psf        \ needed             \ PSF        \
+\ residual   \                    \ RESIDUAL   \ NONE
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! convolve: convolve one spectrum with another
+\*START convolve
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ psfcol     \                    \ PSFCOL     \ 2
+\ title      \                    \            \
+\ comment    \                    \            \
+\ psf        \ needed             \ PSF        \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\! zap: zap ranges in a spectrum
+\*START zap
+\ cols       \                    \ COLS       \ ALL
+\ xc         \                    \ XC         \ 1
+\ yc         \                    \ YC         \ 2
+\ value      \                    \ VALUE      \ 0.0
+\ xr         \                    \ XR         \ 0,0
+\ xr1        \                    \ XR1        \ 0,0
+\ xr2        \                    \ XR2        \ 0,0
+\ xr3        \                    \ XR3        \ 0,0
+\ xr4        \                    \ XR4        \ 0,0
+\ xr5        \                    \ XR5        \ 0,0
+\ xr6        \                    \ XR6        \ 0,0
+\ xr7        \                    \ XR7        \ 0,0
+\ xr8        \                    \ XR8        \ 0,0
+\ xr9        \                    \ XR9        \ 0,0
+\ yr         \                    \ YR         \ 0,0
+\ yr1        \                    \ YR1        \ 0,0
+\ yr2        \                    \ YR2        \ 0,0
+\ yr3        \                    \ YR3        \ 0,0
+\ yr4        \                    \ YR4        \ 0,0
+\ yr5        \                    \ YR5        \ 0,0
+\ yr6        \                    \ YR6        \ 0,0
+\ yr7        \                    \ YR7        \ 0,0
+\ yr8        \                    \ YR8        \ 0,0
+\ yr9        \                    \ YR9        \ 0,0
+\ title      \                    \            \
+\ comment    \                    \            \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\!
+\!
+\! richard-lucy: deconvolve one spectrum with another
+\*START rl
+\ col        \                    \ COL        \ 2
+\ psfcol     \                    \ PSFCOL     \ 2
+\ niter      \                    \ NITER      \ 1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ psf        \ needed             \ PSF        \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+\! annealing code
+\*START sa
+\ col        \                    \ COL        \ 2
+\ psfcol     \                    \ PSFCOL     \ 2
+\ niter      \                    \ NITER      \ 1
+\ frac       \                    \ FRAC       \ 0.1
+\ title      \                    \            \
+\ comment    \                    \            \
+\ psf        \ needed             \ PSF        \
+\ guess      \                    \ GUESS      \
+\ infile     \ nokeyok            \ INFILE     \ -
+\ outfile    \ nokeyok            \ OUTFILE    \ -
+\*END
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,9 @@
+#!/bin/csh
+
+# setup default values for various options
+
+  /usr/bin/X11/xterm -iconic -name Xanmap -title Xanmap -font 7x13 \
+        -geometry 1000x1000+10000+10000 \
+        -xrm "xterm*allowSendEvents:true"\
+        -e %ANMAP%/bin/Xanmap_exec &
+

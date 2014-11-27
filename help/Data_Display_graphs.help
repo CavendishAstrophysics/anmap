@@ -1,0 +1,35 @@
+
+The following options are defined for the graph- commands.  Note these
+are command options and you will not be prompted for them if they are
+not specified on the command line
+
+  -histogram         use a stepped line to draw the graph rather than
+                     a smooth line
+  -scatter           draw data as a scatter plot rather than as a smooth
+                     continuous line
+  -lines             draw data as smooth continuous lines
+  -key               add a simple key to the plot
+  -xc n -yc m        specify the X and Y columns to plot from a data file
+                     defaults are n=1 m=2
+  -file [file]       specify the file name of the file to plot
+  -file(n)[file]     add more lines to the plot.  A maximum of 8 files
+                     may be specified in this way.  For example to plot
+                     two files use:
+                       -file anmap_results.dat -file2 anmap_data.dat
+                     -file and -file1 are synonymous
+  -function [func]   specify a function to plot rather than a data file
+  -xrange [x1,x2]    give the X-range for the plot
+  -yrange [y1,y2]    give the Y-range for the plot
+  -title ["text"]    specify a title for the plot
+  -xtitle ["text"]   specify a title for the X-axis of the plot
+  -ytitle ["text"]   specify a title for the Y-axis of the plot
+
+
+These options provide a means of accessing more of the data-display system
+functionality than is provided with the simplest use of the graph- commands
+however the full range of the data-display sub-system facilities can be
+accessed simply using the commands described in the data-display help and
+applied to an existing plot using the plot refresh mechanism.
+
+*
+

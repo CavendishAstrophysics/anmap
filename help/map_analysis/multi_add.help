@@ -1,0 +1,103 @@
+Multi-Add : Linear combination of up to 30 maps
+
+*1 Introduction
+
+Multi-Add is a command-line driven sub-program to combine up to 30 maps.
+Use the add-map-to-list command to add a map to the list of maps to
+combine, sepcifying the weighting and zer-level to use.  You can list
+the maps in the list using the list-maps command which will display
+the maps, weights and zer levels.  If you make a mistake the command
+remove-map-from-list can be used to remove a single map from the list
+or use the command clear-map-list to start again.  When happy with
+your map list use the go command to do the addition on-line or the
+make command to run in batch.  Basic-commands are not available from
+within this sub-system.
+
+For example to add four maps with equal weights in catalogue entries
+4,5,6,7 use the following:
+
+  add-map-to-list 4 0.25 0.0
+  add-map-to-list 5 0.25 0.0
+  add-map-to-list 6 0.25 0.0
+  add-map-to-list 7 0.25 0.0
+
+check the list with
+
+  list-maps
+
+and if all is OK run on-line:
+
+  go
+
+You will be warned if the maps are "incompatible" in any sense, but if
+you wish you may ignore these warning messages.
+
+*1 add-map-to-list
+
+Parameters: map-entry scale-factor zero-level
+
+A map is added to the list of maps to combine.  The map will be added
+with a factor "scale-factor" after correcting the zero level of the map
+by an amount "zero-level".  The addition is therefore of
+
+     (map(map-entry) - zero-level ) * scale-factor
+
+To add a map (12) in the catalogue to the list with a weight of 0.55 which has
+a known zero-level error of 1.23mJy use:
+
+  add-map-to-list 12 0.55 1.23
+
+A check for consistency is made between the redtape of the map you are
+adding to the list and existing maps in the list.  You will be warned
+of `soft' errors (different map-centres, sampling etc.), it is NOT
+possible to combine maps of different sizes or UV ranges.
+
+You may if desired (although there is no point) specify the same map
+more than once in the list.  A map list of one entry is permissible.
+
+*1 delete-map-from-list
+
+Parameters: yes/no/ESC in response to prompt for each map in the list
+
+For each map in the list you will prompted for whether you wish to delete
+the specified map, you may reply YES or NO or press ESC to end to
+interogation.  You may add back the map in the list if you wish.
+
+*1 clear-map-list
+
+Parameters: NONE
+
+Clear all entries from the map list and prepare for a new list of maps
+to combine.  You may wish to execute this command each time prior to
+setting up an addition.
+
+*1 go
+
+Parameters: NONE
+
+Run multi-add on line.   Multi-add runs as a separate sub-program.  On
+completion you will be returned to the map-analysis sub-system and the
+map list will have been re-initialised.  It is not currently posisble
+to abort or interupt the multi-add program during execution.
+
+*1 make
+
+Parameters: NONE
+
+Run multi-add off line in batch mode.  Multi-add is run as a separate
+sub-program in the FAST batch queue.  Control is returned immediately
+to the terminal.  The make command creates the output map for your
+addition and it will appear immediately in the catalogue, however it
+will have create access associated with it, indicated by a C when you
+list the catalogue.  This indicates the map has been created, but does
+not yet contain valid data.  When the off-line job completes you will
+be sent a message and the create access flag will be removed from the
+catalogyue entry.
+
+*1 help
+
+Parameter: help entry
+
+Obtain help on the multi-add sub-system.
+
+*

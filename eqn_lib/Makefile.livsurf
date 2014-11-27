@@ -1,0 +1,28 @@
+include ../Makedefs
+
+CFLAGS  = -O -cckr
+YFLAGS  = -d
+TEMPINC = ../include/eqn.h
+OBJ = eqnbase.o eqnexpand.o eqnnames.o eqnfunct.o eqndiff.o eqnrpe.o \
+	eqnpoly.o eqnsubst.o yacc.o lex.o eqnvrpe.o
+
+all:  $(TEMPINC) libeqn.a eqntool
+eqntool: $(TEMPINC) eqntool.o $(OBJ)
+	cc eqntool.o $(OBJ) -lm -o eqntool
+$(TEMPINC): $$(@F)
+	cp $? $@
+install: libeqn.a eqntool
+	$(INSTALL) -F $(BINDIR) eqntool
+	$(INSTALL) -F $(INCDIR) eqn.h
+	$(INSTALL) -F $(LIBDIR) libeqn.a
+	$(INSTALL) -F $(MAN1DIR) eqntool.1
+	$(INSTALL) -F $(MAN3DIR) eqn.3
+	$(INSTALL) -F $(MAN5DIR) eqn.5
+
+libeqn.a: $(OBJ) 
+	$(AR) rv $(ARFLAGS) $@ $(OBJ)
+
+clean:
+	rm -f $(OBJ) eqntool.o
+distclean: clean
+	rm -f $(TEMPINC) libeqn.a eqntool y.tab.h

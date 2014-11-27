@@ -1,0 +1,76 @@
+Changes/bug fixes and additions to eqn library
+
+version 2.0 25/8/93
+
+	First off there was one critical bug.
+	When trying to convert equations in three varibles into
+	polynomials messed up whenever the term -z was encountered.
+
+	A slight change in interpratation of equations,
+	a/b(c) is now interprated as a/(b(c)) if b has been declaired
+	as a function and (a/b)(c) otherwise. It use to always be
+	a/(b(c)). This also effects a/b c. See the section on functions
+	for more details. Note the call set_input_functions is
+	now required for function definitions to be used.
+
+	Operators like diff(eqn,name) can now be added.
+
+	Attemps to handle vectors with dot product . vector product ^
+	addition/subtraction + - . This bit works but is still at
+	a developement stage. (Would like to have user definable
+	vector functions eg unit(v) ).
+
+	Some new function definition usable in equations
+		abs
+		sgn
+		max
+		min
+		if
+
+	Lots of new c-subroutines added:
+		count_eqn_args
+		copy_node
+		free_eqn_node
+		join_eqn
+		join_dup_eqn
+		get_eqn_arg
+		add_operator
+		eval_ops
+		set_input_functions
+		get_input_functions
+		make_vrpe
+		eval_vrpe
+		fprint_vrpe
+		print_vrpe
+	and some macros
+		eqn_op
+		eqn_l
+		eqn_r
+		eqn_val
+		eqn_name
+		eqn_fun
+		eqn_arg
+		eqnop
+		eqnl
+		eqnr
+		eqnval
+		eqnname
+		eqnfun
+		eqnarg
+		remove_eqn_names
+		num_eqn_names
+		get_eqn_names
+		
+
+THINGS TO DO
+		Add the subroutines
+			add_internal_mapping
+			add_external_mapping
+		and deal with general mappings from R^n to R^m.
+
+		Rework the substitution mechinism so that if we have
+			X = a * b ;
+			a = x + y;
+			b = x - y;
+		we can find the value of X and its derivative with
+		out having to substitute in the equations for a and b.

@@ -1,0 +1,27 @@
+#
+# Tcl script to install applications
+#
+set ANMAP [lindex $argv 0]
+set WISH [lindex $argv 1]
+set WISHX [lindex $argv 2]
+set WISHXB [lindex $argv 3]
+set SRC [lindex $argv 4]
+for {set n 5} {$n < [llength $argv]} {incr n} {
+  set file [lindex $argv $n]
+  puts "Building and installing $file"
+  if [file exists $file] then {
+     set fid [open $file r]
+     set text [read $fid]
+     close $fid
+     regsub -all {%ANMAP%} $text $ANMAP t1
+     regsub -all {%WISH%} $t1 $WISH t2
+     regsub -all {%WISHX%} $t2 $WISHX t1
+     regsub -all {%WISHXB%} $t1 $WISHXB t2
+     regsub -all {%SRC%} $t2 $SRC t1
+     set fid [open ../bin/$file w]
+     puts -nonewline $fid $t1
+     close $fid
+     exec chmod a+x ../bin/$file
+  }
+}
+ 

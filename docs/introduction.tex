@@ -1,0 +1,480 @@
+\documentstyle[12pt]{article}
+\include{anmap_macros}
+\begin{document}
+\begin{center}
+\vspace*{4.0cm}
+{\Large\bf Anmap User Guide} \\
+\vspace{1.0cm}
+{\Large\bf An Introduction to Anmap}
+\end{center}
+
+\newpage
+\begin{center}
+{\Large\bf Anmap User Guide} \\
+\vspace{1.0cm}
+{\Large\bf An Introduction to Anmap}
+\end{center}
+\vspace{1.0cm}
+
+\Anmap\ is a system for the analysis and processing of images
+and spectral data.  Originally written for use in Radio Astronomy,
+much of its functionality is applicable to other disciplines and
+the package is being enhanced by the addition of new algorithms
+and analysis procedures of direct use in, for example, NMR
+imaging and spectroscopy.  The unique feature of \Anmap\ is the
+emphasis placed on the analysis of data with an aim to extracting
+quantitative results for comparison with theoretical models
+and/or other experimantal data.  To achieve this Anmap provides:
+(a) A wide range of tools for analysis, fitting and modelling
+(including standard image and data processing algorithms);
+(b) A powerful environment for users to develop their own
+analysis/processing tools either by combining existing 
+algorithms and facilities with the very powerful command
+(scripting) language or by writing new routines in FORTRAN or C
+which integrate seemlessly with the rest of Anmap.  
+ 
+Throughout this document some standard notation will be used.
+\begin{apars}
+\item In the text italics will indicate a command name or parameter.
+\item In examples bold will indicate messages produced by the
+computer as well as prompts.
+\item The term CR will refer to a 'carriage-return' (i.e.
+pressing the return key).
+\end{apars}
+
+\section{Getting \Anmap\ started}
+ 
+To start up ANMAP simply type one of the following
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> anmap \\
+\> Anmap \\
+\> Xanmap \\
+\end{tabbing}
+where the final one of these will start up the X-windows version of
+the program.
+
+The program will then begin -- it will take a little time to
+get going as the program is quite large and it is going
+through a start-up procedure. After a while a message similar
+to the following will appear on the screen:
+\begin{verbatim}
+         Welcome to Version X0.51e See Help/News for details
+         =>      Bug fix in Multi-Add and Multi-Fit
+         =>      See News about hopeful/possible fix of STACK problems !!?
+         =>      See News concerning use of PGPLOT special characters
+\end{verbatim}
+and the prompt will change to:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\>  Anmap$>$ \\
+\end{tabbing}
+If you start up the X-windows version then a new command input
+window with menu bar will appear together with a graphics window a
+the message will be displayed above the menu bar
+Anmap is now ready to accept commands. 
+
+\section{The User Interface}
+
+The facilities of \Anmap\ can be acessed either from the
+command line or via a windows interface although in the
+current verion \Version\ only a limited subset of facilities
+currently have a windows interface.  The power of \Anmap\ stems
+from the user's abaility to extend the basic functionality of
+the program by either writing new routines (and window's interfaces)
+in the command language used by \Anmap\ called Tcl, or by adding
+new routines written in FORTYRAN or C.
+
+Commands come in three flavours, user commands which implement the
+analysis features of \Anmap\, Tcl (or command language) commands
+which provide the basic operations of any computer language together
+with many specific commands for data processing, and finally
+ordinary UNIX-type commands and programs that you would use from
+any unix command interface, SHELL --- \Anmap\ is in most ways just
+another UNIX shell eextended with data processing commands.
+New users will start just be using the {\em user} commands, 
+but you will soon find that using the command language helps 
+you to get your work done even faster!  The three flavours of command 
+are distinguished simply:
+\begin{npars}
+\item User commands are all {\em multi-part} commands with
+dashes (or hyphens / minus signs, ``-'') used to separate the parts of the
+command --- a user only has to type sufficient of the command to
+make it unambiguous for the command to be executed with each part
+of the command being matched separately (see below).
+\item Command language commands are single word commands, or
+a multi-word command with the words separated by an underscore
+character (``\_'') --- these commands must be typed exactly, minimal
+matching is not allowed.
+\item Finally, if the input you type cannot be interpreted as either
+a user analysis command or a command language command then \Anmap\
+attempts to execute what you have typed as a standard UNIX command
+(program) in the same way as any command you type at a UNIX prompt.
+\end{npars}
+ 
+The conventions used for the mininal matching of user commands
+are as follows:
+Each command consists of a number of parts each separated by a
+dash '--', with commands being case sensitive (ie. upper and lower-case 
+characters {\em are} distinguished in commands as they are in
+file names). The command
+interpreter matches each part of the command separately, you
+only need to type as much of the command as is necessary to
+make it unambiguous. The simplest way to see how this works is
+via an example. The command {\em list-catalogue} lists the contents
+of the map-catalogue (see below). To use this command the user
+may type any one of the following abbreviations:
+\begin{tabbing}
+XXXXXX\= \kill 
+\>li-cat \\
+\>list-c \\
+\>li-c \\
+\end{tabbing}
+however, the simple {\em l-cat} 
+is not sufficient as there is also a command {\em load-catalogue}
+and a message:
+
+{\bf *** command is ambiguous}
+
+ will appear along with a list of alternatives.
+ 
+User commands may take data: the data for a
+particular command is given after the command --- you may type on
+the same line as the command the responses to the prompts
+which would normally follow after specifying the command name.
+If more than one data item or response is given on the command
+line than they may be separated by commas ``,'' or spaces. If
+you do not know what data a particular command is expecting
+then the program will give an informative prompt.
+
+Commands can be continued onto more than one line by making the last 
+character on the line a backslash \\.
+
+{\bf Example 1}
+The following will all produce the same result --- listing the first
+ten entries in the catalogue
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Anmap$>$ {\bf list-catalogue 1,10} \\
+\\
+\> Range to list low  [ 1 ] : {\bf 1} \\
+\> Range to list high  [ 256 ] : {\bf 10} \\
+\end{tabbing}
+
+{\bf Example 2} 
+Scan-map takes a map-catalogue entry and a UV-range -- in this
+example the default of the complete map is used.
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Anmap$>$ {\bf map-analysis scan-map 1,,,,,}
+\end{tabbing}
+
+
+When you are prompted for some input the default to the
+command is shown in square brackets ``['', ``]''. Round brackets
+are used to show possible responses. The default may be
+obtained by pressing CR.
+
+{\bf Example 3}
+In this example a default directory and file type are
+indicated -- if you do not supply these the defaults are used.
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-name [/data1/pa/images/*.map] : {\bf CR} 
+\end{tabbing}
+
+
+{\bf Example 4}
+The user is prompted for the projection of the output map in
+the reproject command, the valid replies are either
+equatorial, sky or tangent and the default (obtained on
+pressing carriage return) is sky, in this example the user has
+chosen equatorial (note again the use of minimal matching for matching
+list-type output.
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Projection (equatorial,sky,tangent) [sky] : {\bf equat}
+\end{tabbing}
+ 
+Command language commands provide access to a wide range of programming
+tools as well as low-level access the \Anmap\ itself.  The command
+language is based on Tcl an embedded language developped by
+Dr. J Ousterhout at the University of California Berkely.  \Anmap\
+is therefore built around a very powerful programming language which
+in addition to all of the normal programming tools also allows you to
+construct graphical user interfaces based on the X-windows system --- a
+programmer using the \Anmap\ command language can therfore create a
+complete X-windows application inside of \Anmap!
+Command language commands cannot be abreviated and in general the data
+to the commands must be specified on the command line using a UNIX-like
+syntax of command value -options.  Examples of some of the most useful
+command-language commands with a brief description of what they do are
+given in table 1.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Command(s)} & {\bf What is does} \\
+& \\ \hline
+& \\
+set & set variables arrays and lists \\
+foreach, loop, for & looping commands \\
+proc, return, rename & manage procedures \\
+if, switch & logical tests \\
+open, close, file, puts, gets & access text files \\
+exec, system, pid & run UNIX commands \\
+string, regexp, regsub & handling text \\
+list ... & handling lists of elements \\
+expr, incr & calculations \\
+& \\ \hline
+\end{tabular}
+\caption{Examples of command language commands}
+\end{table}
+A more detailed description of the command language is given
+later.
+
+\section{How \Anmap\ is organised}
+
+\Anmap\ is organized into
+sub-systems, each with its own set of commands, however some
+commands (Global-Commands) are always available to you --- the
+global commands are those which are available when you see the
+``Anmap$>$'' prompt and you may type them in response to any of the
+other prompts. Global-commands exist to obtain help
+information, access the map-catalogue, access disc files and
+importantly to change to another sub-system.  Note that all
+command-language (Tcl) commands are treated as global commands.
+The sub-systems which are currently defined are shown in table 2.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Sub-system} & {\bf What is does} \\
+& \\ \hline
+& \\
+graphic-system & control graphics and graphic devices \\
+map-display & display of maps/images (grey scales contours etc.) \\
+data-display & graphs, scatter plots etc. \\
+scratch-display & control scratch graphics \\
+drawing-display & annotations for graphics \\
+map-analysis & analyse maps and images \\
+spectrum-analysis & analyse spectral files \\
+edit-image & edit and filter images \\
+edit-redtape & edit the image/map headers \\
+clean-system & clean image deconvolution \\
+catalogue-system & manage the image catalogue \\
+synchrotron-analysis & analyse maps of synchrotron emission \\
+& \\ \hline
+\end{tabular}
+\caption{The main \Anmap\ sub-systems}
+\end{table}
+
+ 
+You start off in the main \Anmap-system - to return to it from any
+other sub-system just type exit or quit --- these commands
+typed in response to the Anmap$>$ prompt will exit \Anmap. 
+To switch to a different
+sub-system simply give the name of the sub-system as a command
+and you will notice that the prompt will change.
+At any time you can list the available commands by typing a
+``?'' .  One useful feature is that you do not have to switch sub-systems
+to access the commands in another sub-system, instead you can prefix
+the required command with the name of the sub-system.  For example
+if you are in the map-display sub-system and want to clear the screen
+you need the {\em clear-screen} command from the graphic-system and
+you can simply type:
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Map-Display$>$  {\bf graphic-system clear-screen}
+\end{tabbing}
+ 
+You may obtain considerably more information by typing {\em help} ---
+this enters the help system, while {\em news} is a similar command
+providing up-to-date information on what has changed recently in
+\Anmap.  Both of these commands give you a list of the available
+information, the information is organised hierarchically so that
+you will get a new list of known information as you move through
+the hierarchy or tree.
+To obtain information on a
+particular topic in help or news, for example the catalogue-system, 
+simply type the name of the entry of interest. Let us suppose you type
+cat-sys (note that minimal matching applies). On the screen
+will be displayed a few lines of introduction to the map
+catalogue and then there will appear a new menu of things help
+knows about in connection with the map-catalogue and the
+catalogue system; as we will
+presume you are new to \Anmap\, type intro and the information
+listed under the Introduction will be typed. On completion of
+this information you will still be at the level of help
+information on the map catalogue -- to re-display the menu
+type a question mark (?). 
+To return to the Anmap$>$ prompt keep pressing CR until
+the prompt re-appears on your screen.
+In addition to the command-line versions, if you are using Xanmap
+then X-windows tools exist to navigate through the help, these
+can be started from the menu by selecting {\em Anmap Help}
+or {\em Anmap News} from the {\em Help} menu.
+ 
+ 
+\section{Interupting Anmap Commands}
+ 
+You may interrupt the program at any stage by pressing the 
+Control-Y i.e. the control and the "Y" keys simultaneously.
+This should return you to the current sub-system prompt.
+Note that this will happen immediately in response to a
+prompt, but there may be a considerable delay if some work is
+being done on an image as the effect is carefully controlled
+so that you do not lose any data.  You can abort \Anmap\
+completely by using the standard UNIX Control-C or choosing 
+kill from the frame menu if it is available under X-windows.
+
+
+
+\section{Finding Out About Commands}
+
+A help facility is provided to explain the various commands
+available which can be used by just typing {\em help}.
+This is similar to the help system available on DEC VAX computers.
+A list of topics help knows about will appear on the
+screen and the prompt ``topic$>$''. To find out more about a
+particular topic simply type the name of the topic required
+(as with news described above). Some information will now be
+printed on the terminal with possibly another set of options
+--- note how the prompt changes so that you know where you are
+in help. Help is organized in a hierarchical way, it is
+probably worth spending some time exploring help now before
+doing anything else. To exit help simply press return a number
+of times --- this moves you back up through the help tree, or
+type Control-Y to return immediately to the Anmap$>$ prompt.
+ 
+In addition to using help you can obtain a list of all the
+current commands and a brief indication of what they do simply
+by typing a question mark ``?'', while
+\begin{tabbing}
+XXXXXXX \= SUB-SYSTEMS \= \kill
+\> Anmap$>$ {\bf ? delete}
+\end{tabbing}
+will list all commands beginning delete.
+
+\section{Data files and Data formats}
+
+\Anmap\ uses at present an internal format for maps (images) and
+a very simple format for spectral-type data (i.e. data which is
+represented as values along a specified axis).  To read image data
+into \Anmap\ you must either have your data already in the \Anmap\
+format or use the {\em read-data-file} command (or perhaps another
+specific data input command such as one of the commands to
+read nmr data files: {\em nmr-read-image}, {\em nmr-image-read} 
+or {\em nmr-serial-read}) to read data into the map catalogue.  
+The {\em read-data-file} command can be used to read data in any
+of the following formats:
+\begin{npars}
+\item FITS format files.
+\item Ascii files with one value per pixel
+\item Binary files with the data stored as REAL or INTEGER data.
+\end{npars}
+Other MRAO software, specifically POSTMORTEM, will however write data
+in the same format as use by \Anmap\ and in this case the maps can
+be added directly to the map-catalogue using the {\em add-to-catalogue}
+command.
+Once the map/image data are in the catalogue a number of commands can
+be used to manipulate them, the commands you are most likely to use
+to start with are shown in table 3.
+\begin{table}
+\begin{tabular}{|l||l|}
+\hline
+& \\
+{\bf Catalogue command} & {\bf What is does} \\
+& \\ \hline
+& \\
+read-data-file & read data into \Anmap\ \\
+add-to-catalogue & add maps to the catalogue \\
+remove-from-catalogue & remove maps from thecatalogue \\
+list-catalogue & list (a part of) the catalogue \\
+export-permanent-map & save temporary maps \\
+delete-catalogue-entry & delete maps from disc \\
+& \\ \hline
+\end{tabular}
+\caption{The most common catalogue commands.  These commands are
+all available in the map-catalogue sub-system although they are also
+defined as global commands}
+\end{table}
+
+Spectral files have a very simple format and therefore it should be easy
+to get your data into the required format, specifically the file is an
+ascii (ordinary text) file of numbers where each column in the file is
+a different axis --- for example data specified as $y$ as a function of
+$x$ would have the $x$-values in column 1 and the $y$-values in column 2.
+The only other information that is needed in the file is header information.
+This must preceede all the columns of data and each line of header information
+start with a \% symbol followed immediately by a name by which to
+identify the header item then the value.  Files {\em must} contain two
+items \%ndata and \%ncols giving the number of lines of data and the
+number of columns in the file.  The following is a simple example of a
+spectral file:
+\begin{verbatim}
+%ndata 10
+%ncols 2
+%title This is an example spectral file
+1 0.5612
+2 1.6540
+3 9.0875
+4 12.0241
+5 9.0123
+6 8.0135
+7 6.1209
+8 2.1218
+9 0.0671
+10 0.0056
+\end{verbatim}
+\end{document}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+

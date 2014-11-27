@@ -1,0 +1,65 @@
+#!/mrao/anmap/anm3d/ida
+
+# parse the input data
+set from image.dat ; set to fractal.data
+set x1 0.0; set x2 1.0; set xinc 1.0 ; set near -near1
+set r1 1.0 ; set r2 10.0 ; set r3 11.0
+set cx 32 ; set cy 32 ; set cz 32
+for {set n 0} {$n < [llength $argv]} {incr n} {
+	switch -- [lindex $argv $n] {
+	{-from}		{incr n ; set from [lindex $argv $n]}
+	{-to}		{incr n ; set to [lindex $argv $n]}
+	{-low}		{incr n ; set x1 [lindex $argv $n]}
+	{-x1}		{incr n ; set x1 [lindex $argv $n]}
+	{-high}		{incr n ; set x2 [lindex $argv $n]}
+	{-x2}		{incr n ; set x2 [lindex $argv $n]}
+	{-cx}		{incr n ; set cx [lindex $argv $n]}
+	{-cy}		{incr n ; set cy [lindex $argv $n]}
+	{-cz}		{incr n ; set cz [lindex $argv $n]}
+	{-r1}		{incr n ; set r1 [lindex $argv $n]}
+	{-r2}		{incr n ; set r2 [lindex $argv $n]}
+	{-r3}		{incr n ; set r3 [lindex $argv $n]}
+	{-incr}		{incr n ; set xinc [lindex $argv $n]}
+	{-near1}	{set near "-near1"}
+	{-near2}	{set near "-near2"}
+	{-near3}	{set near "-near3"}
+	{default}	{set from [lindex $argv $n]}
+	}
+}
+
+# define procedures
+proc perc1 { im val cx cy cz r1 r2 r3 near} {
+   global xval perc itot
+
+ # form appropriate binary image
+   set id [img_geom $im subimage]
+   img_apply $id binary $val
+
+ # set percolating regions
+   img_pixel $id annulus -r1 0.0 -r2 $r1 -x $cx -y $cy -z $cz -val 3.0
+   img_pixel $id annulus -r1 $r2 -r2 $r3 -x $cx -y $cy -z $cz -val 4.0
+
+ # identify and analyse image
+   incr i
+   set xval($itot) $val
+   set perc($itot) [img_region percolate $id -test]
+
+# delete workspace
+   img destroy $id
+}
+
+# read in image
+set im [img_image read -file $from -type 1]
+
+# loop over levels
+set itot 0
+for {set x $x1} {$x <= $x2} {set x [expr $x + $xinc]} {
+   frac1 $im $x $near
+}
+
+# output results
+set f [open $to w]
+for {set i 1} {$i <= $itot} {incr i} {
+    puts $f "xval($i) perc($i)"
+}
+close $f

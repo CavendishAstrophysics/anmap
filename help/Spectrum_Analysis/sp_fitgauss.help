@@ -1,0 +1,80 @@
+Spectrum-analysis-program: fit a number of gaussians to a spectral file
+
+Fit a model consisting of a number of gaussians to a data set
+
+
+Keys:
+
+file     nokeyok             input file      [-]
+fit                          output fitted file [fit_output.dat]
+x1                           } data range X1 -- X2        
+x2                           }        
+xc                           X-column        [1]
+yc                           Y-column        [2]
+ngauss                       number of gaussians to fit   [1]
+
+... Parameters of each gaussian: a exp( - (x-x0)**2 / (2*s**2) )
+    and their default values  
+a1                           A1        1.0
+s1                           S1        1.0
+x01                          X01       0.0
+a2                           A2        1.0
+s2                           S2        1.0
+x02                          X02       0.0
+a3                           A3        1.0
+s3                           S3        1.0
+x03                          X03       0.0
+a4                           A4        1.0
+s4                           S4        1.0
+x04                          X04       0.0
+a5                           A5        1.0
+s5                           S5        1.0
+x05                          X05       0.0
+a6                           A6        1.0
+s6                           S6        1.0
+x06                          X06       0.0
+fix_a1   nodata              FIX_A1    
+fix_s1   nodata              FIX_S1    
+fix_X01   nodata             FIX_X01   
+fix_a2   nodata              FIX_A2    
+fix_s2   nodata              FIX_S2    
+fix_X02   nodata             FIX_X02   
+fix_a3   nodata              FIX_A3    
+fix_s3   nodata              FIX_S3    
+fix_X03   nodata             FIX_X03   
+fix_a4   nodata              FIX_A4    
+fix_s4   nodata              FIX_S4    
+fix_X04   nodata             FIX_X04   
+fix_a5   nodata              FIX_A5    
+fix_s5   nodata              FIX_S5    
+fix_X05   nodata             FIX_X05   
+fix_a6   nodata              FIX_A6    
+fix_s6   nodata              FIX_S6    
+fix_X06   nodata             FIX_X06   
+
+Up to six gaussians may be specified and the values for fitting
+parameters will be either:
+
+   starting guesses
+
+Or:
+
+   fixed values if fix_XXX is specified for parameter X.
+
+
+The fitting assumes a function of the form:
+
+     Sum_{i} ( A(i) exp( (x-xc(i))**2/2.0sigma(i)**2 )
+
+  X1/X2 default to the entire data range to fit; estaimates of
+  all the initial values may be supplied by the user.  Output
+  is in the form of a multi-column data file with the columns arranged
+  as:
+   1)       Original X-column
+   2)       Final fitted data to original Y-column
+   3->2+n)  "n" component gaussians
+
+For all fits the NAG routine E04FDF is used for the least squares
+minimization.
+
+

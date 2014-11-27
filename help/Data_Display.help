@@ -1,0 +1,542 @@
+
+Data-display -- a sub-system for the graphical display of 1D data sets.
+
+*1 Introduction
+*@$ANMHELP/Intro_Data_Display.help
+
+*1 line-options
+
+Command: setup options for each line to be displayed.
+Parameters: line option
+Options:    reset-style reset-file file x-file y-file
+            function list
+            x-column y-column
+            x-offset y-offset x-scale y-scale x-auto-scale y-auto-scale
+            x-error-bar y-error-bar x-log-scale y-log-scale
+            x-limits y-limits
+            line-style line-type error-style
+            symbol-style symbol-type key-display
+
+The options for the specified line are set.  Once a file has been defined
+for a line that line will be "active" and will be displayed with a plot all
+or plot line command.  The default is to use column 1 and column 2 as the
+X and Y columns for the plot and to plot Y against X.  This can bechanged
+with the x-column and y-column options, but you may also have the x and
+y columns from different files using the x-file and y-file commands.
+Error bars in X and Y may be displayed either using columns from the main
+or other files (use x-error-bar y-error-bar options).  The data may be
+modified "on-the-fly" before plotting using the -offset -scale -auto-scale
+and -log-scale commands.   Scaling and offseting can be used to shift
+and expand a line to help overlay multiple lines, the -auto-scale options
+attempt to do this automatically.  The -log-scale commands take the logarithm
+of each data point before display; zero or negative points are trapped and
+set to zero on output.  The type of line/markers plotted is controlled
+with the line-style, line-type (none, standard or histogram) and symbol-type
+options, for example to plot a histogram-type line
+  line-options 1 line-type 2
+of to plot just symbols
+  line-options 1 line-type 0
+  line-options 1 symbol-type 2
+to get just crosses for example.  Line-style and symbol-styles (colours
+fonts size etc) are set with the line-style symbol-style commands.
+Whether there is an entry in the key, and the text to go with the
+entry, for a particular line is controlled with the key-display option;
+the default is to include an entry in the key and use the data file name
+as the text string.
+
+The line to be drawn can be specified in one of three ways:
+
+  1)  As a file name using the file, x-file or y-file options.  The
+      file must be in the standard Anmap spectral format (see below).
+      Different  files may be specified for the x and y corrdinates of
+      the line and also for any error bars.  For data from such a file
+      you must also specify the x-column and y-column to use for the
+      X and Y coordinates specifying the line itself.  Error bars may
+      be specified in a separate file or in the same file using the
+      x-error-bar or y-error-bar options.  Data limits, or error bars
+      with un-equal arms may be specified using the x-limits and
+      y-limits options.  The high and low limits to the error must both
+      be given for all data points with the high and low limits in
+      adjacent columns in the file.
+
+  2)  As a command-language (tcl) list.  This option can be specified
+      with the list option to which you give the name of both an X and
+      y lists.  If you specify the list option then error bars and
+      limits must also be specified as tcl lists (see the examples below).
+
+  3)  As a function.  The function should specify the y-value as a
+      function of the x-coordinate (e.g. sin(x)).
+
+These possibilities are illustrated in the examples given below.
+*2 file_format
+*@$ANMHELP/Spectral_data_files.help
+
+*2 list_format
+
+To setup a list of data in a tcl variable X all that is required is
+to specify the data as:
+
+   set x { 1 2 3 4 5 6 7 8 9 10 }
+   set y { 0.1 0.3 0.4 0.32 0.5 0.7 0.1 0.0 0.05 0.12 }
+
+or via any other method used to create normal tcl lists.  The variables
+muct be global variables which is the default if they are created at
+any normal Anmap prompt.
+
+*2 function_format
+
+The function must be a single valued function of the independent variable
+``x''.  All standard functions (actually taken from the C-library) are
+available for example exp, sin, cos, tan, mod, abs, log, ... together with
+the standard operators +, -, /, *, ^, **, the last two both representing
+raise to the power of.
+
+*2 Examples
+
+The following example shows how to plot data from a data file with
+the X, Y and errors in columns 1, 2 and 3 (the defaults)
+
+    line 1 file data.dat
+    line 1 y-error-bar yes data.dat 3
+    plot all
+
+If we wanted to reverse the X and axes on the plot the following would
+have been appropriate
+
+    line 1 file data.dat
+    line 1 x-column 2 ; line 1 y-column 1
+    line 1 x-error-bar yes data.dat 3
+    plot all
+
+If columns 3 and 4 contained upper and lower values to the error
+respectively then the y-limits option would have been appropriate to
+display the errors:
+
+    line 1 file data.dat
+    line 1 y-limits yes data.dat 3
+    plot all
+
+Note that the upper and lower error estimates must be in adjacent
+columns in the file.  If the errors had in fact been specified in a
+separate file then we could have used:
+
+    line 1 file data.dat
+    line 1 y-limits yes error_data.dat 3
+    plot all
+
+To specify data to plot using tcl lists we could use the following to
+setup the lists:
+   set x { 1 2 3 4 5 6 7 8 9 10 }
+   set y { 0.1 0.3 0.4 0.32 0.5 0.7 0.1 0.0 0.05 0.12 }
+Then plot them as follows:
+   line 1 list 'x y'
+   plot all
+
+For errors we introduce a third list and then give thisin response
+to setting up y-errors
+   set ey {0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1}
+   line 1 y-error-bar yes ey
+
+If the errors are to be specified as limits then the list of
+error values should pair upper and lower error bar values for
+each point respectively.  For example if all the errors are in fact
+upper limits then:
+   set ey {0 0.1 0 0.1 0 0.1 0 0.1 0 0.1 0 0.1 0 0.1 0 0.1 0 0.1 0 0.1}
+   line 1 y-limits yes ey
+
+Finally as an example of plotting functions consider plotting both a
+straight line and an exponential as two lines on a graph
+   line 1 function '0.265 + 2.31*x'
+   line 2 function '1.034E+2*(1.0 - exp(-x/12.0))'
+   plot all
+
+*1 data_format
+*@$ANMHELP/Spectral_data_files.help
+
+*1 set-frame-style
+*@$ANMHELP/Frame_Style.help
+
+*1 set-text-style
+
+Command: set style for titles plotted in data-display graphics
+Parameters: font, size, colour, width
+
+The standard parameters for a text style can be set with this
+command -- note that the style of any frame drawn (including text)
+is controlled with the set-frame-style command, but the titles are
+drawn with the text-style specified with this command.
+
+*2 attributes
+*@$ANMHELP/Attributes.help
+
+*1 set-title-options
+
+Command: set options for titles
+Parameters: title-type position outwards-displacement location justification
+
+This command sets options for where the titles are to be displayed, to set
+the text-style for titles use the set-text-style command.
+
+  title-type     this must be one of title, x-title or y-title
+  position       specifies which side of the frame to display the title
+                   value   title   x-title    y-title
+                     1     top     bottom     left
+                     2     bottom  top        right
+  outwards-displacement
+                 this is the displacement of the title from the frame
+                 measured in average width characters.
+  location       specifies the title location relative to the frame
+                 and is specified as a fractional position along the frame
+                 with the left/bottom being 0.0 and the right/top 1.0 --
+                 positions outside of the frame are allowed.
+  justification  specifies the title justificationtion relative to the
+                 location of the title and is specified as a fractional
+                 position along the title with 0.0 being the left of the
+                 title and 1.0 the right of the title.
+
+*2 examples
+
+To centre a title use location=0.5 justification=0.5
+   set-title-options title 1 3 0.5 0.5
+
+The following displays the top title aligned with the left of the frame,
+the y-title is moved outward to allow space for "horizontal labels".
+   set-frame-style rotate-labels
+   set-title-options title 1 3 0.0 0.0
+   set-title-options y-title 1 8 0.5 0.5
+
+To put the X-title on the top of the plot and the mai title above it.
+   set-title-options title 1 6 0.5 0.5
+   set-title-options x-title 2 3 0.5 0.5
+
+*1 set-key-options
+
+Command: set options for the plotting of keys
+Parameters: option
+Options:    on off position frame text-style
+
+Options for the key plotted on a data-display graph are controlled
+with this command.  Whether a paticular line/set of points is included
+in the key or not, and the label used in the key, is controlled with
+the line-options key-display command.
+
+The meaning of the options to the set-key-options command is:
+
+  on              turn the display of a key on
+  off             turn the display of a key off
+  position        specify the position of the key relative to the
+                  frame of the graph; the position is specified
+                  as an x- and y-position such that 0.0 aligns the
+                  left of the key with the left edge of the frame
+                  1.0 aligns the left edge of the key with the right
+                  edge of the frame -- for y 0.0 is the bottom and 1.0
+                  is the top and the top of the frame is aligned with the
+                  specified position.  For example:
+                    0.0,1.0   positions the key in the top left corner
+                    1.2,1.0   positions the key outside of the frame to the
+                              top right.
+                  It is not possible to align the key on any other edge
+                  as the size of the key is not known until after it is
+                  drawn as the information is contains is "dynamic".
+  frame           Turn the plotting of a frame around the key on or off.
+  text-style      set font, size, colour, width, drop for the text appearing
+                  in the key -- it is NOT possible to control the style of
+                  text for each entry in the key.  The text that is plotted
+                  is controlled by the line-options key-display command.
+
+See also: line-options
+
+*1 title
+
+Command: set the title for the plot
+Parameters: title
+
+Set the title for the plot to the specified text.  The title is plotted
+when the frame is plotted, if the frame is already drawn you will need to
+use either "initialise plot; plot all" or "plot refresh".
+
+*1 x-title
+
+Command: set the title for the X-axis of the plot
+Parameters: title
+
+Set the X-axis title for the plot to the specified text.  The title is plotted
+when the frame is plotted, if the frame is already drawn you will need to
+use either "initialise plot; plot all" or "plot refresh".
+
+*1 y-title
+
+Command: set the title for the Y-axis of the plot
+Parameters: title
+
+Set the Y-axis title for the plot to the specified text.  The title is plotted
+when the frame is plotted, if the frame is already drawn you will need to
+use either "initialise plot; plot all" or "plot refresh".
+
+*1 x-range
+
+Command: set the x-range for the plot
+Parameters: x1 x2
+
+Set the x-range for the plot.  If x1 and/or x2 are non-zero then the
+range is set to the explicit range sepcified so that the left edge of
+the plot is x1 and the right edge x2 (x2 may be < x1).  To request auto-
+scaling (the default) set x1 = x2 = 0.0.
+
+*1 y-range
+
+Command: set the y-range for the plot
+Parameters: y1 y2
+
+Set the y-range for the plot.  If y1 and/or y2 are non-zero then the
+range is set to the explicit range sepcified so that the left edge of
+the plot is y1 and the right edge y2 (y2 may be < y1).  To request auto-
+scaling (the default) set y1 = y2 = 0.0.
+
+*1 view-port
+
+Command: set the (sub-)view-port for the data display, graph,  object
+Parameters: u1,u2,v1,v2
+
+The view-port specified with this command is relative to the view-port of
+the graph graphic itself (set with the graphic view-port command).  The
+graph graphic is displayed with its frame aligned with this view-port,
+whereas the larger view-port of the graph graphic is the region of the
+display (or plot device) allocated to this graphic and if the mode is
+set to opaque, the region of the screen which will be cleared.  For example
+the following will ensure the entire screen is cleared when a graph graphic
+is defined, but sufficient space will be allowed for the plotting of
+labels and titles which are placed outside of the frame of the actual plot
+
+   graphic select graph 1
+   graphic view-port 0.0,1.0,0.0,1.0
+   data-display view-port 0.15,0.85,0.15,0.85
+
+Alternatively if the graph graphic is to appear in a small region of the
+screen to the top right (perhaps allowing space for an image to be displayed)
+then the following would be more appropriate
+
+   graphic select graph 1
+   graphic view-port 0.7,1.0,0.7,1.0
+   data-display view-port 0.15,0.85,0.15,0.85
+
+*2 examples
+
+Select the whole device for display of a linear graph
+   graphic
+     select graph 1
+     view-port 0.0,1.0,0.0,1.0
+   data-display
+     view-port 0.1,0.9,0.1,0.9
+     linear-graph ......
+
+Display a grey scale image then display a slice in a small box to the top right
+   map-display
+     set-map 1
+     grey on,,,,
+     plot grey
+   map-analysis
+     select-slice 1 -30,30,30,30
+   graphic
+     select graph 1
+     view-port 0.7,1.0,0.7,1.0
+   data-display
+     view-port 0.15,0.85,0.15,0.85
+     line-options 1 file anmap_results.dat
+     plot all
+
+
+
+*1 plot
+
+Command: plot a data-display graph graphic object
+Parameters: option
+Options: all line frame annotations refresh
+
+The plot command controls the plotting of information to the screen
+or output device.  The plot all command can be used to plot all
+the information you have requested/defined; once plotted plot all
+will not re-plot the same information even if you change some
+attributes such as line-colour etc. -- in this case you need to
+use "plot refresh" which refreshes the plot using the attributes
+for lines and text and other options in effect at the time you give
+the command.  You can control in more detail how the plot is put
+together using the plot line plot annotations and plot frame commands
+to plot just parts of the information on the plot.  There are also
+plot commands in the annotate sub-system to provide careful control
+over the plotting of annotations.
+
+The options have the following specific meanings
+   all              plot everything that is outstanding (i.e. not
+                    yet plotted.
+   refresh          re-plot the graphic using all attributes and options
+                    in effect when this command is given.
+   annotations      plot annotations, same as annotate plot all or
+                    plot all.
+   frame            plot just the frame and key for the plot.
+   line   n         plot just line n where line "n" has been defined with
+                    the line-options command.
+
+*1 initialise
+
+Command: initialise the data-display sub-system
+Parameters: option
+Options: all plot options annotations title setup
+
+This command can be used to initialise parts of the data-display
+sub-system. The options have the following meaning:
+
+   annotations     initialise all annotations and annotation options
+   options         initialise line, text, key and frame style options
+   title           initialise title strings
+   plot            initialise for (re-)plotting, the state of the
+                   sub-system is initialised so that it was as if
+                   nothing had yet be drawn on the plot; plot all
+                   will then plot everything.
+                      initialise plot ; plot all
+                   gives the same results as
+                      plot all ; plot refresh
+   setup           initialise the setup of line options specific to
+                   the files / data sets to be plotted.
+   all             equivalent to all the above
+
+
+*1 annotate
+*@$ANMHELP/Annotate.help
+
+*1 get
+
+Command: retrieve information about the current sub-system
+Parameters: option
+Options: cursor-input coordinates line frame key max-lines view-port range
+
+Get returns information about the current scratch-display definition or
+prompts the user for necessary input.  All information is returned via
+command-language parameters.
+
+   cursor-position     the user is requested to enter a position using
+                       the cursor.  The routine will return
+                         %X %Y       coordinate position in current graph
+                                     coordinates.
+                         %GR-X %GR-Y position in screen coordinates.
+                         %GR-CHAR    character typed
+
+   coordinates         return the current coordinates as an array
+                         %COORDINATES
+   view-port           return the current view-port as an array
+                         %GRAPH-VP
+   range               reruen the current data range in two arrays
+                         %X-RANGE %Y-RANGE
+
+   scratch             details of the options for the current scratch
+                       definition
+
+   max-lines           return the maximum number of lines as %MAX-LINES
+
+   frame               return frame details in standard parameters
+
+   key                 return key details in standard parameters
+
+   line  n             return details for line n in standard parameters
+
+*2 standard_parameters
+*@$ANMHELP/Standard_parameters.help
+
+*1 graph-linear-linear
+
+Command-procedure: plot a data-file as a linear-scaled graph
+Parameters: data-file
+
+This command plots a data file as a linear-scaled graph.  This provides
+a simplified interface to the facilities of the data-display system
+when you have a data file in the standard spectrum format and you want
+to plot the y-column (column 2) versus the x-column (column 1).  You
+specify just the file name and the plot is drawn automatically.  To
+alter aspects of the plot (e.g. add a title) use standard data-display
+commands after the linear-graph command and the say "plot refresh".
+
+For example to plot the anmap results file then add titles:
+
+   graph-linear-linear anmap_results.dat
+   title Main title
+   x-title X
+   y-title Y
+   plot refresh
+
+*@$ANMHELP/Data_Display_graphs.help
+
+*1 graph-log-log
+
+Command-procedure: plot a data-file as a log-scaled graph
+Parameters: data-file
+
+This command plots a data file as a log-scaled graph.  This provides
+a simplified interface to the facilities of the data-display system
+when you have a data file in the standard spectrum format and you want
+to plot the y-column (column 2) versus the x-column (column 1).  You
+specify just the file name and the plot is drawn automatically.  To
+alter aspects of the plot (e.g. add a title) use standard data-display
+commands after the lograithmic-graph command and the say "plot refresh".
+
+For example to plot the anmap results file then add titles:
+
+   graph-log-log anmap_results.dat
+   title Main title
+   x-title X
+   y-title Y
+   plot refresh
+
+*@$ANMHELP/Data_Display_graphs.help
+
+*1 graph-log-linear
+
+Command-procedure: plot a data-file as a log-scaled graph
+Parameters: data-file
+
+This command plots a data file as a log-linear-scaled graph.  This provides
+a simplified interface to the facilities of the data-display system
+when you have a data file in the standard spectrum format and you want
+to plot the y-column (column 2) versus the x-column (column 1).  You
+specify just the file name and the plot is drawn automatically.  To
+alter aspects of the plot (e.g. add a title) use standard data-display
+commands after the lograithmic-graph command and the say "plot refresh".
+
+For example to plot the anmap results file then add titles:
+
+   graph-log-linear anmap_results.dat
+   title Main title
+   x-title X
+   y-title Y
+   plot refresh
+
+*@$ANMHELP/Data_Display_graphs.help
+
+*1 graph-linear-log
+
+Command-procedure: plot a data-file as a log-scaled graph
+Parameters: data-file
+
+This command plots a data file as a linear-log-scaled graph.  This provides
+a simplified interface to the facilities of the data-display system
+when you have a data file in the standard spectrum format and you want
+to plot the y-column (column 2) versus the x-column (column 1).  You
+specify just the file name and the plot is drawn automatically.  To
+alter aspects of the plot (e.g. add a title) use standard data-display
+commands after the lograithmic-graph command and the say "plot refresh".
+
+For example to plot the anmap results file then add titles:
+
+   graph-linear-log anmap_results.dat
+   title Main title
+   x-title X
+   y-title Y
+   plot refresh
+
+*@$ANMHELP/Data_Display_graphs.help
+
+*1 examples
+*@$ANMHELP/Data_Display_Examples.help
+*
+
+
+

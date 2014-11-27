@@ -1,0 +1,150 @@
+#
+# Module : map-analysis
+#
+# define command to switch to the map-analysis sub-system
+set global.commands(map-analysis) {main.system map-analysis}
+
+
+# define basic commands for the map-analysis sub-system
+set anmapnames(anal) {map-analysis}
+set sysnames(map-analysis) {anal}
+set anal.prompt "Map-analysis> "
+proc anal.command {args} { eval anmap_command map-analysis $args }
+set anal.commands(add-flux) {}
+set anal.commands(strip-flux) {}
+set anal.commands(ring-flux) {}
+set anal.commands(angular-flux) {}
+set anal.commands(print-map) {}
+set anal.commands(output-map) {}
+set anal.commands(input-map) {}
+set anal.commands(map-histogram) {}
+set anal.commands(scatter-plot) {}
+set anal.commands(plot-slice) {}
+set anal.commands(shrink-map) {}
+set anal.commands(expand-map) {}
+set anal.commands(stretch-map) {}
+set anal.commands(vertical-flip) {}
+set anal.commands(horizontal-flip) {}
+set anal.commands(reproject-map) {}
+set anal.commands(reproj2) {}
+set anal.commands(UV-shift-map) {}
+set anal.commands(UV-rotate-map) {}
+set anal.commands(smooth-map) {}
+set anal.commands(convolve-map) {}
+set anal.commands(scan-map) {}
+set anal.commands(noise-map) {}
+set anal.commands(scale-map) {}
+set anal.commands(zap-map) {}
+set anal.commands(change-blank-values) {}
+set anal.commands(gate-map) {}
+set anal.commands(logarithmic-map) {}
+set anal.commands(exponentiate-map) {}
+set anal.commands(add-maps) {}
+set anal.commands(divide-maps) {}
+set anal.commands(multiply-maps) {}
+set anal.commands(mask-map) {}
+set anal.commands(convert-position) {}
+set anal.commands(local-maximum) {}
+set anal.commands(multi-add-maps) {anal.system multi-add-maps}
+set anal.commands(multi-fit-maps) {anal.system multi-fit-maps}
+set anal.commands(extract-slice) {}
+set anal.commands(binary-map) {}
+set anal.commands(get) {}
+proc anal.system { sysname args } {
+   global anmap_sys anmap_parent anmap_owner sysnames
+   set sys $sysnames($sysname)
+   set anmap_owner map-analysis
+   if [llength $args] then {
+     eval interp_command $sys $args
+   } else {
+     uplevel #0 "anmap_prompt $\{$sys.prompt\}"
+     set anmap_parent $sysnames(map-analysis)
+     set anmap_sys $sys
+   }
+}
+set anmapnames(multiadd) {multi-add-maps}
+set sysnames(multi-add-maps) multiadd
+set multiadd.prompt "Multi-Add> "
+proc multiadd.command {args} { eval anmap_command map-analysis multi-add-maps $args }
+set multiadd.commands(clear-map-list) {}
+set multiadd.commands(add-map-to-list) {}
+set multiadd.commands(delete-map-from-list) {}
+set multiadd.commands(list-maps) {}
+set multiadd.commands(make) {anmap_command map-analysis multi-add-maps go $args
+                             anmap_command catalogue-sys re-init-stack}
+set multiadd.commands(go)   {anmap_command map-analysis multi-add-maps go $args
+                             anmap_command catalogue-sys re-init-stack}
+
+set anmapnames(multifit) {multi-fit-maps}
+set sysnames(multi-fit-maps) multifit
+set multifit.prompt "Multi-Fit> "
+proc multifit.command {args} { }
+set multifit.commands(clear-map-list) { multi_fit_sys clear }
+set multifit.commands(add-map-to-list) {multi_fit_sys add }
+set multifit.commands(delete-map-from-list) {multi_fit_sys delete }
+set multifit.commands(set-fit-type) {multi_fit_sys type}
+set multifit.commands(set-constant) {multi_fit_sys const}
+set multifit.commands(list-maps) {multi_fit_sys list}
+set multifit.commands(go-fit)   {multi_fit_sys exec}
+
+#
+#
+# define new commands to map analysis
+set anal.commands(image-fft) "$Anmap(src)/bin/image_fft"
+set anal.commands(Aphi-real-imag) "$Anmap(src)/bin/Aphi_RealImag"
+set anal.commands(fractal-calculation) "$Anmap(src)/bin/fractal_calc"
+set anal.commands(ricean-correction) {ricean_correction}
+set anal.commands(cluster-analysis) $Anmap(src)/bin/cluster_make
+
+#
+# 
+# create procedures used to implement the above user interface
+proc multi_fit_sys { opt args } {
+   global multiFit Anmap
+   io_setcli $args
+   if ![info exists multiFit(init)] then {
+	set multiFit(init) 1
+	set multiFit(list) {}
+	set multiFit(type) 1
+ 	foreach n {1 2 3 4 5} { set multiFit(val:$n) 0.0 }
+   }
+   switch $opt {
+	{add}		{set map [io_getword "CE : " {-1}]
+			 set x [io_getr "Xvalue : " {0.0}]
+			 set g [io_getr "Gate : " {0.0}]
+			 if { $map > 0 } then {
+				lappend multiFit(list) [list $map $x $g]
+			 }
+			}
+	{list}		{for {set n 0} {$n < [llength $multiFit(list)]} {incr n} {
+				set l [lindex $multiFit(list) $n]
+				puts [format "Map: %-20s      Xvalue: %-10s     Gate %-10s" \
+					[lindex $l 0] [lindex $l 1] [lindex $l 2]]
+			 }
+			}
+	{clear}		{set multiFit(list) {}}
+	{delete}	{for {set n 0} {$n < [llength $multiFit(list)]} {incr n} {
+				set l [lindex [lindex $multiFit(list) $n] 0]
+				set r [io_onoff "Delete from list map $l \[no\] : " 0]
+				if { !$r } { lappend nl [lindex $multiFit(list) $n] }
+			 }
+			 set multiFit(list) $nl
+			}
+	{type}		{set multiFit(type) \
+			  [io_geti "Model type \[$multiFit(type)\] : " \
+			   $multiFit(type)]
+			}
+	{const}		{set n [io_geti "Constant to set \[1\] : " 1]
+			 if { ($n < 1) || ($n > 5) } {set n 1}
+ 			 set multiFit(val:$n) \
+			  [io_getr "Constant $n \[$multiFit(val:$n)\] : " \
+			   $multiFit(val:$n)]
+			}
+	{exec}		{eval exec $Anmap(src)/bin/multi_fit \
+			    [llength $multiFit(list)] [join $multiFit(list)] 2 \
+			    $multiFit(type) 5 $multiFit(val:1) $multiFit(val:2) \
+			    $multiFit(val:3) $multiFit(val:4) $multiFit(val:5)
+			}
+   }
+}
+

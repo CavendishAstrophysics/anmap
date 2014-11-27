@@ -1,0 +1,44 @@
+#
+# Module : edit_image
+#
+# define command to switch to the edit-image sub-system
+set global.commands(edit-image) {main.system edit-image}
+
+# define basic commands for the edit-image sub-system
+set anmapnames(editim) {edit-image}
+set sysnames(edit-image) {editim}
+set editim.prompt "Edit-Image> "
+proc editim.command {args} { eval anmap_command edit-image $args }
+set editim.commands(set-map) {}
+set editim.commands(create-map) {}
+set editim.commands(update-map) {}
+set editim.commands(save-edits) {}
+set editim.commands(discard-edits) {}
+set editim.commands(set-pixel) {}
+set editim.commands(set-region) {}
+set editim.commands(set-circle) {}
+set editim.commands(set-annulus) {}
+set editim.commands(set-row) {}
+set editim.commands(set-column) {}
+set editim.commands(set-full-image) {}
+set editim.commands(set-source) {}
+set editim.commands(set-program) {}
+set editim.commands(copy-pixel) {}
+set editim.commands(copy-region) {}
+set editim.commands(copy-row) {}
+set editim.commands(copy-column) {}
+set editim.commands(copy-from-image) {}
+set editim.commands(select-value-mode) {}
+set editim.commands(select-noise-mode) {}
+set editim.commands(select-blanking-mode) {}
+set editim.commands(select-scale-mode) {}
+set editim.commands(select-filter-mode) {}
+set editim.commands(define-blank) {}
+set editim.commands(reset-blank-values) {}
+set editim.commands(apply-ricean-correction) {}
+set editim.commands(mask-map) {}
+set editim.commands(function) {}
+set editim.commands(edit-options) {}
+
+
+

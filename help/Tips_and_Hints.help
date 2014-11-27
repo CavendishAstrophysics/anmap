@@ -1,0 +1,76 @@
+
+*1 taking_a_backup
+
+It is perfectly safe to take a backup of all of your image and catalogue
+files using the standard UNIX tools.  For example suppose we archive all
+images and map-catalogues to an archive file on Exabyte tape:
+
+  cd ~
+  tar cvf /dev/rst/0 mrao/*.mctg images 
+
+This command will work on mraos and mraosc or to DAT tape on mraosd and
+can be given from within Anmap or any UNIX shell.  It also assumes you are
+using the standard ~/images path to contain Anmap maps and other data.
+
+To recover a particular catalogue from this archive you must do two things:
+
+  1) recover firstly the catalogue itself then
+  2) recover the files from the catalogue.
+
+To recover the catalogue enter the following command (I will assume
+you are already in Anmap):
+
+  tar xvf /dev/rst/0 save-catalogue.mctg
+
+where "save-catalogue" is the name of the catalogue you want to recover.
+Then switch to using this recovered catalogue:
+
+  load-catalogue save-catalogue
+
+You should now recover the files associated with this catalogue as
+follows:
+
+  eval tar xvf /dev/rst1 [imcat_fileList]
+
+The command imcat_fileList lists all file names in the catalogue; the
+above command passes this list directly to tar (the "eval" is necessary to
+process the output of imcat_fileList properly).
+
+To create a tar archive of the current map catalogue, the following
+command should be used (in this example a disc tar file is created):
+
+  cd ~/mrao
+  eval tar cvf mapcat.tar map-catalogue.mctg [imcat_fileList]
+
+*1 using_large_images
+
+If you are analysing large images then you will find the
+"-mapsize" options very useful.  For example if your standard image size
+is 1024x1024, then you should probably start Anmap with:
+
+	anmap -mapsize 512
+
+It is not necessary to specify your actual map size as the amount of reserved
+storage is in fact:
+
+	nmaps * mapsize**2
+
+*1 working_directory
+
+By default Anmap changes directory to ~/mrao.  You can overide this
+with the option "-cwd" or change to another directory with the options
+"-cd dir" on the anmap or Xanmap command line.
+
+Additionally you may find it useful to set some options regarding working
+directory in your ~/mrao/init_anmap.tcl file.  For example to stop Anmap
+changing directory to ~/mrao then simply add the following to your init
+file:
+
+	set Anmap(init:cwd) 1
+
+Or to change to your own specified working directory add the following:
+
+	set Anmap(init:dir) directory_name
+
+
+*

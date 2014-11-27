@@ -1,0 +1,380 @@
+#!/mrao/anmap/anm3d/Xida -f
+
+#
+# Application to visualize 3D volume data using IDA extension / pgplot / vogle
+#
+global Imid Imdisp Imdef Imdef1 Andef
+global auto_path Vis3d
+
+set src /soft/tcl/ndt4 ; lappend auto_path $src/lib
+
+# define global values
+set Vis3d(src) /mrao/anmap/anm3d
+set Vis3d(tran) -linear
+set Vis3d(disp:x1) {}
+set Vis3d(disp:x2) {}
+set Vis3d(movie:play) 0
+set Vis3d(movie:pl) xy
+set Vis3d(movie:sl) 1
+set Vis3d(movie:sl1) 1
+set Vis3d(movie:sl2) 1
+set Vis3d(anal:img) 1
+set Vis3d(anal:reg) 0
+set Vis3d(anal:histn) 100
+set Vis3d(anal:hist1) 0
+set Vis3d(anal:hist2) 0
+set Vis3d(anal:histmm) 1
+set Vis3d(anal:save) 0
+set Vis3d(anal:file) {}
+set Vis3d(vissh:init) 0
+set Vis3d(regth:gate) 0.0
+set Vis3d(regth:ns) 1
+set Vis3d(regth:type) 0
+set Vis3d(regth:mlow) 0
+set Vis3d(regth:mhigh) 10000
+set Vis3d(regan:infile) {}
+set Vis3d(regan:doinfile) 0
+set Vis3d(regan:xc) 0.0
+set Vis3d(regan:yc) 0.0
+set Vis3d(regan:zc) 0.0
+set Vis3d(regan:slmin) 0.0
+set Vis3d(regan:slmax) 1000.0
+set Vis3d(regan:r1) 0.0
+set Vis3d(regan:r2) 1000.0
+set Vis3d(regan:axis) z
+set Vis3d(regan:excl) 0
+set Vis3d(regan:x1) 0.5
+set Vis3d(regan:x2) 4000.5
+set Vis3d(regan:xi) 1.0
+set Vis3d(regan:nh) 20
+set Vis3d(regan:vv) 1
+set Vis3d(regan:logx) 0
+set Vis3d(regan:out) 1
+set Vis3d(regan:file) output.ps
+set Vis3d(regan:setbinsize) 0
+set Vis3d(regan:binsize) {}
+set Vis3d(geom:axis) {x y z}
+set Vis3d(geom:binx) 1
+set Vis3d(geom:biny) 1
+set Vis3d(geom:binz) 1
+set Vis3d(geom:projdir) z
+
+# load desktop environment
+Desktop_Init Vis3d $src -command /mrao/anmap/anm3d/vis3d
+   wm iconbitmap . @$Vis3d(src)/vis3d.xbm
+   wm iconname . Vis3d
+   wm title . Vis3d
+
+# interogate command line
+   set pgopt 1
+   set vgopt 0
+   set fiopt 0
+   for {set n 0} {$n < [llength $argv]} {incr n} {
+	switch -- [lindex $argv $n] {
+	{-nographic}	{set pgopt 0 ; set vgopt 0}
+	{-graphic}	{set pgopt 1 ; set vgopt 1}
+	{-nopg}		{set pgopt 0}
+	{-novg}		{set vgopt 0}
+	{-pg}		{set pgopt 1}
+	{-vg}		{set vgopt 1}
+	{-file}		{set fiopt 1; incr n ; set file [lindex $argv $n]}
+	}
+   }
+
+# start up pgplot and vogle
+   if { $pgopt } then {
+	pg paper 10.0 1.0
+	pg stream open 1 /xwindow
+	pg paper 10.0 1.0
+	pg stream open 2 /xwindow
+	pg stream select 1
+	pg paper 10.0 1.0
+	pg page
+   }
+   if { $vgopt } then {
+	vg_init 10 ; vg move 0 0 0
+   }
+
+# add application menu bar
+pack [frame .bar -relief raised -borderwidth 2] \
+      -side top -fill x
+  pack [menubutton .bar.file -text File -width 8 -menu .bar.file.m] \
+        -side left -anchor w
+  menu .bar.file.m
+  .bar.file.m add command -label "Load image" \
+		 -command vis_load
+  .bar.file.m add command -label "Load 2nd image" \
+		 -command vis_load2
+  .bar.file.m add command -label "Save image As" \
+		 -command {vis_save image}
+  .bar.file.m add command -label "Save displayed image As" \
+		 -command {vis_save displayed}
+  .bar.file.m add separator
+  .bar.file.m add command -label "Command window" \
+		 -command "Desktop_CommandMode .cm -toplevel"
+  .bar.file.m add separator
+  .bar.file.m add command -label "Exit" \
+		 -command exit
+
+  pack [menubutton .bar.edit -text Edit -width 8 -menu .bar.edit.m] \
+        -side left -anchor w
+  menu .bar.edit.m
+  .bar.edit.m add command -label "Edit images ..." \
+		 -command "vis_editImage"
+  .bar.edit.m add command -label "Select subimage ..." \
+		 -command "vis_subImage"
+  .bar.edit.m add command -label "Edit lookup table ..." \
+		 -command "pgct .ct"
+  .bar.edit.m add command -label "Edit tool appearance ..." \
+		 -command "option_EditWindow .cfopts -toplevel"
+  .bar.edit.m add command -label "Working directory ..." \
+		 -command "dirselect .teddir -toplevel -nograb -nodestroy"
+
+  pack [menubutton .bar.geom -text Geometry -width 8 -menu .bar.geom.m] \
+        -side left -anchor w
+  menu .bar.geom.m
+  .bar.geom.m add command -label "Select subimage ..." \
+		 -command "vis_subImage"
+  .bar.geom.m add command -label "Tile subimages ..." \
+		 -command "vis_tile"
+  .bar.geom.m add command -label "Transpose ..." \
+		 -command "vis_geomTranspose"
+  .bar.geom.m add command -label "Rebin ..." \
+		 -command "vis_geomBin"
+  .bar.geom.m add command -label "Project ..." \
+		 -command "vis_geomProject"
+
+  pack [menubutton .bar.tools -text Tools -width 8 -menu .bar.tools.m] \
+        -side left -anchor w
+  menu .bar.tools.m
+  .bar.tools.m add command -label "Procedure editor ..." \
+		 -command {vis_edit}
+  .bar.tools.m add command -label "Results monitor ..." \
+		 -command {vised_result .res}
+  .bar.tools.m add command -label "Screen capture ..." \
+		 -command {screen_capture .scrc -ps -file screen.ps \
+				-toplevel  -dismiss {destroy .scrc}}
+
+  pack [menubutton .bar.reg -text Regions -width 8 -menu .bar.reg.m] \
+        -side left -anchor w
+  menu .bar.reg.m
+  .bar.reg.m add command -label "Construct thinned image ..." \
+		-command "reg_makeThin"
+  .bar.reg.m add command -label "Identify regions in thinned image ..." \
+		-command "reg_makeIdent"
+  .bar.reg.m add command -label "Classify identified image ..." \
+		-command "reg_makeClass"
+  .bar.reg.m add command -label "Visualize shapes ..." \
+		-command "vis_visRegions"
+  .bar.reg.m add command -label "Analyse regions ..." \
+		-command "reg_analRegs"
+
+  pack [menubutton .bar.disp -text Display -width 8 -menu .bar.disp.m] \
+        -side left -anchor w
+  menu .bar.disp.m
+  .bar.disp.m add command -label "Display image as cloud ..." \
+		-command "vis_cloud"
+
+# add main window to select basic display options
+set w [frame .disp]
+
+# display an image as a movie or series of frame
+   pack [frame $w.movie -relief sunken -borderwidth 2] \
+	-side top -fill x -padx 4 -pady 4
+   pack [label $w.movie.title -text "Display Movie of Image"] \
+	-side top -fill x -padx 4 -pady 2
+   pack [frame $w.movie.sel -relief flat] \
+	-side top -fill x -padx 2 -pady 2
+     pack [radiobutton $w.movie.sel.xy -text "XY" -width 4 \
+	   -command vis_movieSetup \
+	   -variable Vis3d(movie:pl) -value xy -relief flat] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [radiobutton $w.movie.sel.yz -text "YZ" -width 4 \
+	   -command vis_movieSetup \
+	   -variable Vis3d(movie:pl) -value yz -relief flat] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [radiobutton $w.movie.sel.xz -text "XZ" -width 4 \
+	   -command vis_movieSetup \
+	   -variable Vis3d(movie:pl) -value xz -relief flat] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [label $w.movie.sel.l1 -width 4 -text {}] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [label $w.movie.sel.l2 -width 8 -text Frame:] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [entry $w.movie.sel.fr -width 6 -textvariable Vis3d(movie:sl)\
+	   -relief sunken -borderwidth 2] \
+	   -side left -anchor w -padx 2 -pady 2
+     bind $w.movie.sel.fr <Return> {vis_movieDisplay}
+   pack [frame $w.movie.reg -relief flat] \
+	-side top -fill x -padx 2 -pady 2
+   foreach t {x1 x2 y1 y2 z1 z2 v1} {
+     pack [label $w.movie.reg.${t} -text "$t:" -width 3] \
+           -side left -anchor w -padx 2
+     pack [entry $w.movie.reg.e${t} -textvariable Imdef1(${t}) -width 4 \
+           -relief sunken -borderwidth 2] \
+           -side left -anchor w -padx 4
+     bind $w.movie.reg.e${t} <Return> {vis_movieDisplay}
+     pack [label $w.movie.reg.t${t} -text {} -width 1] \
+           -side left -anchor w -padx 2
+   }
+   pack [frame $w.movie.opts -relief flat] \
+	-side top -fill x -padx 4 -pady 4
+     pack [radiobutton $w.movie.opts.lin -text "Linear" -width 8 \
+	   -variable Vis3d(tran) -value -linear -relief flat] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [radiobutton $w.movie.opts.log -text "Log" -width 8 \
+	   -variable Vis3d(tran) -value -log -relief flat] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [radiobutton $w.movie.opts.sqrt -text "Sqrt" -width 8 \
+	   -variable Vis3d(tran) -value -sqrt -relief flat] \
+	   -side left -anchor w -padx 2 -pady 2
+
+     pack [label $w.movie.opts.ll1 -width 2 -text {} -relief flat ] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [label $w.movie.opts.l1 -width 10 -text {Range from:} -relief flat ] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [entry $w.movie.opts.e1 -width 5 -relief sunken \
+	   -textvariable Vis3d(disp:x1) -borderwidth 2] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [label $w.movie.opts.ll2 -width 2 -text {} -relief flat ] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [label $w.movie.opts.l2 -width 10 -text {Range to:} -relief flat ] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [entry $w.movie.opts.e2 -width 5 -relief sunken \
+	   -textvariable Vis3d(disp:x2) -borderwidth 2] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [label $w.movie.opts.ll3 -width 2 -text {} -relief flat ] \
+	   -side left -anchor w -padx 2 -pady 2
+     pack [button $w.movie.opts.b -text "Reset" -width 5 \
+	   -command {set Vis3d(disp:x1) {} ; set Vis3d(disp:x2) {} }\
+	   -relief raised -borderwidth 2] \
+	   -side left -anchor w -padx 2 -pady 2
+
+   pack [frame $w.movie.bar -relief groove -borderwidth 2] \
+	-side top -fill x -padx 4 -pady 4
+     pack [button $w.movie.bar.play -command vis_moviePlay \
+	   -text Play -width 8] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.movie.bar.stop -command vis_movieStop \
+	   -text Stop -width 8] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.movie.bar.next -command "vis_movieIncr +1" \
+	   -text Next -width 8] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.movie.bar.prev -command "vis_movieIncr -1" \
+	   -text Previous -width 8] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.movie.bar.update -command "vis_movieUpdate" \
+	   -text Update -width 8] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.movie.bar.frame -command vis_movieDisplay \
+	   -text Plane -width 8] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.movie.bar.reset -command vis_planeReset \
+	   -text Reset -width 8] -side left -anchor w -padx 10 -pady 4
+
+# analyse an image
+  pack [frame $w.anal -relief sunken -borderwidth 2] \
+	-side top -fill x -padx 4 -pady 4
+  pack [label $w.anal.title -text "Analyse Image"] \
+	-side top -fill x -padx 4 -pady 2
+   pack [frame $w.anal.sel -relief flat] \
+	-side top -fill x -padx 2 -pady 2
+   pack [button $w.anal.sel.reset -text "Reset" -width 8 -relief raised \
+         -borderwidth 2 -command vis_setDefn] \
+	 -side left -anchor w -padx 2 -pady 2
+   pack [radiobutton $w.anal.sel.img -text "Image" -width 8 -relief flat \
+         -variable Vis3d(anal:img) -value 1 -command vis_setDefn] \
+	   -side left -anchor w -padx 2 -pady 2
+   pack [radiobutton $w.anal.sel.dis -text "Display" -width 8 -relief flat \
+         -variable Vis3d(anal:img) -value 2 -command vis_setDefn] \
+	   -side left -anchor w -padx 2 -pady 2
+   pack [checkbutton $w.anal.sel.pr -text "Select region" -width 16 \
+         -relief flat -variable Vis3d(anal:reg)] \
+	   -side left -anchor w -padx 2 -pady 2
+   pack [frame $w.anal.reg -relief flat] \
+	-side top -fill x -padx 2 -pady 2
+   foreach t {x1 x2 y1 y2 z1 z2 v1} {
+     pack [label $w.anal.reg.${t} -text "$t:" -width 3] \
+           -side left -anchor w -padx 2
+     pack [entry $w.anal.reg.e${t} -textvariable Andef(${t}) -width 4 \
+           -relief sunken -borderwidth 2] \
+           -side left -anchor w -padx 4
+     bind $w.anal.reg.e${t} <Return> { }
+     pack [label $w.anal.reg.t${t} -text {} -width 1] \
+           -side left -anchor w -padx 2
+   }
+   set w1 8 ; set w0 6
+   pack [frame $w.anal.res -relief sunken -borderwidth 2] \
+	-side top -fill x -padx 4 -pady 4
+     pack [label $w.anal.res.t1 -text "Mean: " -width $w0 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t2 -textvariable Vis3d(anal:mn) \
+        -width $w1 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t3 -text "SD: " -width $w0 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t4 -textvariable Vis3d(anal:sd) \
+        -width $w1 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t5 -text "Sum: " -width $w0 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t6 -textvariable Vis3d(anal:sum) \
+        -width $w1 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t7 -text "Min: " -width $w0 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t8 -textvariable Vis3d(anal:min) \
+        -width $w1 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t9 -text "Max: " -width $w0 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+     pack [label $w.anal.res.t10 -textvariable Vis3d(anal:max) \
+        -width $w1 -anchor w] \
+        -side left -anchor w -padx 2 -pady 4
+   pack [frame $w.anal.bar -relief groove -borderwidth 2] \
+	-side top -fill x -padx 4 -pady 4
+     pack [button $w.anal.bar.slice -command vis_analSlice \
+	   -text Slice -width 10] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.anal.bar.stats -command vis_analStats \
+	   -text Statistics -width 10] -side left -anchor w -padx 10 -pady 4
+     pack [button $w.anal.bar.hist -command vis_analHist \
+	   -text Histogram -width 10] -side left -anchor w -padx 10 -pady 4
+     pack [checkbutton $w.anal.bar.cbs -relief flat -borderwidth 2 \
+           -width 18 -variable Vis3d(anal:save)\
+	   -text "Save to file:" -anchor w] \
+           -side left -anchor w -padx 4
+     pack [entry $w.anal.bar.sbse -relief sunken -borderwidth 2 \
+           -width 20 -textvariable Vis3d(anal:file) ] \
+           -side left -anchor w -padx 4
+
+
+
+# build complete application
+pack $w -side top -fill x -padx 4 -pady 4
+
+# construct a status bar
+   pack [frame .status -relief raised -borderwidth 2] \
+	-side top -fill x -padx 2 -pady 2
+   pack [frame .status.l1 -relief flat] \
+	-side top -fill x -padx 2 -pady 2
+     pack [label .status.l1.t1 -text File: -width 8 -anchor w] \
+           -side left -anchor w
+     pack [label .status.l1.t2 -textvariable Vis3d(file) -width 40] \
+           -side left -anchor w
+     pack [label .status.l1.t3 -text {   Region:} -width 10] \
+           -side left -anchor w
+     foreach t {x1 x2 y1 y2 z1 z2 v1 v2} {
+       pack [label .status.l1.e${t} -textvariable Imdef(${t}) -width 3] \
+           -side left -anchor w -padx 2
+     }
+   pack [frame .status.l2 -relief flat] \
+	-side top -fill x -padx 2 -pady 2
+     pack [label .status.l2.t1 -text Display: -width 8 -anchor w] \
+           -side left -anchor w
+     pack [label .status.l2.t2 -textvariable Vis3d(file) -width 40] \
+           -side left -anchor w
+     pack [label .status.l2.t3 -text {   Region:} -width 10] \
+           -side left -anchor w
+     foreach t {x1 x2 y1 y2 z1 z2 v1 v2} {
+       pack [label .status.l2.e${t} -textvariable ImdefD(${t}) -width 3] \
+           -side left -anchor w -padx 2
+     }
+
+# read specified file if required
+   update idletasks
+   if { $fiopt } {vis_loadFile $file}
